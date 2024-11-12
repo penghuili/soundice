@@ -25,10 +25,10 @@ export async function fetchTotalAlbumsCount() {
         Authorization: `Bearer ${LocalStorage.get(storageKeys.accessToken)}`,
       },
     });
-    const { total } = await response.json();
+    const data = await response.json();
 
-    totalAlbumsCountCat.set(total);
-    LocalStorage.set(storageKeys.totalAlbumsCount, total);
+    totalAlbumsCountCat.set(data.total);
+    LocalStorage.set(storageKeys.totalAlbumsCount, data.total);
   } catch (error) {
     console.log(error);
   }
@@ -56,11 +56,14 @@ export async function fetchRandomAlbum() {
         Authorization: `Bearer ${LocalStorage.get(storageKeys.accessToken)}`,
       },
     });
-    const res = await response2.json();
+    const data = await response2.json();
 
-    const album = res?.items?.[0]?.album;
+    const album = data?.items?.[0]?.album;
     if (album) {
-      randomAlbumCat.set({ ...album, added_at: res.items[0].added_at });
+      randomAlbumCat.set({ ...album, added_at: data.items[0].added_at });
+
+      totalAlbumsCountCat.set(data.total);
+      LocalStorage.set(storageKeys.totalAlbumsCount, data.total);
     }
   } catch (error) {
     console.log(error);

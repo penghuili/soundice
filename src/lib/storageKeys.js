@@ -3,6 +3,7 @@ export const storageKeys = {
   accessToken: 'access_token',
   refreshToken: 'refresh_token',
   expiresAt: 'expires_at',
+  account: 'account',
 
   totalAlbumsCount: 'totalAlbumsCount',
 
@@ -11,4 +12,6 @@ export const storageKeys = {
   allArtists: 'allArtists',
 
   totalSongsCount: 'totalSongsCount',
+
+  totalPodcastsCount: 'totalPodcastsCount',
 };

@@ -3,7 +3,7 @@ import { replaceTo } from 'react-baby-router';
 import { storageKeys } from '../../lib/storageKeys';
 import { eventEmitter, eventEmitterEvents } from '../../shared/browser/eventEmitter';
 import { LocalStorage } from '../../shared/browser/LocalStorage';
-import { isLoggedInCat } from './authCats';
+import { accountCat, isLoadingAccountCat, isLoggedInCat } from './authCats';
 
 const generateRandomString = length => {
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -153,4 +153,28 @@ export function signOut() {
   LocalStorage.clear();
   isLoggedInCat.set(false);
   replaceTo('/');
+}
+
+export async function fetchAccount() {
+  isLoadingAccountCat.set(true);
+
+  await refreshTokenIfNecessary();
+
+  try {
+    const url = 'https://api.spotify.com/v1/me';
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${LocalStorage.get(storageKeys.accessToken)}`,
+      },
+    });
+    const data = await response.json();
+
+    accountCat.set(data);
+    LocalStorage.set(storageKeys.account, data);
+  } catch (error) {
+    console.log(error);
+  }
+
+  isLoadingAccountCat.set(false);
 }

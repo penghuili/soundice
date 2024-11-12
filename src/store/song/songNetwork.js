@@ -58,11 +58,14 @@ export async function fetchRandomSong() {
         Authorization: `Bearer ${LocalStorage.get(storageKeys.accessToken)}`,
       },
     });
-    const res = await response.json();
+    const data = await response.json();
 
-    const song = res?.items?.[0];
+    const song = data?.items?.[0];
     if (song) {
       randomSongCat.set({ ...song.track, added_at: song.added_at });
+
+      totalSongsCountCat.set(data.total);
+      LocalStorage.set(storageKeys.totalSongsCount, data.total);
     }
   } catch (error) {
     console.log(error);

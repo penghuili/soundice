@@ -1,29 +1,59 @@
 import { Dropdown, TabPane, Tabs } from '@douyinfe/semi-ui';
 import { RiCodeBoxLine, RiLogoutBoxLine, RiMenuLine } from '@remixicon/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCat } from 'usecat';
 
 import { RandomAlbum } from '../components/RandomAlbum.jsx';
 import { RandomArtist } from '../components/RandomArtist.jsx';
+import { RandomPodcast } from '../components/RandomPodcast.jsx';
 import { RandomSong } from '../components/RandomSong.jsx';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { IconButton } from '../shared/semi/IconButton.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import { PageHeader } from '../shared/semi/PageHeader.jsx';
 import { isLoadingRandomAlbumCat, isLoadingTotalCountCat } from '../store/album/albumCats.js';
-import { signOut } from '../store/auth/authNetwork.js';
+import {
+  isLoadingAllArtistsCat,
+  isLoadingTotalArtistsCountCat,
+} from '../store/artist/artistCats.js';
+import { fetchAccount, signOut } from '../store/auth/authNetwork.js';
+import {
+  isLoadingRandomPodcastCat,
+  isLoadingTotalPodcastsCountCat,
+} from '../store/podcast/podcastCats.js';
+import { isLoadingRandomSongCat, isLoadingTotalSongsCountCat } from '../store/song/songCats.js';
 
 export function Home() {
-  const isLoadingTotal = useCat(isLoadingTotalCountCat);
-  const isLoading = useCat(isLoadingRandomAlbumCat);
+  const isLoadingAlbumsTotal = useCat(isLoadingTotalCountCat);
+  const isLoadingAlbum = useCat(isLoadingRandomAlbumCat);
+  const isLoadingArtistsTotal = useCat(isLoadingTotalArtistsCountCat);
+  const isLoadingArtist = useCat(isLoadingAllArtistsCat);
+  const isLoadingPodcastsTotal = useCat(isLoadingTotalPodcastsCountCat);
+  const isLoadingPodcast = useCat(isLoadingRandomPodcastCat);
+  const isLoadingSongsTotal = useCat(isLoadingTotalSongsCountCat);
+  const isLoadingSong = useCat(isLoadingRandomSongCat);
 
   const [tab, setTab] = useState('album');
+
+  useEffect(() => {
+    fetchAccount();
+  }, []);
+
+  const isLoading =
+    isLoadingAlbum ||
+    isLoadingArtist ||
+    isLoadingPodcast ||
+    isLoadingSong ||
+    isLoadingAlbumsTotal ||
+    isLoadingArtistsTotal ||
+    isLoadingPodcastsTotal ||
+    isLoadingSongsTotal;
 
   return (
     <PageContent paddingBottom="0">
       <PageHeader
-        title="Randomusic"
-        isLoading={isLoading || isLoadingTotal}
+        title="Soundice"
+        isLoading={isLoading}
         right={
           <Dropdown
             trigger="click"
@@ -59,8 +89,11 @@ export function Home() {
         <TabPane tab="Artists" itemKey="artists">
           <RandomArtist />
         </TabPane>
-        <TabPane tab="Liked Songs" itemKey="songs">
+        <TabPane tab="Songs" itemKey="songs">
           <RandomSong />
+        </TabPane>
+        <TabPane tab="Podcasts" itemKey="podcasts">
+          <RandomPodcast />
         </TabPane>
       </Tabs>
     </PageContent>
