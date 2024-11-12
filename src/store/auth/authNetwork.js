@@ -148,3 +148,9 @@ export async function refreshTokenIfNecessary() {
   }
   isRefreshing = false;
 }
+
+export function signOut() {
+  LocalStorage.clear();
+  isLoggedInCat.set(false);
+  replaceTo('/');
+}

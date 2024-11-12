@@ -12,7 +12,7 @@ export function Welcome() {
     <PageContent>
       <ItemsWrapper>
         <Flex direction="row" align="center" p="2rem 0 1rem" m="0" gap="0.5rem">
-          <Avatar src={logo} /> <Typography.Title heading={2}>Random Spotify</Typography.Title>
+          <Avatar src={logo} /> <Typography.Title heading={2}>Randomusic</Typography.Title>
         </Flex>
       </ItemsWrapper>
 
