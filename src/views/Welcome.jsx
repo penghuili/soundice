@@ -5,6 +5,7 @@ import { logo } from '../shared/browser/initShared';
 import { PageContent } from '../shared/browser/PageContent.jsx';
 import { Flex } from '../shared/semi/Flex';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
+import { Link } from '../shared/semi/Link.jsx';
 import { signIn } from '../store/auth/authNetwork.js';
 
 export function Welcome() {
@@ -40,6 +41,23 @@ export function Welcome() {
         </Typography.Title>
       </ItemsWrapper>
 
+      <ItemsWrapper>
+        <img src="/intro.gif" style={{ width: '100%', maxWidth: 400 }} />
+      </ItemsWrapper>
+
+      <ItemsWrapper gap="0">
+        <Typography.Title heading={5}>
+          1. Everything happens in your browser, your data is never sent to any server.
+        </Typography.Title>
+        <Typography.Title heading={5}>2. Free.</Typography.Title>
+        <Typography.Title heading={5}>
+          3. Open source:{' '}
+          <Link href="https://github.com/penghuili/soundice" target="_blank">
+            https://github.com/penghuili/soundice
+          </Link>
+        </Typography.Title>
+      </ItemsWrapper>
+
       <ItemsWrapper align="start">
         <Button
           theme="solid"
@@ -47,7 +65,7 @@ export function Welcome() {
             await signIn();
           }}
         >
-          Sign in
+          Connect your Spotify account
         </Button>
       </ItemsWrapper>
     </PageContent>
