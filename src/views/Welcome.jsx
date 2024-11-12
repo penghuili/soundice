@@ -3,6 +3,8 @@ import React from 'react';
 
 import { logo } from '../shared/browser/initShared';
 import { PageContent } from '../shared/browser/PageContent.jsx';
+import { copyContactEmailEffect } from '../shared/browser/store/sharedEffects.js';
+import { contactEmail } from '../shared/js/constants.js';
 import { Flex } from '../shared/semi/Flex';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
@@ -67,6 +69,15 @@ export function Welcome() {
         >
           Connect your Spotify account
         </Button>
+      </ItemsWrapper>
+
+      <ItemsWrapper align="start">
+        <Typography.Paragraph>
+          Spotify is reviewing the app, so it's not publicly available yet. Drop me an email if you
+          want to try it, I will send you an invite.
+        </Typography.Paragraph>
+
+        <Button onClick={() => copyContactEmailEffect()}>{contactEmail}</Button>
       </ItemsWrapper>
     </PageContent>
   );
