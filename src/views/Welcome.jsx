@@ -37,7 +37,7 @@ export function Welcome() {
 
       <ItemsWrapper>
         <Typography.Title heading={5}>
-          Soundice helps you pick music and podcasts randomly from your Spotify account.
+          Soundice helps you pick music and podcasts randomly.
         </Typography.Title>
       </ItemsWrapper>
 
