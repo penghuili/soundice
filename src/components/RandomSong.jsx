@@ -13,6 +13,7 @@ import {
   totalSongsCountCat,
 } from '../store/song/songCats.js';
 import { fetchRandomSong, fetchTotalSongsCount } from '../store/song/songNetwork.js';
+import { CoverImage } from './CoverImage.jsx';
 
 export function RandomSong() {
   const totalCount = useCat(totalSongsCountCat);
@@ -44,10 +45,7 @@ export function RandomSong() {
 
       {!!randomSong && (
         <Flex align="center">
-          <Card
-            cover={<img alt="example" src={randomSong.album.images[0].url} />}
-            style={{ width: 300 }}
-          >
+          <Card cover={<CoverImage src={randomSong.album.images[0].url} />} style={{ width: 300 }}>
             <Typography.Title heading={5}>{randomSong.name}</Typography.Title>
             <Typography.Paragraph>
               {randomSong.artists.map(a => (

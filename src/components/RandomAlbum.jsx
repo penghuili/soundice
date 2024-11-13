@@ -13,6 +13,7 @@ import {
   totalAlbumsCountCat,
 } from '../store/album/albumCats.js';
 import { fetchRandomAlbum, fetchTotalAlbumsCount } from '../store/album/albumNetwork.js';
+import { CoverImage } from './CoverImage.jsx';
 
 export function RandomAlbum() {
   const totalCount = useCat(totalAlbumsCountCat);
@@ -44,10 +45,7 @@ export function RandomAlbum() {
 
       {!!randomAlbum && (
         <Flex align="center">
-          <Card
-            cover={<img alt="example" src={randomAlbum.images[0].url} />}
-            style={{ width: 300 }}
-          >
+          <Card cover={<CoverImage src={randomAlbum.images[0].url} />} style={{ width: 300 }}>
             <Typography.Title heading={5}>{randomAlbum.name}</Typography.Title>
             <Typography.Paragraph>
               {randomAlbum.artists.map(a => (

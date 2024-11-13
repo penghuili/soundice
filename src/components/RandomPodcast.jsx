@@ -13,6 +13,7 @@ import {
   totalPodcastsCountCat,
 } from '../store/podcast/podcastCats.js';
 import { fetchRandomPodcast, fetchTotalPodcastsCount } from '../store/podcast/podcastNetwork.js';
+import { CoverImage } from './CoverImage.jsx';
 
 export function RandomPodcast() {
   const totalCount = useCat(totalPodcastsCountCat);
@@ -44,10 +45,7 @@ export function RandomPodcast() {
 
       {!!randomPodcast && (
         <Flex align="center">
-          <Card
-            cover={<img alt="example" src={randomPodcast.images[0].url} />}
-            style={{ width: 300 }}
-          >
+          <Card cover={<CoverImage src={randomPodcast.images[0].url} />} style={{ width: 300 }}>
             <Typography.Title heading={5}>{randomPodcast.name}</Typography.Title>
             <Typography.Paragraph>
               <Link href={randomPodcast.show.external_urls.spotify} target="_blank">
