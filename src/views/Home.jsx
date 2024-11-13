@@ -1,6 +1,6 @@
 import { Dropdown, TabPane, Tabs } from '@douyinfe/semi-ui';
 import { RiCodeBoxLine, RiLogoutBoxLine, RiMenuLine } from '@remixicon/react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useCat } from 'usecat';
 
 import { RandomAlbum } from '../components/RandomAlbum.jsx';
@@ -16,7 +16,7 @@ import {
   isLoadingAllArtistsCat,
   isLoadingTotalArtistsCountCat,
 } from '../store/artist/artistCats.js';
-import { fetchAccount, signOut } from '../store/auth/authNetwork.js';
+import { signOut } from '../store/auth/authNetwork.js';
 import {
   isLoadingRandomPodcastCat,
   isLoadingTotalPodcastsCountCat,
@@ -34,10 +34,6 @@ export function Home() {
   const isLoadingSong = useCat(isLoadingRandomSongCat);
 
   const [tab, setTab] = useState('album');
-
-  useEffect(() => {
-    fetchAccount();
-  }, []);
 
   const isLoading =
     isLoadingAlbum ||
