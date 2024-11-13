@@ -1,5 +1,4 @@
 import { Button, Card, Typography } from '@douyinfe/semi-ui';
-import { RiDiceLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
@@ -14,6 +13,7 @@ import {
 } from '../store/podcast/podcastCats.js';
 import { fetchRandomPodcast, fetchTotalPodcastsCount } from '../store/podcast/podcastNetwork.js';
 import { CoverImage } from './CoverImage.jsx';
+import { DiceSpinner } from './DiceSpinner.jsx';
 
 export function RandomPodcast() {
   const totalCount = useCat(totalPodcastsCountCat);
@@ -34,7 +34,7 @@ export function RandomPodcast() {
 
       <Button
         theme="solid"
-        icon={<RiDiceLine />}
+        icon={<DiceSpinner loading={isLoading} />}
         onClick={async () => {
           await fetchRandomPodcast(true);
         }}

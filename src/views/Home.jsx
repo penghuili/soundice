@@ -11,40 +11,28 @@ import { PageContent } from '../shared/browser/PageContent.jsx';
 import { IconButton } from '../shared/semi/IconButton.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import { PageHeader } from '../shared/semi/PageHeader.jsx';
-import { isLoadingRandomAlbumCat, isLoadingTotalCountCat } from '../store/album/albumCats.js';
+import { isLoadingTotalCountCat } from '../store/album/albumCats.js';
 import {
   isLoadingAllArtistsCat,
-  isLoadingRandomArtistCat,
   isLoadingTotalArtistsCountCat,
 } from '../store/artist/artistCats.js';
 import { signOut } from '../store/auth/authNetwork.js';
-import {
-  isLoadingRandomPodcastCat,
-  isLoadingTotalPodcastsCountCat,
-} from '../store/podcast/podcastCats.js';
-import { isLoadingRandomSongCat, isLoadingTotalSongsCountCat } from '../store/song/songCats.js';
+import { isLoadingTotalPodcastsCountCat } from '../store/podcast/podcastCats.js';
+import { isLoadingTotalSongsCountCat } from '../store/song/songCats.js';
 
 export function Home() {
   const isLoadingAlbumsTotal = useCat(isLoadingTotalCountCat);
-  const isLoadingAlbum = useCat(isLoadingRandomAlbumCat);
   const isLoadingArtistsTotal = useCat(isLoadingTotalArtistsCountCat);
   const isLoadingArtist = useCat(isLoadingAllArtistsCat);
-  const isLoadingRandomArtist = useCat(isLoadingRandomArtistCat);
   const isLoadingPodcastsTotal = useCat(isLoadingTotalPodcastsCountCat);
-  const isLoadingPodcast = useCat(isLoadingRandomPodcastCat);
   const isLoadingSongsTotal = useCat(isLoadingTotalSongsCountCat);
-  const isLoadingSong = useCat(isLoadingRandomSongCat);
 
   const [tab, setTab] = useState('album');
 
   const isLoading =
-    isLoadingAlbum ||
     isLoadingArtist ||
-    isLoadingPodcast ||
-    isLoadingSong ||
     isLoadingAlbumsTotal ||
     isLoadingArtistsTotal ||
-    isLoadingRandomArtist ||
     isLoadingPodcastsTotal ||
     isLoadingSongsTotal;
 

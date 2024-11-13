@@ -1,5 +1,4 @@
 import { Button, Card, Typography } from '@douyinfe/semi-ui';
-import { RiDiceLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
@@ -18,6 +17,7 @@ import {
   getRandomArtist,
 } from '../store/artist/artistNetwork.js';
 import { CoverImage } from './CoverImage.jsx';
+import { DiceSpinner } from './DiceSpinner.jsx';
 
 export function RandomArtist() {
   const totalCount = useCat(totalArtistsCountCat);
@@ -41,7 +41,7 @@ export function RandomArtist() {
 
       <Button
         theme="solid"
-        icon={<RiDiceLine />}
+        icon={<DiceSpinner loading={isLoadingRandom} />}
         onClick={() => {
           getRandomArtist(true);
         }}

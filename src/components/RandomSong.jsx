@@ -1,5 +1,4 @@
 import { Button, Card, Typography } from '@douyinfe/semi-ui';
-import { RiDiceLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
@@ -14,6 +13,7 @@ import {
 } from '../store/song/songCats.js';
 import { fetchRandomSong, fetchTotalSongsCount } from '../store/song/songNetwork.js';
 import { CoverImage } from './CoverImage.jsx';
+import { DiceSpinner } from './DiceSpinner.jsx';
 
 export function RandomSong() {
   const totalCount = useCat(totalSongsCountCat);
@@ -34,7 +34,7 @@ export function RandomSong() {
 
       <Button
         theme="solid"
-        icon={<RiDiceLine />}
+        icon={<DiceSpinner loading={isLoading} />}
         onClick={async () => {
           await fetchRandomSong(true);
         }}
