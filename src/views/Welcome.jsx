@@ -44,7 +44,7 @@ export function Welcome() {
       </ItemsWrapper>
 
       <ItemsWrapper>
-        <img src="/intro.gif" style={{ width: '100%', maxWidth: 400 }} />
+        <img src="/intro2.gif" style={{ width: '100%', maxWidth: 400 }} />
       </ItemsWrapper>
 
       <ItemsWrapper gap="0">

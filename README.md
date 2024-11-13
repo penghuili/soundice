@@ -1,3 +1,3 @@
 # Soundice
 
-![intro](/public/intro.gif)
+![intro](/public/intro2.gif)
