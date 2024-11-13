@@ -1,15 +1,14 @@
-import { Button, Card, Spin, Typography } from '@douyinfe/semi-ui';
-import { RiRefreshLine } from '@remixicon/react';
+import { Button, Card, Typography } from '@douyinfe/semi-ui';
+import { RiDiceLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
+import { formatDateTime } from '../shared/js/date.js';
 import { Flex } from '../shared/semi/Flex';
-import { IconButton } from '../shared/semi/IconButton.jsx';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import {
   isLoadingRandomSongCat,
-  isLoadingTotalSongsCountCat,
   randomSongCat,
   totalSongsCountCat,
 } from '../store/song/songCats.js';
@@ -17,7 +16,6 @@ import { fetchRandomSong, fetchTotalSongsCount } from '../store/song/songNetwork
 
 export function RandomSong() {
   const totalCount = useCat(totalSongsCountCat);
-  const isLoadingTotal = useCat(isLoadingTotalSongsCountCat);
   const isLoading = useCat(isLoadingRandomSongCat);
   const randomSong = useCat(randomSongCat);
 
@@ -29,19 +27,15 @@ export function RandomSong() {
     <ItemsWrapper>
       {totalCount && (
         <Typography.Title heading={5} style={{ marginTop: '1rem' }}>
-          You liked {totalCount} songs.{' '}
-          <IconButton
-            theme="borderless"
-            icon={isLoadingTotal ? <Spin /> : <RiRefreshLine />}
-            onClick={fetchTotalSongsCount}
-          />
+          You liked {totalCount} songs.
         </Typography.Title>
       )}
 
       <Button
         theme="solid"
+        icon={<RiDiceLine />}
         onClick={async () => {
-          await fetchRandomSong();
+          await fetchRandomSong(true);
         }}
         disabled={isLoading || !totalCount}
       >
@@ -79,6 +73,12 @@ export function RandomSong() {
               </Link>
             </Typography.Paragraph>
           </Card>
+
+          <div style={{ width: 300, marginTop: '1rem' }}>
+            <Typography.Paragraph>
+              Saved at {formatDateTime(randomSong.added_at)}
+            </Typography.Paragraph>
+          </div>
         </Flex>
       )}
     </ItemsWrapper>

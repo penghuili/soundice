@@ -1,5 +1,5 @@
-import { Dropdown, TabPane, Tabs } from '@douyinfe/semi-ui';
-import { RiCodeBoxLine, RiLogoutBoxLine, RiMenuLine } from '@remixicon/react';
+import { Dropdown, Spin, TabPane, Tabs } from '@douyinfe/semi-ui';
+import { RiCodeBoxLine, RiDiceLine, RiLogoutBoxLine, RiMenuLine } from '@remixicon/react';
 import React, { useState } from 'react';
 import { useCat } from 'usecat';
 
@@ -14,6 +14,7 @@ import { PageHeader } from '../shared/semi/PageHeader.jsx';
 import { isLoadingRandomAlbumCat, isLoadingTotalCountCat } from '../store/album/albumCats.js';
 import {
   isLoadingAllArtistsCat,
+  isLoadingRandomArtistCat,
   isLoadingTotalArtistsCountCat,
 } from '../store/artist/artistCats.js';
 import { signOut } from '../store/auth/authNetwork.js';
@@ -28,6 +29,7 @@ export function Home() {
   const isLoadingAlbum = useCat(isLoadingRandomAlbumCat);
   const isLoadingArtistsTotal = useCat(isLoadingTotalArtistsCountCat);
   const isLoadingArtist = useCat(isLoadingAllArtistsCat);
+  const isLoadingRandomArtist = useCat(isLoadingRandomArtistCat);
   const isLoadingPodcastsTotal = useCat(isLoadingTotalPodcastsCountCat);
   const isLoadingPodcast = useCat(isLoadingRandomPodcastCat);
   const isLoadingSongsTotal = useCat(isLoadingTotalSongsCountCat);
@@ -42,6 +44,7 @@ export function Home() {
     isLoadingSong ||
     isLoadingAlbumsTotal ||
     isLoadingArtistsTotal ||
+    isLoadingRandomArtist ||
     isLoadingPodcastsTotal ||
     isLoadingSongsTotal;
 
@@ -50,6 +53,7 @@ export function Home() {
       <PageHeader
         title="Soundice"
         isLoading={isLoading}
+        spin={<Spin indicator={<RiDiceLine />} style={{ marginLeft: '1rem' }} />}
         right={
           <Dropdown
             trigger="click"

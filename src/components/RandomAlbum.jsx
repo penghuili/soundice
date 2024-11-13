@@ -1,16 +1,14 @@
-import { Button, Card, Spin, Typography } from '@douyinfe/semi-ui';
-import { RiRefreshLine } from '@remixicon/react';
+import { Button, Card, Typography } from '@douyinfe/semi-ui';
+import { RiDiceLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
 import { formatDateTime } from '../shared/js/date.js';
 import { Flex } from '../shared/semi/Flex';
-import { IconButton } from '../shared/semi/IconButton.jsx';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import {
   isLoadingRandomAlbumCat,
-  isLoadingTotalCountCat,
   randomAlbumCat,
   totalAlbumsCountCat,
 } from '../store/album/albumCats.js';
@@ -18,7 +16,6 @@ import { fetchRandomAlbum, fetchTotalAlbumsCount } from '../store/album/albumNet
 
 export function RandomAlbum() {
   const totalCount = useCat(totalAlbumsCountCat);
-  const isLoadingTotal = useCat(isLoadingTotalCountCat);
   const isLoading = useCat(isLoadingRandomAlbumCat);
   const randomAlbum = useCat(randomAlbumCat);
 
@@ -30,19 +27,15 @@ export function RandomAlbum() {
     <ItemsWrapper>
       {totalCount && (
         <Typography.Title heading={5} style={{ marginTop: '1rem' }}>
-          You saved {totalCount} albums.{' '}
-          <IconButton
-            theme="borderless"
-            icon={isLoadingTotal ? <Spin /> : <RiRefreshLine />}
-            onClick={fetchTotalAlbumsCount}
-          />
+          You saved {totalCount} albums.
         </Typography.Title>
       )}
 
       <Button
         theme="solid"
+        icon={<RiDiceLine />}
         onClick={async () => {
-          await fetchRandomAlbum();
+          fetchRandomAlbum(true);
         }}
         disabled={isLoading || !totalCount}
       >
@@ -68,7 +61,9 @@ export function RandomAlbum() {
                 </Link>
               ))}
             </Typography.Paragraph>
-            <Typography.Paragraph>{randomAlbum.tracks.total} tracks</Typography.Paragraph>
+            <Typography.Paragraph>
+              {randomAlbum.tracks.total} {randomAlbum.tracks.total === 1 ? 'track' : 'tracks'}
+            </Typography.Paragraph>
             <Typography.Paragraph type="secondary">{randomAlbum.release_date}</Typography.Paragraph>
 
             <Typography.Paragraph style={{ marginTop: '1rem' }}>

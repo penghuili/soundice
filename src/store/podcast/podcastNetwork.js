@@ -1,4 +1,5 @@
 import { storageKeys } from '../../lib/storageKeys';
+import { waitAtLeast } from '../../lib/waitAtLeast';
 import { LocalStorage } from '../../shared/browser/LocalStorage';
 import { refreshTokenIfNecessary } from '../auth/authNetwork';
 import {
@@ -38,7 +39,7 @@ export async function fetchTotalPodcastsCount() {
   isLoadingTotalPodcastsCountCat.set(false);
 }
 
-export async function fetchRandomPodcast() {
+export async function fetchRandomPodcast(wait) {
   const total = totalPodcastsCountCat.get();
   if (!total) {
     return;
@@ -46,6 +47,21 @@ export async function fetchRandomPodcast() {
 
   isLoadingRandomPodcastCat.set(true);
 
+  const { data } = wait
+    ? await waitAtLeast(1000, fetchRandomPodcastNetwork(total))
+    : await fetchRandomPodcastNetwork(total);
+
+  if (data) {
+    randomPodcastCat.set(data);
+
+    totalPodcastsCountCat.set(data.total);
+    LocalStorage.set(storageKeys.totalPodcastsCount, data.total);
+  }
+
+  isLoadingRandomPodcastCat.set(false);
+}
+
+async function fetchRandomPodcastNetwork(total) {
   await refreshTokenIfNecessary();
 
   try {
@@ -61,15 +77,12 @@ export async function fetchRandomPodcast() {
     const data = await response.json();
 
     const episode = data?.items?.[0];
-    if (episode) {
-      randomPodcastCat.set({ ...episode.episode, added_at: episode.added_at });
+    const episodeWithDate = episode
+      ? { ...episode.episode, added_at: episode.added_at, total: data.total }
+      : null;
 
-      totalPodcastsCountCat.set(data.total);
-      LocalStorage.set(storageKeys.totalPodcastsCount, data.total);
-    }
+    return { data: episodeWithDate, error: null };
   } catch (error) {
-    console.log(error);
+    return { data: null, error };
   }
-
-  isLoadingRandomPodcastCat.set(false);
 }

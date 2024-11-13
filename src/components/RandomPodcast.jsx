@@ -1,15 +1,14 @@
-import { Button, Card, Spin, Typography } from '@douyinfe/semi-ui';
-import { RiRefreshLine } from '@remixicon/react';
+import { Button, Card, Typography } from '@douyinfe/semi-ui';
+import { RiDiceLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
+import { formatDateTime } from '../shared/js/date.js';
 import { Flex } from '../shared/semi/Flex';
-import { IconButton } from '../shared/semi/IconButton.jsx';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import {
   isLoadingRandomPodcastCat,
-  isLoadingTotalPodcastsCountCat,
   randomPodcastCat,
   totalPodcastsCountCat,
 } from '../store/podcast/podcastCats.js';
@@ -17,7 +16,6 @@ import { fetchRandomPodcast, fetchTotalPodcastsCount } from '../store/podcast/po
 
 export function RandomPodcast() {
   const totalCount = useCat(totalPodcastsCountCat);
-  const isLoadingTotal = useCat(isLoadingTotalPodcastsCountCat);
   const isLoading = useCat(isLoadingRandomPodcastCat);
   const randomPodcast = useCat(randomPodcastCat);
 
@@ -29,19 +27,15 @@ export function RandomPodcast() {
     <ItemsWrapper>
       {totalCount && (
         <Typography.Title heading={5} style={{ marginTop: '1rem' }}>
-          You saved {totalCount} podcast episodes.{' '}
-          <IconButton
-            theme="borderless"
-            icon={isLoadingTotal ? <Spin /> : <RiRefreshLine />}
-            onClick={fetchTotalPodcastsCount}
-          />
+          You saved {totalCount} podcast episodes.
         </Typography.Title>
       )}
 
       <Button
         theme="solid"
+        icon={<RiDiceLine />}
         onClick={async () => {
-          await fetchRandomPodcast();
+          await fetchRandomPodcast(true);
         }}
         disabled={isLoading || !totalCount}
       >
@@ -70,6 +64,12 @@ export function RandomPodcast() {
               </Link>
             </Typography.Paragraph>
           </Card>
+
+          <div style={{ width: 300, marginTop: '1rem' }}>
+            <Typography.Paragraph>
+              Saved at {formatDateTime(randomPodcast.added_at)}
+            </Typography.Paragraph>
+          </div>
         </Flex>
       )}
     </ItemsWrapper>

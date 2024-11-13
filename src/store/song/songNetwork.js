@@ -1,4 +1,5 @@
 import { storageKeys } from '../../lib/storageKeys';
+import { waitAtLeast } from '../../lib/waitAtLeast';
 import { LocalStorage } from '../../shared/browser/LocalStorage';
 import { refreshTokenIfNecessary } from '../auth/authNetwork';
 import {
@@ -38,7 +39,7 @@ export async function fetchTotalSongsCount() {
   isLoadingTotalSongsCountCat.set(false);
 }
 
-export async function fetchRandomSong() {
+export async function fetchRandomSong(wait) {
   const total = totalSongsCountCat.get();
   if (!total) {
     return;
@@ -46,6 +47,21 @@ export async function fetchRandomSong() {
 
   isLoadingRandomSongCat.set(true);
 
+  const { data } = wait
+    ? await waitAtLeast(1000, fetchRandomSongNetwork(total))
+    : await fetchRandomSongNetwork(total);
+
+  if (data) {
+    randomSongCat.set(data);
+
+    totalSongsCountCat.set(data.total);
+    LocalStorage.set(storageKeys.totalSongsCount, data.total);
+  }
+
+  isLoadingRandomSongCat.set(false);
+}
+
+async function fetchRandomSongNetwork(total) {
   await refreshTokenIfNecessary();
 
   try {
@@ -61,15 +77,12 @@ export async function fetchRandomSong() {
     const data = await response.json();
 
     const song = data?.items?.[0];
-    if (song) {
-      randomSongCat.set({ ...song.track, added_at: song.added_at });
+    const songWithDate = song
+      ? { ...song.track, added_at: song.added_at, total: data.total }
+      : null;
 
-      totalSongsCountCat.set(data.total);
-      LocalStorage.set(storageKeys.totalSongsCount, data.total);
-    }
+    return { data: songWithDate, error: null };
   } catch (error) {
-    console.log(error);
+    return { data: null, error };
   }
-
-  isLoadingRandomSongCat.set(false);
 }

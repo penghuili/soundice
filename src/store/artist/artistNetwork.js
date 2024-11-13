@@ -1,10 +1,12 @@
 import { storageKeys } from '../../lib/storageKeys';
 import { LocalStorage } from '../../shared/browser/LocalStorage';
 import { asyncForEach } from '../../shared/js/asyncForEach';
+import { waitForSeconds } from '../../shared/js/waitForSeconds';
 import { refreshTokenIfNecessary } from '../auth/authNetwork';
 import {
   allArtistsCat,
   isLoadingAllArtistsCat,
+  isLoadingRandomArtistCat,
   isLoadingTotalArtistsCountCat,
   randomArtistCat,
   totalArtistsCountCat,
@@ -77,10 +79,18 @@ export async function fetchAllArtists() {
   isLoadingAllArtistsCat.set(false);
 }
 
-export function getRandomArtist() {
+export async function getRandomArtist(wait) {
+  if (wait) {
+    isLoadingRandomArtistCat.set(true);
+    await waitForSeconds(1);
+  }
   const artists = allArtistsCat.get();
   const artist = artists[Math.floor(Math.random() * artists.length)];
   randomArtistCat.set(artist);
+
+  if (wait) {
+    isLoadingRandomArtistCat.set(false);
+  }
 }
 
 async function fetchBatchArtists(afterKey) {

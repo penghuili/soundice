@@ -1,15 +1,14 @@
-import { Button, Card, Spin, Typography } from '@douyinfe/semi-ui';
-import { RiRefreshLine } from '@remixicon/react';
+import { Button, Card, Typography } from '@douyinfe/semi-ui';
+import { RiDiceLine } from '@remixicon/react';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
 import { Flex } from '../shared/semi/Flex';
-import { IconButton } from '../shared/semi/IconButton.jsx';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import {
   isLoadingAllArtistsCat,
-  isLoadingTotalArtistsCountCat,
+  isLoadingRandomArtistCat,
   randomArtistCat,
   totalArtistsCountCat,
 } from '../store/artist/artistCats.js';
@@ -21,8 +20,8 @@ import {
 
 export function RandomArtist() {
   const totalCount = useCat(totalArtistsCountCat);
-  const isLoadingTotal = useCat(isLoadingTotalArtistsCountCat);
   const isLoading = useCat(isLoadingAllArtistsCat);
+  const isLoadingRandom = useCat(isLoadingRandomArtistCat);
   const randomArtist = useCat(randomArtistCat);
 
   useEffect(() => {
@@ -35,21 +34,17 @@ export function RandomArtist() {
     <ItemsWrapper>
       {totalCount && (
         <Typography.Title heading={5} style={{ marginTop: '1rem' }}>
-          You are following {totalCount} artists.{' '}
-          <IconButton
-            theme="borderless"
-            icon={isLoadingTotal ? <Spin /> : <RiRefreshLine />}
-            onClick={fetchTotalArtistsCount}
-          />
+          You are following {totalCount} artists.
         </Typography.Title>
       )}
 
       <Button
         theme="solid"
+        icon={<RiDiceLine />}
         onClick={() => {
-          getRandomArtist();
+          getRandomArtist(true);
         }}
-        disabled={isLoading || !totalCount}
+        disabled={isLoading || !totalCount || isLoadingRandom}
       >
         Get a random artist
       </Button>
