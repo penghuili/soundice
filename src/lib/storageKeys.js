@@ -6,12 +6,15 @@ export const storageKeys = {
   account: 'account',
 
   totalAlbumsCount: 'totalAlbumsCount',
+  latestAlbums: 'latestAlbums',
 
   totalArtistsCount: 'totalArtistsCount',
   latestArtistId: 'latestArtistId',
   allArtists: 'allArtists',
 
   totalSongsCount: 'totalSongsCount',
+  latestSongs: 'latestSongs',
 
   totalPodcastsCount: 'totalPodcastsCount',
+  latestPodcasts: 'latestPodcasts',
 };

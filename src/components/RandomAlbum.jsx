@@ -1,27 +1,27 @@
-import { Button, Card, Typography } from '@douyinfe/semi-ui';
+import { Button, Divider, Typography } from '@douyinfe/semi-ui';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
-import { formatDateTime } from '../shared/js/date.js';
 import { Flex } from '../shared/semi/Flex';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
-import { Link } from '../shared/semi/Link.jsx';
 import {
   isLoadingRandomAlbumCat,
+  latestAlbumsCat,
   randomAlbumCat,
   totalAlbumsCountCat,
 } from '../store/album/albumCats.js';
-import { fetchRandomAlbum, fetchTotalAlbumsCount } from '../store/album/albumNetwork.js';
-import { CoverImage } from './CoverImage.jsx';
+import { fetchLatestAlbums, fetchRandomAlbum } from '../store/album/albumNetwork.js';
+import { AlbumItem } from './AlbumItem.jsx';
 import { DiceSpinner } from './DiceSpinner.jsx';
 
 export function RandomAlbum() {
   const totalCount = useCat(totalAlbumsCountCat);
+  const latestAlbums = useCat(latestAlbumsCat);
   const isLoading = useCat(isLoadingRandomAlbumCat);
   const randomAlbum = useCat(randomAlbumCat);
 
   useEffect(() => {
-    fetchTotalAlbumsCount().then(() => fetchRandomAlbum());
+    fetchLatestAlbums().then(() => fetchRandomAlbum());
   }, []);
 
   return (
@@ -43,40 +43,18 @@ export function RandomAlbum() {
         Get a random album
       </Button>
 
-      {!!randomAlbum && (
-        <Flex align="center">
-          <Card cover={<CoverImage src={randomAlbum.images[0].url} />} style={{ width: 300 }}>
-            <Typography.Title heading={5}>{randomAlbum.name}</Typography.Title>
-            <Typography.Paragraph>
-              {randomAlbum.artists.map(a => (
-                <Link
-                  key={a.id}
-                  href={a.external_urls.spotify}
-                  target="_blank"
-                  style={{ marginRight: '0.5rem' }}
-                >
-                  {a.name}
-                </Link>
-              ))}
-            </Typography.Paragraph>
-            <Typography.Paragraph>
-              {randomAlbum.tracks.total} {randomAlbum.tracks.total === 1 ? 'track' : 'tracks'}
-            </Typography.Paragraph>
-            <Typography.Paragraph type="secondary">{randomAlbum.release_date}</Typography.Paragraph>
+      <Flex align="center">
+        <AlbumItem album={randomAlbum} addedAt={randomAlbum?.added_at} />
+      </Flex>
 
-            <Typography.Paragraph style={{ marginTop: '1rem' }}>
-              <Link href={randomAlbum.external_urls.spotify} target="_blank">
-                Open in Spotify
-              </Link>
-            </Typography.Paragraph>
-          </Card>
-
-          <div style={{ width: 300, marginTop: '1rem' }}>
-            <Typography.Paragraph>
-              Saved at {formatDateTime(randomAlbum.added_at)}
-            </Typography.Paragraph>
-          </div>
-        </Flex>
+      {!!latestAlbums?.length && (
+        <>
+          <Divider margin="2rem" />
+          <Typography.Title heading={3}>Latest saved albums</Typography.Title>
+          {latestAlbums.map(item => (
+            <AlbumItem key={item.added_at} album={item.album} addedAt={item.added_at} topTime />
+          ))}
+        </>
       )}
     </ItemsWrapper>
   );

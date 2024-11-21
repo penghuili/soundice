@@ -5,14 +5,19 @@ import { refreshTokenIfNecessary } from '../auth/authNetwork';
 import {
   isLoadingRandomPodcastCat,
   isLoadingTotalPodcastsCountCat,
+  latestPodcastsCat,
   randomPodcastCat,
   totalPodcastsCountCat,
 } from './podcastCats';
 
-export async function fetchTotalPodcastsCount() {
+export async function fetchLatestPodcasts() {
   const savedCount = LocalStorage.get(storageKeys.totalPodcastsCount);
   if (savedCount) {
     totalPodcastsCountCat.set(savedCount);
+  }
+  const savedLatestPodcasts = LocalStorage.get(storageKeys.latestPodcasts);
+  if (savedLatestPodcasts?.length) {
+    latestPodcastsCat.set(savedLatestPodcasts);
   }
 
   isLoadingTotalPodcastsCountCat.set(true);
@@ -20,7 +25,7 @@ export async function fetchTotalPodcastsCount() {
   await refreshTokenIfNecessary();
 
   try {
-    const url = 'https://api.spotify.com/v1/me/episodes?limit=1&offset=0';
+    const url = 'https://api.spotify.com/v1/me/episodes?limit=10&offset=0';
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -32,6 +37,11 @@ export async function fetchTotalPodcastsCount() {
 
     totalPodcastsCountCat.set(total);
     LocalStorage.set(storageKeys.totalPodcastsCount, total);
+
+    if (data?.items?.length) {
+      LocalStorage.set(storageKeys.latestPodcasts, data.items);
+      latestPodcastsCat.set(data.items);
+    }
   } catch (error) {
     console.log(error);
   }

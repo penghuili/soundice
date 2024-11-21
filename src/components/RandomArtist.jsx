@@ -1,4 +1,4 @@
-import { Button, Card, Typography } from '@douyinfe/semi-ui';
+import { Button, Card, Divider, Typography } from '@douyinfe/semi-ui';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
@@ -10,6 +10,7 @@ import {
   isLoadingRandomArtistCat,
   randomArtistCat,
   totalArtistsCountCat,
+  useLatestArtists,
 } from '../store/artist/artistCats.js';
 import {
   fetchAllArtists,
@@ -24,6 +25,7 @@ export function RandomArtist() {
   const isLoading = useCat(isLoadingAllArtistsCat);
   const isLoadingRandom = useCat(isLoadingRandomArtistCat);
   const randomArtist = useCat(randomArtistCat);
+  const latestArtists = useLatestArtists();
 
   useEffect(() => {
     fetchTotalArtistsCount()
@@ -52,20 +54,36 @@ export function RandomArtist() {
 
       {!!randomArtist && (
         <Flex align="center">
-          <Card cover={<CoverImage src={randomArtist.images[0].url} />} style={{ width: 300 }}>
-            <Typography.Title heading={5}>{randomArtist.name}</Typography.Title>
-            <Typography.Paragraph type="secondary">
-              Followers: {randomArtist.followers.total}
-            </Typography.Paragraph>
-
-            <Typography.Paragraph style={{ marginTop: '1rem' }}>
-              <Link href={randomArtist.external_urls.spotify} target="_blank">
-                Open in Spotify
-              </Link>
-            </Typography.Paragraph>
-          </Card>
+          <ArtistItem artist={randomArtist} />
         </Flex>
       )}
+
+      {!!latestArtists?.length && (
+        <>
+          <Divider margin="2rem" />
+          <Typography.Title heading={3}>Latest followed artists</Typography.Title>
+          {latestArtists.map(item => (
+            <ArtistItem key={item.id} artist={item} />
+          ))}
+        </>
+      )}
     </ItemsWrapper>
+  );
+}
+
+function ArtistItem({ artist }) {
+  return (
+    <Card cover={<CoverImage src={artist.images[0].url} />} style={{ width: 300 }}>
+      <Typography.Title heading={5}>{artist.name}</Typography.Title>
+      <Typography.Paragraph type="secondary">
+        Followers: {artist.followers.total}
+      </Typography.Paragraph>
+
+      <Typography.Paragraph style={{ marginTop: '1rem' }}>
+        <Link href={artist.external_urls.spotify} target="_blank">
+          Open in Spotify
+        </Link>
+      </Typography.Paragraph>
+    </Card>
   );
 }
