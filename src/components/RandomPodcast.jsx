@@ -2,8 +2,8 @@ import { Button, Card, Divider, Typography } from '@douyinfe/semi-ui';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
+import { cardWidth } from '../lib/constants';
 import { formatDateTime } from '../shared/js/date.js';
-import { Flex } from '../shared/semi/Flex';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import {
@@ -40,16 +40,14 @@ export function RandomPodcast() {
         onClick={async () => {
           await fetchRandomPodcast(true);
         }}
+        size="large"
+        style={{ width: cardWidth }}
         disabled={isLoading || !totalCount}
       >
         Get a random episode
       </Button>
 
-      {!!randomPodcast && (
-        <Flex align="center">
-          <PodcastItem podcast={randomPodcast} addedAt={randomPodcast.added_at} />
-        </Flex>
-      )}
+      {!!randomPodcast && <PodcastItem podcast={randomPodcast} addedAt={randomPodcast.added_at} />}
 
       {!!lastestPodcasts?.length && (
         <>
@@ -73,12 +71,12 @@ function PodcastItem({ podcast, addedAt, topTime }) {
   return (
     <div>
       {!!topTime && !!addedAt && (
-        <div style={{ width: 300 }}>
+        <div style={{ width: cardWidth }}>
           <Typography.Paragraph>Saved at {formatDateTime(addedAt)}</Typography.Paragraph>
         </div>
       )}
 
-      <Card cover={<CoverImage src={podcast.images[0].url} />} style={{ width: 300 }}>
+      <Card cover={<CoverImage src={podcast.images[0].url} />} style={{ width: cardWidth }}>
         <Typography.Title heading={5}>{podcast.name}</Typography.Title>
         <Typography.Paragraph>
           <Link href={podcast.show.external_urls.spotify} target="_blank">
@@ -95,7 +93,7 @@ function PodcastItem({ podcast, addedAt, topTime }) {
       </Card>
 
       {!topTime && !!addedAt && (
-        <div style={{ width: 300, marginTop: '1rem' }}>
+        <div style={{ width: cardWidth, marginTop: '1rem' }}>
           <Typography.Paragraph>Saved at {formatDateTime(addedAt)}</Typography.Paragraph>
         </div>
       )}

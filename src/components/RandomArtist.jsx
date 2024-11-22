@@ -2,7 +2,7 @@ import { Button, Card, Divider, Typography } from '@douyinfe/semi-ui';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
-import { Flex } from '../shared/semi/Flex';
+import { cardWidth } from '../lib/constants';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import {
@@ -47,16 +47,14 @@ export function RandomArtist() {
         onClick={() => {
           getRandomArtist(true);
         }}
+        size="large"
+        style={{ width: cardWidth }}
         disabled={isLoading || !totalCount || isLoadingRandom}
       >
         Get a random artist
       </Button>
 
-      {!!randomArtist && (
-        <Flex align="center">
-          <ArtistItem artist={randomArtist} />
-        </Flex>
-      )}
+      {!!randomArtist && <ArtistItem artist={randomArtist} />}
 
       {!!latestArtists?.length && (
         <>
@@ -73,7 +71,7 @@ export function RandomArtist() {
 
 function ArtistItem({ artist }) {
   return (
-    <Card cover={<CoverImage src={artist.images[0].url} />} style={{ width: 300 }}>
+    <Card cover={<CoverImage src={artist.images[0].url} />} style={{ width: cardWidth }}>
       <Typography.Title heading={5}>{artist.name}</Typography.Title>
       <Typography.Paragraph type="secondary">
         Followers: {artist.followers.total}

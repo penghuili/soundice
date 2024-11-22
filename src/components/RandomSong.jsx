@@ -2,8 +2,8 @@ import { Button, Card, Divider, Typography } from '@douyinfe/semi-ui';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
+import { cardWidth } from '../lib/constants.js';
 import { formatDateTime } from '../shared/js/date.js';
-import { Flex } from '../shared/semi/Flex';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import {
@@ -40,16 +40,14 @@ export function RandomSong() {
         onClick={async () => {
           await fetchRandomSong(true);
         }}
+        size="large"
+        style={{ width: cardWidth }}
         disabled={isLoading || !totalCount}
       >
         Get a random song
       </Button>
 
-      {!!randomSong && (
-        <Flex align="center">
-          <SongItem song={randomSong} addedAt={randomSong.added_at} />
-        </Flex>
-      )}
+      {!!randomSong && <SongItem song={randomSong} addedAt={randomSong.added_at} />}
 
       {!!latestSongs?.length && (
         <>
@@ -68,12 +66,12 @@ function SongItem({ song, addedAt, topTime }) {
   return (
     <div>
       {!!topTime && !!addedAt && (
-        <div style={{ width: 300 }}>
+        <div style={{ width: cardWidth }}>
           <Typography.Paragraph>Saved at {formatDateTime(addedAt)}</Typography.Paragraph>
         </div>
       )}
 
-      <Card cover={<CoverImage src={song.album.images[0].url} />} style={{ width: 300 }}>
+      <Card cover={<CoverImage src={song.album.images[0].url} />} style={{ width: cardWidth }}>
         <Typography.Title heading={5}>{song.name}</Typography.Title>
         <Typography.Paragraph>
           {song.artists.map(a => (
@@ -101,7 +99,7 @@ function SongItem({ song, addedAt, topTime }) {
       </Card>
 
       {!topTime && !!addedAt && (
-        <div style={{ width: 300, marginTop: '1rem' }}>
+        <div style={{ width: cardWidth, marginTop: '1rem' }}>
           <Typography.Paragraph>Saved at {formatDateTime(addedAt)}</Typography.Paragraph>
         </div>
       )}

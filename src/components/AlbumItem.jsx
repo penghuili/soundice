@@ -2,6 +2,7 @@ import { Card, Typography } from '@douyinfe/semi-ui';
 import React from 'react';
 import fastMemo from 'react-fast-memo';
 
+import { cardWidth } from '../lib/constants.js';
 import { formatDateTime } from '../shared/js/date.js';
 import { Link } from '../shared/semi/Link.jsx';
 import { CoverImage } from './CoverImage.jsx';
@@ -14,12 +15,12 @@ export const AlbumItem = fastMemo(({ album, addedAt, topTime }) => {
   return (
     <div>
       {!!topTime && !!addedAt && (
-        <div style={{ width: 300 }}>
+        <div style={{ width: cardWidth }}>
           <Typography.Paragraph>Saved at {formatDateTime(addedAt)}</Typography.Paragraph>
         </div>
       )}
 
-      <Card cover={<CoverImage src={album.images[0].url} />} style={{ width: 300 }}>
+      <Card cover={<CoverImage src={album.images[0].url} />} style={{ width: cardWidth }}>
         <Typography.Title heading={5}>{album.name}</Typography.Title>
         <Typography.Paragraph>
           {album.artists.map(a => (
@@ -46,7 +47,7 @@ export const AlbumItem = fastMemo(({ album, addedAt, topTime }) => {
       </Card>
 
       {!topTime && !!addedAt && (
-        <div style={{ width: 300, marginTop: '1rem' }}>
+        <div style={{ width: cardWidth, marginTop: '1rem' }}>
           <Typography.Paragraph>Saved at {formatDateTime(addedAt)}</Typography.Paragraph>
         </div>
       )}

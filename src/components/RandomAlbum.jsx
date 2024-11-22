@@ -2,7 +2,7 @@ import { Button, Divider, Typography } from '@douyinfe/semi-ui';
 import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
-import { Flex } from '../shared/semi/Flex';
+import { cardWidth } from '../lib/constants.js';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import {
   isLoadingRandomAlbumCat,
@@ -38,14 +38,14 @@ export function RandomAlbum() {
         onClick={async () => {
           fetchRandomAlbum(true);
         }}
+        size="large"
+        style={{ width: cardWidth }}
         disabled={isLoading || !totalCount}
       >
         Get a random album
       </Button>
 
-      <Flex align="center">
-        <AlbumItem album={randomAlbum} addedAt={randomAlbum?.added_at} />
-      </Flex>
+      <AlbumItem album={randomAlbum} addedAt={randomAlbum?.added_at} />
 
       {!!latestAlbums?.length && (
         <>
