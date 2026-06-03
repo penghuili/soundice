@@ -69,7 +69,6 @@ export async function fetchAllArtists() {
   await asyncForEach(Array.from({ length: Math.ceil(total / 49) }).fill(null), async () => {
     const { afterKey: nextAfterKey, artists: nextArtists } = await fetchBatchArtists(afterKey);
     afterKey = nextAfterKey;
-    console.log(afterKey);
     artists = artists.concat(nextArtists);
   });
 

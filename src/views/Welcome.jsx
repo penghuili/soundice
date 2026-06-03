@@ -73,8 +73,13 @@ export function Welcome() {
 
       <ItemsWrapper align="start">
         <Typography.Paragraph>
-          Spotify is reviewing the app, so it's not publicly available yet. Drop me an email if you
-          want to try it, I will send you an invite.
+          Soundice is currently limited by Spotify's development mode quota. Spotify only accepts
+          extended quota requests from organizations, not personal accounts, so I cannot open the app
+          to everyone yet.
+        </Typography.Paragraph>
+        <Typography.Paragraph>
+          I have 3 free allowlist spots right now. Drop me an email if you want to try it, and I will
+          send you an invite while spots are available.
         </Typography.Paragraph>
 
         <Button onClick={() => copyContactEmailEffect()}>{contactEmail}</Button>

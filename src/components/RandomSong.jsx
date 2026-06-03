@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
 import { cardWidth } from '../lib/constants.js';
+import { getAlbumImageUrl, getSpotifyUrl } from '../lib/spotify.js';
 import { formatDateTime } from '../shared/js/date.js';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
@@ -71,13 +72,13 @@ function SongItem({ song, addedAt, topTime }) {
         </div>
       )}
 
-      <Card cover={<CoverImage src={song.album.images[0].url} />} style={{ width: cardWidth }}>
+      <Card cover={<CoverImage src={getAlbumImageUrl(song)} />} style={{ width: cardWidth }}>
         <Typography.Title heading={5}>{song.name}</Typography.Title>
         <Typography.Paragraph>
-          {song.artists.map(a => (
+          {song.artists?.map(a => (
             <Link
               key={a.id}
-              href={a.external_urls.spotify}
+              href={getSpotifyUrl(a)}
               target="_blank"
               style={{ marginRight: '0.5rem' }}
             >
@@ -86,16 +87,22 @@ function SongItem({ song, addedAt, topTime }) {
           ))}
         </Typography.Paragraph>
         <Typography.Paragraph>
-          <Link href={song.album.external_urls.spotify} target="_blank">
-            {song.album.name}
-          </Link>
+          {getSpotifyUrl(song.album) ? (
+            <Link href={getSpotifyUrl(song.album)} target="_blank">
+              {song.album.name}
+            </Link>
+          ) : (
+            song.album?.name
+          )}
         </Typography.Paragraph>
 
-        <Typography.Paragraph style={{ marginTop: '1rem' }}>
-          <Link href={song.external_urls.spotify} target="_blank">
-            Open in Spotify
-          </Link>
-        </Typography.Paragraph>
+        {!!getSpotifyUrl(song) && (
+          <Typography.Paragraph style={{ marginTop: '1rem' }}>
+            <Link href={getSpotifyUrl(song)} target="_blank">
+              Open in Spotify
+            </Link>
+          </Typography.Paragraph>
+        )}
       </Card>
 
       {!topTime && !!addedAt && (

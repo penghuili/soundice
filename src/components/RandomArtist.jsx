@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
 import { cardWidth } from '../lib/constants';
+import { getImageUrl, getSpotifyUrl } from '../lib/spotify.js';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
 import {
@@ -71,17 +72,19 @@ export function RandomArtist() {
 
 function ArtistItem({ artist }) {
   return (
-    <Card cover={<CoverImage src={artist.images[0].url} />} style={{ width: cardWidth }}>
+    <Card cover={<CoverImage src={getImageUrl(artist)} />} style={{ width: cardWidth }}>
       <Typography.Title heading={5}>{artist.name}</Typography.Title>
       <Typography.Paragraph type="secondary">
-        Followers: {artist.followers.total}
+        Followers: {artist.followers?.total}
       </Typography.Paragraph>
 
-      <Typography.Paragraph style={{ marginTop: '1rem' }}>
-        <Link href={artist.external_urls.spotify} target="_blank">
-          Open in Spotify
-        </Link>
-      </Typography.Paragraph>
+      {!!getSpotifyUrl(artist) && (
+        <Typography.Paragraph style={{ marginTop: '1rem' }}>
+          <Link href={getSpotifyUrl(artist)} target="_blank">
+            Open in Spotify
+          </Link>
+        </Typography.Paragraph>
+      )}
     </Card>
   );
 }

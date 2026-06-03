@@ -3,6 +3,7 @@ import React from 'react';
 import fastMemo from 'react-fast-memo';
 
 import { cardWidth } from '../lib/constants.js';
+import { getImageUrl, getSpotifyUrl } from '../lib/spotify.js';
 import { formatDateTime } from '../shared/js/date.js';
 import { Link } from '../shared/semi/Link.jsx';
 import { CoverImage } from './CoverImage.jsx';
@@ -20,13 +21,13 @@ export const AlbumItem = fastMemo(({ album, addedAt, topTime }) => {
         </div>
       )}
 
-      <Card cover={<CoverImage src={album.images[0].url} />} style={{ width: cardWidth }}>
+      <Card cover={<CoverImage src={getImageUrl(album)} />} style={{ width: cardWidth }}>
         <Typography.Title heading={5}>{album.name}</Typography.Title>
         <Typography.Paragraph>
-          {album.artists.map(a => (
+          {album.artists?.map(a => (
             <Link
               key={a.id}
-              href={a.external_urls.spotify}
+              href={getSpotifyUrl(a)}
               target="_blank"
               style={{ marginRight: '0.5rem' }}
             >
@@ -35,15 +36,17 @@ export const AlbumItem = fastMemo(({ album, addedAt, topTime }) => {
           ))}
         </Typography.Paragraph>
         <Typography.Paragraph>
-          {album.tracks.total} {album.tracks.total === 1 ? 'track' : 'tracks'}
+          {album.tracks?.total} {album.tracks?.total === 1 ? 'track' : 'tracks'}
         </Typography.Paragraph>
         <Typography.Paragraph type="secondary">{album.release_date}</Typography.Paragraph>
 
-        <Typography.Paragraph style={{ marginTop: '1rem' }}>
-          <Link href={album.external_urls.spotify} target="_blank">
-            Open in Spotify
-          </Link>
-        </Typography.Paragraph>
+        {!!getSpotifyUrl(album) && (
+          <Typography.Paragraph style={{ marginTop: '1rem' }}>
+            <Link href={getSpotifyUrl(album)} target="_blank">
+              Open in Spotify
+            </Link>
+          </Typography.Paragraph>
+        )}
       </Card>
 
       {!topTime && !!addedAt && (

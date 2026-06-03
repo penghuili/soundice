@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useCat } from 'usecat';
 
 import { cardWidth } from '../lib/constants';
+import { getImageUrl, getSpotifyUrl } from '../lib/spotify.js';
 import { formatDateTime } from '../shared/js/date.js';
 import { ItemsWrapper } from '../shared/semi/ItemsWrapper.jsx';
 import { Link } from '../shared/semi/Link.jsx';
@@ -76,20 +77,26 @@ function PodcastItem({ podcast, addedAt, topTime }) {
         </div>
       )}
 
-      <Card cover={<CoverImage src={podcast.images[0].url} />} style={{ width: cardWidth }}>
+      <Card cover={<CoverImage src={getImageUrl(podcast)} />} style={{ width: cardWidth }}>
         <Typography.Title heading={5}>{podcast.name}</Typography.Title>
         <Typography.Paragraph>
-          <Link href={podcast.show.external_urls.spotify} target="_blank">
-            {podcast.show.name}
-          </Link>
+          {getSpotifyUrl(podcast.show) ? (
+            <Link href={getSpotifyUrl(podcast.show)} target="_blank">
+              {podcast.show.name}
+            </Link>
+          ) : (
+            podcast.show?.name
+          )}
         </Typography.Paragraph>
         <Typography.Paragraph type="secondary">{podcast.release_date}</Typography.Paragraph>
 
-        <Typography.Paragraph style={{ marginTop: '1rem' }}>
-          <Link href={podcast.external_urls.spotify} target="_blank">
-            Open in Spotify
-          </Link>
-        </Typography.Paragraph>
+        {!!getSpotifyUrl(podcast) && (
+          <Typography.Paragraph style={{ marginTop: '1rem' }}>
+            <Link href={getSpotifyUrl(podcast)} target="_blank">
+              Open in Spotify
+            </Link>
+          </Typography.Paragraph>
+        )}
       </Card>
 
       {!topTime && !!addedAt && (
