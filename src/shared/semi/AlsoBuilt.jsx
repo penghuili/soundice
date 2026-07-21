@@ -66,11 +66,11 @@ export function AlsoBuilt({ showBeer }) {
       )}
 
       {appName !== apps.soundice.name && (
-        <a href="https://soundice.net" target="_blank">
+        <a href="https://soundice.peng37.com" target="_blank">
           <Button
             icon={
               <Image
-                src="https://app.soundice.net/icons2/icon-192.png"
+                src="https://soundice.peng37.com/icons2/icon-192.png"
                 width={24}
                 height={24}
                 preview={false}
