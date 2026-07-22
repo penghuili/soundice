@@ -58,12 +58,6 @@ const categories = [
       </div>
     </section>
 
-    <aside class="quota-note">
-      <span class="quota-dot" />
-      <p><strong>Small by design.</strong> Spotify currently limits personal apps to an allowlist. Want to try it?</p>
-      <a href="mailto:ichpenghui@gmail.com">Request access ↗</a>
-    </aside>
-
     <footer class="landing-footer">
       <span>© {{ new Date().getFullYear() }} Soundice</span>
       <span>Free · Open source · No tracking</span>

@@ -85,11 +85,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .category-chip { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 92px; color: #aaa9ae; font-size: 13px; font-weight: 650; border-right: 1px solid var(--line); }
 .category-chip:last-child { border-right: 0; }
 .category-chip span { color: var(--accent); font-size: 18px; }
-.quota-note { display: flex; align-items: center; gap: 13px; margin: 54px 0; padding: 18px 21px; color: var(--muted); background: #0d0f13; border: 1px solid var(--line); border-radius: 16px; font-size: 13px; }
-.quota-note p { margin: 0; }
-.quota-note strong { color: #e4e2df; }
-.quota-note a { margin-left: auto; color: #e7e4df; font-weight: 700; white-space: nowrap; }
-.quota-dot { width: 8px; height: 8px; border-radius: 50%; background: #e8aa40; box-shadow: 0 0 14px rgba(232,170,64,.5); }
 .landing-footer { display: flex; justify-content: space-between; padding: 25px 0 35px; color: #646770; border-top: 1px solid var(--line); font-size: 11px; }
 
 /* App */
@@ -236,8 +231,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .category-chip { min-height: 68px; }
   .category-chip:nth-child(2) { border-right: 0; }
   .category-chip:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
-  .quota-note { align-items: flex-start; flex-wrap: wrap; margin: 36px 0; }
-  .quota-note a { width: 100%; margin: 4px 0 0 21px; }
   .landing-footer { gap: 15px; flex-direction: column; }
   .account-copy { display: none; }
   .library-tabs { margin-top: 20px; margin-right: -14px; border-radius: 14px 0 0 14px; border-right: 0; }
