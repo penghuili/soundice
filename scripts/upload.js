@@ -36,6 +36,28 @@ function deployApp() {
     '--cache-control',
     'max-age=31536000,public',
   ]);
+
+  run('aws', [
+    's3',
+    'sync',
+    'dist/icons',
+    `${bucketUrl}/icons`,
+    '--delete',
+    '--cache-control',
+    'max-age=0,no-cache',
+  ]);
+
+  for (const file of ['favicon.ico', 'manifest.json', 'soundice-icon.svg', 'soundice-mark.svg', 'sw.js']) {
+    run('aws', [
+      's3',
+      'cp',
+      `dist/${file}`,
+      `${bucketUrl}/${file}`,
+      '--cache-control',
+      'max-age=0,no-cache',
+    ]);
+  }
+
   run('aws', [
     's3',
     'cp',

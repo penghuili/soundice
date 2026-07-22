@@ -2,6 +2,8 @@
 
 Soundice picks a random album, artist, song, or podcast episode from your Spotify library.
 
+It is installable as a PWA on supported mobile and desktop browsers, with an offline app shell for reopening the interface without a network connection.
+
 ## Development
 
 ```bash
