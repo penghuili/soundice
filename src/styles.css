@@ -104,11 +104,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .icon-button { display: grid; place-items: center; width: 36px; height: 36px; margin-left: 4px; color: #7f828b; background: transparent; border: 0; border-radius: 10px; cursor: pointer; }
 .icon-button:hover { color: #fff; background: #17191f; }
 .icon-button svg { width: 18px; height: 18px; fill: currentColor; }
-.library-intro { padding: 58px 0 40px; }
-.library-intro .eyebrow { margin-bottom: 13px; }
-.library-intro h1 { margin: 0; font-size: clamp(38px, 5vw, 60px); line-height: 1.02; letter-spacing: -.055em; }
-.library-intro > p:last-child { margin: 14px 0 0; color: var(--muted); font-size: 14px; }
-.library-tabs { display: flex; gap: 6px; padding: 6px; overflow-x: auto; background: #0e1014; border: 1px solid var(--line); border-radius: 16px; scrollbar-width: none; }
+.library-tabs { display: flex; gap: 6px; margin-top: 28px; padding: 6px; overflow-x: auto; background: #0e1014; border: 1px solid var(--line); border-radius: 16px; scrollbar-width: none; }
 .library-tabs::-webkit-scrollbar { display: none; }
 .library-tabs button { display: flex; align-items: center; justify-content: center; flex: 1 0 150px; gap: 9px; min-height: 48px; padding: 0 16px; color: #7f828b; background: transparent; border: 0; border-radius: 11px; cursor: pointer; font-size: 13px; font-weight: 680; transition: color 150ms ease, background 150ms ease; }
 .library-tabs button:hover { color: #d9d7d3; }
@@ -244,9 +240,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .quota-note a { width: 100%; margin: 4px 0 0 21px; }
   .landing-footer { gap: 15px; flex-direction: column; }
   .account-copy { display: none; }
-  .library-intro { padding: 42px 0 30px; }
-  .library-intro h1 { font-size: 42px; }
-  .library-tabs { margin-right: -14px; border-radius: 14px 0 0 14px; border-right: 0; }
+  .library-tabs { margin-top: 20px; margin-right: -14px; border-radius: 14px 0 0 14px; border-right: 0; }
   .library-tabs button { flex-basis: 128px; min-height: 45px; padding: 0 12px; }
   .content-grid { gap: 14px; padding-top: 14px; }
   .feature-card { min-height: auto; padding: 15px; border-radius: 20px; }

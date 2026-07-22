@@ -101,12 +101,6 @@ function savedDate(value) {
       </div>
     </header>
 
-    <section class="library-intro">
-      <p class="eyebrow"><span /> Your library, shuffled</p>
-      <h1>What should we play?</h1>
-      <p>Choose a shelf. Soundice will pick one thing so you don't have to.</p>
-    </section>
-
     <nav class="library-tabs" aria-label="Spotify library" role="tablist">
       <button
         v-for="category in categories"
