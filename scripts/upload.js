@@ -19,7 +19,11 @@ function run(command, args, options = {}) {
 
 function buildApp() {
   console.log('Building the app...');
-  run(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'build']);
+  if (process.platform === 'win32') {
+    run(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', 'npm run build']);
+  } else {
+    run('npm', ['run', 'build']);
+  }
 }
 
 function deployApp() {
