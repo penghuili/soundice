@@ -23,7 +23,7 @@ const states = reactive(
   Object.fromEntries(
     categories.map(category => [
       category.id,
-      { count: null, latest: [], current: null, loading: false, rolling: false, loaded: false, error: '' },
+      { count: null, latest: [], current: null, loading: false, rolling: false, loaded: false, error: '', rollError: '' },
     ])
   )
 );
@@ -41,6 +41,7 @@ async function load() {
   if (target.loaded || target.loading) return;
   target.loading = true;
   target.error = '';
+  target.rollError = '';
   try {
     const data = await props.service.loadCategory(type);
     target.count = data.count;
@@ -58,11 +59,15 @@ async function roll(type = active.value, animate = true) {
   const target = states[type];
   if (!target.count || target.rolling) return;
   target.rolling = animate;
-  target.error = '';
+  target.rollError = '';
   try {
     target.current = await props.service.getRandomItem(type, target.count);
   } catch (error) {
-    handleError(error, target);
+    if (error instanceof AuthRequiredError) {
+      emit('logout');
+    } else {
+      target.rollError = error.message || 'Spotify could not pick something right now.';
+    }
   } finally {
     target.rolling = false;
   }
@@ -157,7 +162,16 @@ function savedDate(value) {
                 </button>
                 <a v-if="state.current.url" class="spotify-link" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
               </div>
+              <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
             </div>
+          </div>
+          <div v-else class="feature-retry">
+            <span>↻</span>
+            <h2>One more roll?</h2>
+            <p>{{ state.rollError || 'Spotify did not return a pick.' }}</p>
+            <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
+              {{ state.rolling ? 'Trying again…' : 'Try again' }}
+            </button>
           </div>
         </Transition>
       </section>

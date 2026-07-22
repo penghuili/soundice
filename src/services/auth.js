@@ -1,4 +1,5 @@
 import { storage, storageKeys } from './storage.js';
+import { fetchWithRetry } from './request.js';
 
 const clientId = 'fd576a531dd842c6ab8549636279a775';
 const redirectUri = import.meta.env.VITE_REDIRECT_URL || window.location.origin;
@@ -66,7 +67,7 @@ export async function beginSpotifyLogin() {
 export async function exchangeAuthorizationCode(code) {
   const verifier = storage.get(storageKeys.codeVerifier);
   if (!verifier) throw new Error('The sign-in request has expired. Please connect again.');
-  const response = await fetch(tokenUrl, {
+  const response = await fetchWithRetry(tokenUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
@@ -90,7 +91,7 @@ async function refreshAccessToken() {
   const savedRefreshToken = storage.get(storageKeys.refreshToken);
   if (!savedRefreshToken) throw new AuthRequiredError();
   try {
-    const response = await fetch(tokenUrl, {
+    const response = await fetchWithRetry(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({

@@ -1,16 +1,17 @@
 import { AuthRequiredError, getAccessToken } from './auth.js';
+import { fetchWithRetry } from './request.js';
 import { storage, storageKeys } from './storage.js';
 
 const apiBase = 'https://api.spotify.com/v1';
 
 async function spotifyFetch(path, retry = true) {
   const token = await getAccessToken();
-  const response = await fetch(`${apiBase}${path}`, {
+  const response = await fetchWithRetry(`${apiBase}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (response.status === 401 && retry) {
     const freshToken = await getAccessToken(true);
-    const retried = await fetch(`${apiBase}${path}`, {
+    const retried = await fetchWithRetry(`${apiBase}${path}`, {
       headers: { Authorization: `Bearer ${freshToken}` },
     });
     if (!retried.ok) throw new Error(`Spotify request failed (${retried.status}).`);

@@ -136,6 +136,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .roll-button svg.spinning { animation: dice-spin 600ms ease; }
 .spotify-link { display: flex; justify-content: center; padding: 10px; color: #94969e; font-size: 12px; font-weight: 670; transition: color 150ms ease; }
 .spotify-link:hover { color: #fff; }
+.roll-error { margin: 7px 0 0; color: #d79a89; font-size: 11px; line-height: 1.45; text-align: center; }
+.feature-retry { display: flex; min-height: 410px; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+.feature-retry > span { display: grid; place-items: center; width: 48px; height: 48px; color: var(--accent); background: rgba(255,99,56,.1); border-radius: 14px; font-size: 23px; }
+.feature-retry h2 { margin: 18px 0 7px; font-size: 25px; }
+.feature-retry p { max-width: 360px; margin: 0; color: var(--muted); font-size: 13px; }
+.feature-retry .roll-button { min-width: 180px; margin-top: 24px; }
 .recent-panel { min-height: 510px; padding: 22px 10px 12px; }
 .panel-heading { display: flex; align-items: center; justify-content: space-between; padding: 0 12px 17px; border-bottom: 1px solid var(--line); }
 .panel-heading p { margin: 0 0 5px; color: #696c75; font-size: 9px; font-weight: 730; letter-spacing: .1em; text-transform: uppercase; }

@@ -11,6 +11,7 @@ const names = {
   podcasts: ['The Memory Palace', '99% Invisible', 'Search Engine', 'Twenty Thousand Hertz'],
 };
 const counts = { albums: 286, artists: 94, songs: 1248, podcasts: 67 };
+const failRandomPick = import.meta.env.DEV && new URLSearchParams(window.location.search).get('demo') === 'error';
 
 function item(type, index) {
   return {
@@ -32,6 +33,7 @@ export const demoService = {
   },
   async getRandomItem(type) {
     await new Promise(resolve => setTimeout(resolve, 420));
+    if (failRandomPick) throw new Error('Spotify is temporarily unreachable. Please try again.');
     return item(type, Math.floor(Math.random() * 4));
   },
 };
