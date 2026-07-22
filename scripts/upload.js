@@ -1,63 +1,73 @@
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 require('dotenv').config();
 
+const bucketUrl = process.env.S3_URL;
+const bucketName = bucketUrl?.replace(/^s3:\/\//, '');
+const timestamp = process.env.TIMESTAMP;
+
+if (!bucketName || !timestamp) {
+  throw new Error('S3_URL and TIMESTAMP must be configured before deploying.');
+}
+
 buildApp();
+deployApp();
 
-deployApp(process.env.S3_URL);
-
-function deployApp(bucket) {
-  console.log(`Deploying app to ${bucket} ...`);
-
-  uploadStatic(bucket);
-
-  uploadIndex(bucket);
-
-  deleteOldVersion(bucket);
-
-  console.log(`Deploy app to ${bucket} completed.`);
+function run(command, args, options = {}) {
+  return execFileSync(command, args, { stdio: 'inherit', ...options });
 }
 
 function buildApp() {
   console.log('Building the app...');
-  execSync(`npm run build`);
-  console.log('Build app completed.');
+  run(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', 'build']);
 }
 
-function uploadStatic(bucket) {
-  console.log('Uploading assets to S3...');
-  execSync(
-    `aws s3 sync dist/${process.env.TIMESTAMP} ${bucket}/${process.env.TIMESTAMP} --cache-control max-age=31536000,public`
+function deployApp() {
+  console.log(`Deploying app to ${bucketUrl} ...`);
+  run('aws', [
+    's3',
+    'sync',
+    `dist/${timestamp}`,
+    `${bucketUrl}/${timestamp}`,
+    '--cache-control',
+    'max-age=31536000,public',
+  ]);
+  run('aws', [
+    's3',
+    'cp',
+    'dist/index.html',
+    `${bucketUrl}/index.html`,
+    '--cache-control',
+    'max-age=0,no-store',
+  ]);
+  deleteOldVersions();
+  console.log(`Deploy app to ${bucketUrl} completed.`);
+}
+
+function deleteOldVersions() {
+  const output = execFileSync(
+    'aws',
+    [
+      's3api',
+      'list-objects-v2',
+      '--bucket',
+      bucketName,
+      '--delimiter',
+      '/',
+      '--query',
+      'CommonPrefixes[].Prefix',
+      '--output',
+      'json',
+    ],
+    { encoding: 'utf8' }
   );
-  console.log('Upload assets to S3 completed.');
-}
-
-function uploadIndex(bucket) {
-  console.log('Uploading index.html to S3...');
-  execSync(`aws s3 cp dist/index.html ${bucket}/index.html --cache-control max-age=0,no-store`);
-  console.log('Upload index.html to S3 completed.');
-}
-
-function deleteOldVersion(bucket) {
-  console.log('Deleting old versions ...');
-  // Retrieve the list of folder names (versions) from S3
-  const command = `aws s3 ls ${bucket} --recursive | awk '{print $4}' | grep '/' | cut -d/ -f1 | uniq`;
-  const result = execSync(command).toString();
-  // Split the result into an array, filter out 'index.html' and other non-versioned entries, and then sort
-  const versions = result
-    .split('\n')
-    .filter(v => v && v !== 'index.html' && /^\d{14}$/.test(v))
+  const versions = JSON.parse(output)
+    .map(prefix => prefix.replace(/\/$/, ''))
+    .filter(prefix => /^\d{14}$/.test(prefix))
     .sort();
-  // If there are more than 10 versions, remove the oldest ones
-  if (versions.length > 10) {
-    const toDelete = versions.slice(0, versions.length - 10); // Keep the last 10
 
-    toDelete.forEach(version => {
-      console.log(`Deleting version: ${version}`);
-      execSync(`aws s3 rm ${bucket}/${version} --recursive`);
-    });
-    console.log('Deleting old versions completed.');
-  } else {
-    console.log('No old versions to delete.');
+  for (const version of versions.slice(0, -10)) {
+    console.log(`Deleting old version: ${version}`);
+    run('aws', ['s3', 'rm', `${bucketUrl}/${version}`, '--recursive']);
   }
 }
