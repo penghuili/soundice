@@ -18,7 +18,8 @@ const categories = [
   { id: 'podcasts', label: 'Podcasts', singular: 'episode', symbol: '◉', recent: 'Recently saved' },
 ];
 
-const active = ref('albums');
+const requestedTab = new URLSearchParams(window.location.search).get('tab');
+const active = ref(categories.some(category => category.id === requestedTab) ? requestedTab : 'albums');
 const artistAlbum = reactive({ current: null, rolling: false, error: '', artistId: null });
 const states = reactive(
   Object.fromEntries(
@@ -34,7 +35,12 @@ const state = computed(() => states[active.value]);
 const displayName = computed(() => props.profile?.display_name || props.profile?.id || 'Spotify user');
 const avatar = computed(() => props.profile?.images?.[0]?.url || null);
 
-watch(active, load, { immediate: true });
+watch(active, type => {
+  const url = new URL(window.location.href);
+  url.searchParams.set('tab', type);
+  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+  load();
+}, { immediate: true });
 
 async function load() {
   const type = active.value;
