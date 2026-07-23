@@ -238,7 +238,7 @@ function savedDate(value) {
 
     <footer class="app-footer">
       <p><strong>Soundice</strong> picks from your Spotify library. Nothing is stored on our servers.</p>
-      <div><a href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer">Source</a><a href="mailto:ichpenghui@gmail.com">Feedback</a></div>
+      <div><a href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer">GitHub</a><a href="mailto:ichpenghui@gmail.com">Feedback</a></div>
     </footer>
   </div>
 </template>

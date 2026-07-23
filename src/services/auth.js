@@ -1,10 +1,17 @@
 import { storage, storageKeys } from './storage.js';
 import { fetchWithRetry } from './request.js';
 
-const clientId = 'fd576a531dd842c6ab8549636279a775';
+const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const redirectUri = import.meta.env.VITE_REDIRECT_URL || window.location.origin;
 const tokenUrl = 'https://accounts.spotify.com/api/token';
 let refreshPromise = null;
+
+function requireClientId() {
+  if (!clientId) {
+    throw new Error('Spotify is not configured. Set VITE_SPOTIFY_CLIENT_ID and rebuild the app.');
+  }
+  return clientId;
+}
 
 export class AuthRequiredError extends Error {
   constructor(message = 'Your Spotify session has expired.') {
@@ -50,12 +57,13 @@ export function hasSession() {
 }
 
 export async function beginSpotifyLogin() {
+  const configuredClientId = requireClientId();
   const verifier = randomString(64);
   storage.set(storageKeys.codeVerifier, verifier);
   const authUrl = new URL('https://accounts.spotify.com/authorize');
   authUrl.search = new URLSearchParams({
     response_type: 'code',
-    client_id: clientId,
+    client_id: configuredClientId,
     scope: 'user-library-read user-follow-read',
     code_challenge_method: 'S256',
     code_challenge: await createChallenge(verifier),
@@ -65,13 +73,14 @@ export async function beginSpotifyLogin() {
 }
 
 export async function exchangeAuthorizationCode(code) {
+  const configuredClientId = requireClientId();
   const verifier = storage.get(storageKeys.codeVerifier);
   if (!verifier) throw new Error('The sign-in request has expired. Please connect again.');
   const response = await fetchWithRetry(tokenUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
-      client_id: clientId,
+      client_id: configuredClientId,
       grant_type: 'authorization_code',
       code,
       redirect_uri: redirectUri,
@@ -88,6 +97,7 @@ function clearSession() {
 }
 
 async function refreshAccessToken() {
+  const configuredClientId = requireClientId();
   const savedRefreshToken = storage.get(storageKeys.refreshToken);
   if (!savedRefreshToken) throw new AuthRequiredError();
   try {
@@ -95,7 +105,7 @@ async function refreshAccessToken() {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
-        client_id: clientId,
+        client_id: configuredClientId,
         grant_type: 'refresh_token',
         refresh_token: savedRefreshToken,
       }),
