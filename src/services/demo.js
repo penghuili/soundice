@@ -10,6 +10,12 @@ const names = {
   songs: ['Borderline', 'Woman', 'Paprika', 'Spirit 2.0'],
   podcasts: ['The Memory Palace', '99% Invisible', 'Search Engine', 'Twenty Thousand Hertz'],
 };
+const artistAlbums = [
+  ['Sometimes I Might Be Introvert', 'GREY Area', 'No Thank You'],
+  ['Mordechai', 'Con Todo El Mundo', 'A LA SALA'],
+  ['Jubilee', 'Soft Sounds from Another Planet', 'For Melancholy Brunettes (& sad women)'],
+  ['Lahai', 'Process', 'Dual'],
+];
 const counts = { albums: 286, artists: 94, songs: 1248, podcasts: 67 };
 const failRandomPick = import.meta.env.DEV && new URLSearchParams(window.location.search).get('demo') === 'error';
 
@@ -35,5 +41,18 @@ export const demoService = {
     await new Promise(resolve => setTimeout(resolve, 420));
     if (failRandomPick) throw new Error('Spotify is temporarily unreachable. Please try again.');
     return item(type, Math.floor(Math.random() * 4));
+  },
+  async getRandomArtistAlbum(artistId) {
+    await new Promise(resolve => setTimeout(resolve, 320));
+    const artistIndex = Number(artistId?.split('-').at(-1)) || 0;
+    const albums = artistAlbums[artistIndex % artistAlbums.length];
+    const albumIndex = Math.floor(Math.random() * albums.length);
+    return {
+      ...item('albums', artistIndex),
+      id: `${artistId}-album-${albumIndex}`,
+      title: albums[albumIndex],
+      subtitle: names.artists[artistIndex % names.artists.length],
+      detail: `${2018 + albumIndex * 3} · ${10 + albumIndex} tracks`,
+    };
   },
 };

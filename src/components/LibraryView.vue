@@ -19,6 +19,7 @@ const categories = [
 ];
 
 const active = ref('albums');
+const artistAlbum = reactive({ current: null, rolling: false, error: '', artistId: null });
 const states = reactive(
   Object.fromEntries(
     categories.map(category => [
@@ -62,6 +63,7 @@ async function roll(type = active.value, animate = true) {
   target.rollError = '';
   try {
     target.current = await props.service.getRandomItem(type, target.count);
+    if (type === 'artists' && target.current) await rollArtistAlbum(target.current, animate);
   } catch (error) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
@@ -70,6 +72,27 @@ async function roll(type = active.value, animate = true) {
     }
   } finally {
     target.rolling = false;
+  }
+}
+
+async function rollArtistAlbum(artist = states.artists.current, animate = true) {
+  if (!artist?.id || artistAlbum.rolling) return;
+  const artistId = artist.id;
+  artistAlbum.rolling = animate;
+  artistAlbum.error = '';
+  artistAlbum.artistId = artistId;
+  try {
+    const album = await props.service.getRandomArtistAlbum(artistId);
+    if (artistAlbum.artistId === artistId) artistAlbum.current = album;
+    if (!album) artistAlbum.error = `Spotify did not return an album for ${artist.title}.`;
+  } catch (error) {
+    if (error instanceof AuthRequiredError) {
+      emit('logout');
+    } else if (artistAlbum.artistId === artistId) {
+      artistAlbum.error = error.message || 'Spotify could not pick an album right now.';
+    }
+  } finally {
+    if (artistAlbum.artistId === artistId) artistAlbum.rolling = false;
   }
 }
 
@@ -134,7 +157,8 @@ function savedDate(value) {
     </div>
 
     <div v-else class="content-grid">
-      <section class="feature-card">
+      <div class="feature-stack">
+        <section class="feature-card">
         <div class="feature-topline">
           <span>Random {{ meta.singular }}</span>
           <span class="library-count">1 of {{ state.count?.toLocaleString() }}</span>
@@ -168,7 +192,37 @@ function savedDate(value) {
             </button>
           </div>
         </Transition>
-      </section>
+        </section>
+
+        <section v-if="active === 'artists'" class="artist-album-card">
+          <div class="feature-topline">
+            <span>Random album by {{ state.current?.title }}</span>
+            <span class="album-symbol">◐</span>
+          </div>
+          <Transition name="swap" mode="out-in">
+            <div v-if="artistAlbum.current" :key="artistAlbum.current.id" class="artist-album-content">
+              <MediaArtwork :item="artistAlbum.current" />
+              <div class="artist-album-details">
+                <p class="feature-kicker">From their catalog</p>
+                <h2>{{ artistAlbum.current.title }}</h2>
+                <p class="feature-subtitle">{{ artistAlbum.current.subtitle }}</p>
+                <p v-if="artistAlbum.current.detail" class="feature-meta">{{ artistAlbum.current.detail }}</p>
+                <button class="secondary-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
+                  {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
+                </button>
+                <a v-if="artistAlbum.current.url" class="spotify-link" :href="artistAlbum.current.url" target="_blank" rel="noreferrer">Open album in Spotify ↗</a>
+              </div>
+            </div>
+            <div v-else class="artist-album-empty">
+              <p>{{ artistAlbum.error || 'No album landed for this artist.' }}</p>
+              <button class="secondary-button" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
+                {{ artistAlbum.rolling ? 'Trying…' : 'Try an album' }}
+              </button>
+            </div>
+          </Transition>
+          <p v-if="artistAlbum.error && artistAlbum.current" class="roll-error" role="status">{{ artistAlbum.error }}</p>
+        </section>
+      </div>
 
       <section class="recent-panel">
         <div class="panel-heading"><div><p>{{ meta.recent }}</p><h2>Your latest {{ meta.label.toLowerCase() }}</h2></div><span>{{ state.latest.length }}</span></div>

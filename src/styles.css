@@ -108,7 +108,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .library-tabs .active small { color: #9b9da4; }
 .tab-symbol { width: 20px; color: var(--accent); font-size: 17px; text-align: center; }
 .content-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, .85fr); gap: 20px; padding: 20px 0 58px; }
-.feature-card, .recent-panel { overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.feature-stack { display: flex; min-width: 0; flex-direction: column; gap: 20px; }
+.feature-card, .artist-album-card, .recent-panel { overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
 .feature-card { min-height: 510px; padding: 22px; }
 .feature-topline { display: flex; align-items: center; justify-content: space-between; margin-bottom: 21px; color: #72757f; font-size: 10px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
 .library-count { padding: 6px 9px; color: #9799a1; background: #1b1d22; border-radius: 7px; font-variant-numeric: tabular-nums; letter-spacing: 0; text-transform: none; }
@@ -133,6 +134,19 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .feature-retry h2 { margin: 18px 0 7px; font-size: 25px; }
 .feature-retry p { max-width: 360px; margin: 0; color: var(--muted); font-size: 13px; }
 .feature-retry .roll-button { min-width: 180px; margin-top: 24px; }
+.artist-album-card { padding: 22px; }
+.artist-album-card .feature-topline { margin-bottom: 18px; }
+.album-symbol { color: var(--accent); font-size: 17px; }
+.artist-album-content { display: grid; grid-template-columns: 156px minmax(0, 1fr); align-items: center; gap: 24px; }
+.artist-album-content .artwork { border-radius: 14px; }
+.artist-album-details { min-width: 0; }
+.artist-album-details h2 { display: -webkit-box; margin: 0; overflow: hidden; font-size: 26px; line-height: 1.08; letter-spacing: -.035em; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.artist-album-details .feature-subtitle { margin-top: 9px; font-size: 13px; }
+.artist-album-roll { width: 100%; margin-top: 18px; }
+.artist-album-roll:disabled { cursor: wait; opacity: .65; }
+.artist-album-details .spotify-link { padding-bottom: 0; }
+.artist-album-empty { display: flex; min-height: 156px; flex-direction: column; align-items: center; justify-content: center; gap: 17px; color: var(--muted); text-align: center; }
+.artist-album-empty p { margin: 0; font-size: 13px; }
 .recent-panel { min-height: 510px; padding: 22px 10px 12px; }
 .panel-heading { display: flex; align-items: center; justify-content: space-between; padding: 0 12px 17px; border-bottom: 1px solid var(--line); }
 .panel-heading p { margin: 0 0 5px; color: #696c75; font-size: 9px; font-weight: 730; letter-spacing: .1em; text-transform: uppercase; }
@@ -237,11 +251,17 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .library-tabs button { flex-basis: 128px; min-height: 45px; padding: 0 12px; }
   .content-grid { gap: 14px; padding-top: 14px; }
   .feature-card { min-height: auto; padding: 15px; border-radius: 20px; }
+  .feature-stack { gap: 14px; }
   .feature-topline { margin: 5px 2px 16px; }
   .feature-content { grid-template-columns: 1fr; gap: 25px; }
   .feature-details { padding: 0 5px 5px; }
   .feature-details h2 { font-size: 34px; }
   .feature-actions { margin-top: 23px; }
+  .artist-album-card { padding: 15px; border-radius: 20px; }
+  .artist-album-content { grid-template-columns: 112px minmax(0, 1fr); gap: 16px; }
+  .artist-album-details h2 { font-size: 22px; }
+  .artist-album-details .feature-kicker { margin-bottom: 8px; }
+  .artist-album-roll { min-height: 42px; margin-top: 14px; }
   .recent-panel { padding-top: 18px; border-radius: 20px; }
   .app-footer { align-items: flex-start; gap: 18px; flex-direction: column; }
   .error-panel { align-items: flex-start; flex-wrap: wrap; }
