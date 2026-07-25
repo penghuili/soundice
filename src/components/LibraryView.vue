@@ -33,7 +33,6 @@ const states = reactive(
 const meta = computed(() => categories.find(category => category.id === active.value));
 const state = computed(() => states[active.value]);
 const displayName = computed(() => props.profile?.display_name || props.profile?.id || 'Spotify user');
-const avatar = computed(() => props.profile?.images?.[0]?.url || null);
 
 watch(active, type => {
   const url = new URL(window.location.href);
@@ -122,8 +121,6 @@ function savedDate(value) {
       <BrandMark />
       <div class="account-menu">
         <div class="account-copy"><small>Connected as</small><strong>{{ displayName }}</strong></div>
-        <img v-if="avatar" :src="avatar" alt="" class="avatar" />
-        <div v-else class="avatar avatar-fallback">{{ displayName.slice(0, 1).toUpperCase() }}</div>
         <button class="icon-button" type="button" aria-label="Log out" title="Log out" @click="$emit('logout')">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5v2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5v2Zm5.59 2.59L20 12l-4.41 4.41L14.17 15l2-2H8v-2h8.17l-2-2 1.42-1.41Z" /></svg>
         </button>
