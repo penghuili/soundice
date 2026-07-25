@@ -47,7 +47,7 @@ function deployApp() {
     'max-age=0,no-cache',
   ]);
 
-  for (const file of ['manifest.json', 'soundice-icon.svg', 'soundice-mark.svg', 'sw.js']) {
+  for (const file of ['manifest.json', 'soundice-icon.svg', 'soundice-mark.svg', 'soundice-mark-inverted.svg', 'sw.js']) {
     run('aws', [
       's3',
       'cp',
