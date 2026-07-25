@@ -178,7 +178,7 @@ function savedDate(value) {
               <p v-if="state.current.addedAt" class="feature-saved">Saved {{ savedDate(state.current.addedAt) }}</p>
               <div class="feature-actions">
                 <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
-                  <img :class="{ spinning: state.rolling }" src="/soundice-mark.svg" alt="" aria-hidden="true" />
+                  <img :class="{ spinning: state.rolling }" src="/soundice-icon.svg" alt="" aria-hidden="true" />
                   {{ state.rolling ? 'Rolling…' : 'Roll again' }}
                 </button>
                 <a v-if="state.current.url" class="spotify-link" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
