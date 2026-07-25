@@ -180,7 +180,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 
 /* Loading and transitions */
 .boot-screen { display: grid; place-content: center; min-height: 100vh; background: #08090c; }
-.boot-logo-mark { width: 54px; height: 54px; margin: 0 auto 20px; border-radius: 15px; }
+.boot-logo-mark { width: 54px; height: 54px; margin: 0 auto 20px; border-radius: 15px; transform: rotate(-5deg); }
 .boot-logo-mark i { width: 6px; height: 6px; }
 .boot-logo-mark i:nth-child(1) { top: 14px; left: 14px; }
 .boot-logo-mark i:nth-child(2) { top: 14px; right: 14px; }
