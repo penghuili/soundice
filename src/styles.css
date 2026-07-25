@@ -123,6 +123,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .feature-saved { margin: 19px 0 0; color: #5f626b; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
 .feature-actions { display: flex; flex-direction: column; align-items: stretch; gap: 11px; margin-top: 28px; }
 .roll-button { min-height: 50px; padding: 0 17px; }
+.roll-button svg { transform: rotate(-5deg); }
 .roll-button svg.spinning { animation: dice-spin 600ms ease; }
 .spotify-link { display: flex; justify-content: center; padding: 10px; color: #94969e; font-size: 12px; font-weight: 670; transition: color 150ms ease; }
 .spotify-link:hover { color: #fff; }
