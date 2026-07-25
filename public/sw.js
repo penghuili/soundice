@@ -1,4 +1,4 @@
-const CACHE_NAME = 'soundice-shell-v2';
+const CACHE_NAME = 'soundice-shell-v3';
 const APP_SHELL = ['/', '/manifest.json', '/soundice-mark.svg', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (event) => {
@@ -18,6 +18,9 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
 
   if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+
+  // Never cache the service worker script itself, or it can block its own updates.
+  if (url.pathname === '/sw.js') return;
 
   if (request.mode === 'navigate') {
     event.respondWith(
