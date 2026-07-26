@@ -27,6 +27,7 @@ const removeLabels = {
 const requestedTab = new URLSearchParams(window.location.search).get('tab');
 const active = ref(categories.some(category => category.id === requestedTab) ? requestedTab : 'albums');
 const artistAlbum = reactive({ current: null, rolling: false, error: '', artistId: null });
+const pendingRemoval = reactive({ type: null, item: null });
 const states = reactive(
   Object.fromEntries(
     categories.map(category => [
@@ -50,6 +51,7 @@ const states = reactive(
 const meta = computed(() => categories.find(category => category.id === active.value));
 const state = computed(() => states[active.value]);
 const displayName = computed(() => props.profile?.display_name || props.profile?.id || 'Spotify user');
+const pendingRemovalLabel = computed(() => pendingRemoval.type ? removeLabels[pendingRemoval.type] : '');
 
 watch(active, type => {
   const url = new URL(window.location.href);
@@ -99,12 +101,26 @@ async function roll(type = active.value, animate = true) {
   }
 }
 
-async function removeCurrent(type = active.value) {
+function requestRemoval(type = active.value) {
   const target = states[type];
   const item = target.current;
   if (!item || target.removing) return;
-  const confirmed = window.confirm(`${removeLabels[type]} from your Spotify library?`);
-  if (!confirmed) return;
+  pendingRemoval.type = type;
+  pendingRemoval.item = item;
+}
+
+function closeRemovalDialog() {
+  if (pendingRemoval.type && states[pendingRemoval.type]?.removing) return;
+  pendingRemoval.type = null;
+  pendingRemoval.item = null;
+}
+
+async function confirmRemoval() {
+  const type = pendingRemoval.type;
+  const item = pendingRemoval.item;
+  if (!type || !item) return;
+  const target = states[type];
+  if (target.removing) return;
 
   target.removing = true;
   target.removeError = '';
@@ -130,6 +146,8 @@ async function removeCurrent(type = active.value) {
     }
   } finally {
     target.removing = false;
+    pendingRemoval.type = null;
+    pendingRemoval.item = null;
   }
 }
 
@@ -234,7 +252,7 @@ function savedDate(value) {
                   <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
                   {{ state.rolling ? 'Rolling…' : 'Roll again' }}
                 </button>
-                <button class="secondary-button remove-button" type="button" :disabled="state.removing || state.rolling" @click="removeCurrent()">
+                <button class="secondary-button remove-button" type="button" :disabled="state.removing || state.rolling" @click="requestRemoval()">
                   {{ state.removing ? 'Removing…' : removeLabels[active] }}
                 </button>
                 <a v-if="state.current.url" class="spotify-link" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
@@ -300,5 +318,21 @@ function savedDate(value) {
       <p><strong>Soundice</strong> picks from your Spotify library. Nothing is stored on our servers.</p>
       <div><a href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer">GitHub</a></div>
     </footer>
+
+    <Transition name="dialog-fade">
+      <div v-if="pendingRemoval.item" class="dialog-backdrop" role="presentation" @click.self="closeRemovalDialog">
+        <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="remove-dialog-title">
+          <p class="feature-kicker">{{ pendingRemovalLabel }}</p>
+          <h2 id="remove-dialog-title">{{ pendingRemoval.item.title }}</h2>
+          <p>This will update your Spotify library.</p>
+          <div class="dialog-actions">
+            <button class="secondary-button" type="button" :disabled="states[pendingRemoval.type]?.removing" @click="closeRemovalDialog">Cancel</button>
+            <button class="primary-button confirm-remove-button" type="button" :disabled="states[pendingRemoval.type]?.removing" @click="confirmRemoval">
+              {{ states[pendingRemoval.type]?.removing ? 'Removing…' : pendingRemovalLabel }}
+            </button>
+          </div>
+        </section>
+      </div>
+    </Transition>
   </div>
 </template>

@@ -165,6 +165,16 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .empty-panel > span { color: var(--accent); font-size: 38px; }
 .empty-panel h2 { margin: 18px 0 7px; font-size: 24px; }
 .empty-panel p { margin: 0; color: var(--muted); }
+.dialog-backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px; background: rgba(3, 4, 7, .72); backdrop-filter: blur(10px); }
+.confirm-dialog { width: min(420px, 100%); padding: 24px; background: var(--panel-raised); border: 1px solid var(--line-strong); border-radius: 20px; box-shadow: 0 28px 80px rgba(0, 0, 0, .48); }
+.confirm-dialog h2 { margin: 0; overflow-wrap: anywhere; color: #f6f4f0; font-size: 25px; line-height: 1.08; letter-spacing: -.025em; }
+.confirm-dialog > p:not(.feature-kicker) { margin: 13px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.dialog-actions { display: grid; grid-template-columns: 1fr 1.25fr; gap: 10px; margin-top: 24px; }
+.dialog-actions button { min-height: 46px; }
+.confirm-remove-button { padding: 0 17px; background: #df4f2d; box-shadow: 0 12px 28px rgba(223, 79, 45, .2); }
+.confirm-remove-button:hover:not(:disabled) { background: #f2623d; }
+.dialog-fade-enter-active, .dialog-fade-leave-active { transition: opacity 160ms ease; }
+.dialog-fade-enter-from, .dialog-fade-leave-to { opacity: 0; }
 .error-panel { display: flex; align-items: center; gap: 18px; min-height: auto; padding: 28px; }
 .error-panel > span { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; color: #ff8b6b; background: rgba(255,99,56,.1); border-radius: 12px; font-weight: 800; }
 .error-panel h2, .error-panel p { margin: 0; }
@@ -256,6 +266,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .artist-album-roll { min-height: 42px; margin-top: 14px; }
   .recent-panel { padding-top: 18px; border-radius: 20px; }
   .app-footer { align-items: flex-start; gap: 18px; flex-direction: column; }
+  .dialog-backdrop { align-items: end; padding: 14px; }
+  .confirm-dialog { padding: 18px; border-radius: 18px; }
+  .dialog-actions { grid-template-columns: 1fr; }
   .error-panel { align-items: flex-start; flex-wrap: wrap; }
   .error-panel button { width: 100%; margin-left: 60px; }
   .skeleton-card { display: block; }
