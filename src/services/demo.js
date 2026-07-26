@@ -27,6 +27,7 @@ function item(type, index) {
     detail: type === 'artists' ? `${(index + 2) * 134}K followers` : 'Saved in your Spotify library',
     imageStyle: covers[index % covers.length],
     url: 'https://open.spotify.com/',
+    uri: `spotify:${type}:${index}`,
     addedAt: new Date(Date.now() - index * 86400000).toISOString(),
   };
 }
@@ -54,5 +55,8 @@ export const demoService = {
       subtitle: names.artists[artistIndex % names.artists.length],
       detail: `${2018 + albumIndex * 3} · ${10 + albumIndex} tracks`,
     };
+  },
+  async removeItem() {
+    await new Promise(resolve => setTimeout(resolve, 260));
   },
 };

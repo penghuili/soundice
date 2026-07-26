@@ -17,6 +17,12 @@ const categories = [
   { id: 'songs', label: 'Songs', singular: 'song', symbol: '♪', recent: 'Recently liked' },
   { id: 'podcasts', label: 'Podcasts', singular: 'episode', symbol: '◉', recent: 'Recently saved' },
 ];
+const removeLabels = {
+  albums: 'Remove album',
+  artists: 'Unfollow artist',
+  songs: 'Remove song',
+  podcasts: 'Remove episode',
+};
 
 const requestedTab = new URLSearchParams(window.location.search).get('tab');
 const active = ref(categories.some(category => category.id === requestedTab) ? requestedTab : 'albums');
@@ -25,7 +31,18 @@ const states = reactive(
   Object.fromEntries(
     categories.map(category => [
       category.id,
-      { count: null, latest: [], current: null, loading: false, rolling: false, loaded: false, error: '', rollError: '' },
+      {
+        count: null,
+        latest: [],
+        current: null,
+        loading: false,
+        rolling: false,
+        removing: false,
+        loaded: false,
+        error: '',
+        rollError: '',
+        removeError: '',
+      },
     ])
   )
 );
@@ -53,6 +70,7 @@ async function load() {
     target.count = data.count;
     target.latest = data.latest;
     target.loaded = true;
+    target.removeError = '';
     if (data.count) await roll(type, false);
   } catch (error) {
     handleError(error, target);
@@ -66,6 +84,7 @@ async function roll(type = active.value, animate = true) {
   if (!target.count || target.rolling) return;
   target.rolling = animate;
   target.rollError = '';
+  target.removeError = '';
   try {
     target.current = await props.service.getRandomItem(type, target.count);
     if (type === 'artists' && target.current) await rollArtistAlbum(target.current, animate);
@@ -77,6 +96,40 @@ async function roll(type = active.value, animate = true) {
     }
   } finally {
     target.rolling = false;
+  }
+}
+
+async function removeCurrent(type = active.value) {
+  const target = states[type];
+  const item = target.current;
+  if (!item || target.removing) return;
+  const confirmed = window.confirm(`${removeLabels[type]} from your Spotify library?`);
+  if (!confirmed) return;
+
+  target.removing = true;
+  target.removeError = '';
+  target.rollError = '';
+  try {
+    await props.service.removeItem(type, item);
+    target.count = Math.max((target.count || 1) - 1, 0);
+    target.latest = target.latest.filter(latestItem => latestItem.id !== item.id);
+    target.current = null;
+    if (type === 'artists') {
+      artistAlbum.current = null;
+      artistAlbum.error = '';
+      artistAlbum.artistId = null;
+    }
+    if (target.count) await roll(type, false);
+  } catch (error) {
+    if (error instanceof AuthRequiredError) {
+      emit('logout');
+    } else if (error.status === 403) {
+      target.removeError = 'Reconnect Spotify to allow library changes.';
+    } else {
+      target.removeError = error.message || 'Spotify could not update your library right now.';
+    }
+  } finally {
+    target.removing = false;
   }
 }
 
@@ -181,9 +234,13 @@ function savedDate(value) {
                   <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
                   {{ state.rolling ? 'Rolling…' : 'Roll again' }}
                 </button>
+                <button class="secondary-button remove-button" type="button" :disabled="state.removing || state.rolling" @click="removeCurrent()">
+                  {{ state.removing ? 'Removing…' : removeLabels[active] }}
+                </button>
                 <a v-if="state.current.url" class="spotify-link" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
               </div>
               <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
+              <p v-if="state.removeError" class="roll-error" role="status">{{ state.removeError }}</p>
             </div>
           </div>
           <div v-else class="feature-retry">

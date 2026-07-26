@@ -4,22 +4,36 @@ import { storage, storageKeys } from './storage.js';
 
 const apiBase = 'https://api.spotify.com/v1';
 
-async function spotifyFetch(path, retry = true) {
+async function spotifyFetch(path, options = {}, retry = true) {
   const token = await getAccessToken();
   const response = await fetchWithRetry(`${apiBase}${path}`, {
+    ...options,
     headers: { Authorization: `Bearer ${token}` },
   });
   if (response.status === 401 && retry) {
     const freshToken = await getAccessToken(true);
     const retried = await fetchWithRetry(`${apiBase}${path}`, {
+      ...options,
       headers: { Authorization: `Bearer ${freshToken}` },
     });
-    if (!retried.ok) throw new Error(`Spotify request failed (${retried.status}).`);
-    return retried.json();
+    if (!retried.ok) throw spotifyError(retried);
+    return readSpotifyResponse(retried);
   }
   if (response.status === 401) throw new AuthRequiredError();
-  if (!response.ok) throw new Error(`Spotify request failed (${response.status}).`);
-  return response.json();
+  if (!response.ok) throw spotifyError(response);
+  return readSpotifyResponse(response);
+}
+
+function spotifyError(response) {
+  const error = new Error(`Spotify request failed (${response.status}).`);
+  error.status = response.status;
+  return error;
+}
+
+async function readSpotifyResponse(response) {
+  if (response.status === 204) return null;
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 }
 
 const spotifyUrl = item => item?.external_urls?.spotify || null;
@@ -41,6 +55,7 @@ function normalizeAlbum(item, addedAt) {
       .join(' · '),
     image: imageUrl(item),
     url: spotifyUrl(item),
+    uri: item.uri,
     addedAt,
   };
 }
@@ -53,6 +68,7 @@ function normalizeSong(item, addedAt) {
     detail: item.album?.name,
     image: imageUrl(item.album),
     url: spotifyUrl(item),
+    uri: item.uri,
     addedAt,
   };
 }
@@ -65,6 +81,7 @@ function normalizeEpisode(item, addedAt) {
     detail: item.release_date,
     image: imageUrl(item) || imageUrl(item.show),
     url: spotifyUrl(item),
+    uri: item.uri,
     addedAt,
   };
 }
@@ -77,6 +94,7 @@ function normalizeArtist(item) {
     detail: formatFollowers(item.followers?.total),
     image: imageUrl(item),
     url: spotifyUrl(item),
+    uri: item.uri,
   };
 }
 
@@ -159,4 +177,15 @@ export async function getRandomArtistAlbum(artistId) {
   const offset = Math.floor(Math.random() * firstPage.total);
   const data = offset ? await spotifyFetch(`${path}&offset=${offset}`) : firstPage;
   return data.items?.[0] ? normalizeAlbum(data.items[0]) : null;
+}
+
+export async function removeItem(type, item) {
+  if (!item?.id) throw new Error('No Spotify item is selected.');
+  if (type === 'artists') {
+    await spotifyFetch(`/me/following?type=artist&ids=${encodeURIComponent(item.id)}`, { method: 'DELETE' });
+    followedArtists = followedArtists?.filter(artist => artist.id !== item.id) || null;
+    return;
+  }
+  if (!['albums', 'songs', 'podcasts'].includes(type) || !item.uri) throw new Error('Unknown library category.');
+  await spotifyFetch(`/me/library?uris=${encodeURIComponent(item.uri)}`, { method: 'DELETE' });
 }
