@@ -2,36 +2,64 @@
 
 Soundice picks a random album, artist, song, or podcast episode from your Spotify library.
 
-It is a static Vue app, installable as a PWA on supported mobile and desktop browsers. Spotify authentication uses Authorization Code with PKCE, so tokens and library data stay in the browser and no backend or client secret is required.
+It is a static Vue 3 + Vite app, installable as a PWA on supported mobile and desktop browsers. Spotify authentication uses Authorization Code with PKCE, so tokens and library data stay in the browser and no backend or client secret is required.
 
-## Get the repo
+## Deploy it with your AI
+
+The fastest way to run your own Soundice is to clone the repo and hand it to your AI coding agent (Codex, Claude Code, Cursor, etc.) with your hosting provider's CLI or credentials available.
 
 ```bash
 git clone https://github.com/penghuili/soundice.git
 cd soundice
+```
+
+Then paste this prompt, replacing the bracketed values:
+
+> Deploy this Vue/Vite app to [provider, e.g. Vercel / Netlify / Cloudflare Pages / S3 + CloudFront / a VPS].
+>
+> Build with `npm run build` and publish the `dist` directory. Use a current Node.js LTS release.
+>
+> Set these build-time environment variables:
+> - `VITE_SPOTIFY_CLIENT_ID` = [your Spotify app client ID]
+> - `VITE_REDIRECT_URL` = [the site's public HTTPS origin, e.g. https://soundice.example.com]
+>
+> Rules:
+> - Never commit hosting credentials, AWS keys, or a Spotify client secret. Never put a secret in any `VITE_` variable.
+> - The app must be served over HTTPS and from the root of a domain. If the host can only serve it under a URL path (e.g. `user.github.io/soundice/`), adapt the Vite `base` and the service-worker/icon paths in `public/sw.js` and `public/manifest.json` accordingly, or use a custom domain at the root instead.
+> - `public/sw.js`, `manifest.json`, and icon files must be served with no-cache headers; fingerprinted build assets can be cached immutably.
+>
+> When done, report the final HTTPS URL so I can add it as a redirect URI in the Spotify Developer Dashboard.
+
+After the agent reports the public URL, add that exact URL (scheme, host, and path must match `VITE_REDIRECT_URL`) to **Redirect URIs** in your Spotify app's settings. If the URL changed after a first deploy, redeploy once with the final URL.
+
+## Create your Spotify app
+
+Every deployment needs its own Spotify app; this only takes a few minutes and is done in the browser, not by the AI agent.
+
+1. Open the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard), sign in, and select **Create app**.
+2. Enter an app name and description. For the redirect URI, add `http://127.0.0.1:3003` for local development, and your deployed HTTPS URL for production.
+3. In **APIs used**, select **Web API**, then create the app.
+4. Open **Settings** and copy the **Client ID**. Soundice uses PKCE; ignore the client secret and never share it.
+5. Redirect URIs must match exactly, including scheme, host, port, path, and trailing slash.
+6. New apps start in **Development Mode**: the app owner must have Spotify Premium, at most five Spotify users can be authorized, and every user must be added under **User Management** before the app can access their library.
+
+## Run locally
+
+```bash
 npm install
 cp .env.example .env.local
 ```
 
 On Windows PowerShell, use `Copy-Item .env.example .env.local` instead of `cp`.
 
-Edit `.env.local` with the client ID and local redirect URI from your Spotify app:
+Edit `.env.local` with your Spotify client ID:
 
 ```dotenv
 VITE_SPOTIFY_CLIENT_ID=your_spotify_client_id
 VITE_REDIRECT_URL=http://127.0.0.1:3003
 ```
 
-## Configure Spotify
-
-1. Open the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard), sign in, and select **Create app**.
-2. Enter an app name and description. For the redirect URI, add `http://127.0.0.1:3003` for local development.
-3. In **APIs used**, select **Web API**, then create the app.
-4. Open **Settings** and copy the **Client ID** into `VITE_SPOTIFY_CLIENT_ID`. Soundice uses PKCE; do not put the Spotify client secret in this repo or any `VITE_` variable.
-5. Add every deployed site as an exact redirect URI, for example `https://soundice.example.com`. The scheme, host, port, path, and trailing slash must match `VITE_REDIRECT_URL` exactly.
-6. New apps start in **Development Mode**. The app owner must have Spotify Premium, no more than five Spotify users can be authorized, and every user must be added under **User Management** before the app can access their library.
-
-## Development
+Then start the dev server:
 
 ```bash
 npm run dev
@@ -39,32 +67,19 @@ npm run dev
 
 Open `http://127.0.0.1:3003`. Add `?demo=1` in development to preview the signed-in library UI without a Spotify session.
 
-## Deploy anywhere
+## Manual deployment
 
-Soundice can be hosted by any static-site provider. Configure these build settings:
+If you prefer not to use an AI agent, any static host works with these settings:
 
 - Build command: `npm run build`
 - Publish directory: `dist`
-- Environment variables: `VITE_SPOTIFY_CLIENT_ID` and `VITE_REDIRECT_URL`
+- Build environment variables: `VITE_SPOTIFY_CLIENT_ID` and `VITE_REDIRECT_URL`
 - Runtime: a current Node.js LTS release
+- HTTPS is required for Spotify login outside local development
 
-Set `VITE_REDIRECT_URL` to the site's public HTTPS origin, such as `https://soundice.example.com`, and add the identical value to the Spotify app's redirect URIs. Then run:
-
-```bash
-npm run build
-```
-
-The deployable files are generated in `dist`. Upload that directory to Vercel, Netlify, Cloudflare Pages, S3, a VPS, or another static host. HTTPS is required for Spotify login outside local development.
+Set `VITE_REDIRECT_URL` to the site's public HTTPS origin, add the same value to the Spotify app's redirect URIs, run `npm run build`, and upload `dist`.
 
 Soundice assumes it is hosted at the root of a domain. A provider that publishes it under a path such as `example.github.io/soundice/` needs additional Vite base-path and service-worker configuration. GitHub Pages works without those changes when it uses a custom domain at the root.
-
-### Ask an AI coding agent to deploy it
-
-After cloning the repository, give your AI agent access to the working directory and your chosen hosting provider's CLI or credentials. A prompt like this contains the information it needs:
-
-> Deploy this Vue/Vite app to [provider]. Use `npm run build` and publish `dist`. Configure `VITE_SPOTIFY_CLIENT_ID` and `VITE_REDIRECT_URL` as build environment variables. Do not commit hosting credentials or a Spotify client secret. If the app will be hosted below a URL path instead of at a domain root, adapt the Vite asset base and service-worker paths. Report the final HTTPS URL and any DNS or Spotify redirect URI changes I need to make.
-
-Once the agent reports the public URL, add that exact URL to **Redirect URIs** in the Spotify Developer Dashboard and redeploy with the same URL as `VITE_REDIRECT_URL`.
 
 ### Existing S3 deploy script
 
