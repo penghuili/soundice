@@ -64,7 +64,7 @@ export async function beginSpotifyLogin() {
   authUrl.search = new URLSearchParams({
     response_type: 'code',
     client_id: configuredClientId,
-    scope: 'user-library-read user-library-modify user-follow-read user-follow-modify',
+    scope: 'user-read-private user-library-read user-library-modify user-follow-read user-follow-modify',
     code_challenge_method: 'S256',
     code_challenge: await createChallenge(verifier),
     redirect_uri: redirectUri,
