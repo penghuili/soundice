@@ -139,8 +139,6 @@ async function confirmRemoval() {
   } catch (error) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
-    } else if (error.status === 403) {
-      target.removeError = 'Reconnect Spotify to allow library changes.';
     } else {
       target.removeError = error.message || 'Spotify could not update your library right now.';
     }

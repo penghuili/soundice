@@ -16,10 +16,12 @@ async function spotifyFetch(path, options = {}, retry = true) {
       ...options,
       headers: { Authorization: `Bearer ${freshToken}` },
     });
+    if (retried.status === 403) throw new AuthRequiredError();
     if (!retried.ok) throw spotifyError(retried);
     return readSpotifyResponse(retried);
   }
   if (response.status === 401) throw new AuthRequiredError();
+  if (response.status === 403) throw new AuthRequiredError();
   if (!response.ok) throw spotifyError(response);
   return readSpotifyResponse(response);
 }
