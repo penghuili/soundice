@@ -82,6 +82,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .category-chip:last-child { border-right: 0; }
 .category-chip span { color: var(--accent); font-size: 18px; }
 .landing-footer { display: flex; justify-content: space-between; padding: 25px 0 35px; color: #646770; border-top: 1px solid var(--line); font-size: 11px; }
+.footer-links { display: flex; align-items: center; gap: 22px; }
+.status-link { color: #646770; transition: color 160ms ease; }
+.status-link:hover { color: #fff; }
 
 .github-link { display: flex; align-items: center; color: #646770; transition: color 160ms ease, transform 160ms ease; }
 .github-link:hover { color: #fff; transform: translateY(-1px); }
