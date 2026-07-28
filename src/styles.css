@@ -125,10 +125,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .roll-button { min-height: 50px; padding: 0 17px; }
 .roll-button .roll-mark { width: 21px; height: 21px; }
 .roll-button .spinning { animation: dice-spin 600ms ease; }
-.remove-button { min-height: 46px; color: #ffb7a3; background: rgba(255, 99, 56, .08); border-color: rgba(255, 99, 56, .22); }
-.remove-button:hover:not(:disabled) { color: #fff; background: rgba(255, 99, 56, .14); }
+.remove-button { min-height: 42px; color: #a98d86; background: transparent; border-color: rgba(255, 99, 56, .14); }
+.remove-button:hover:not(:disabled) { color: #ffb7a3; background: rgba(255, 99, 56, .08); }
 .spotify-link { display: flex; justify-content: center; padding: 10px; color: #94969e; font-size: 12px; font-weight: 670; transition: color 150ms ease; }
 .spotify-link:hover { color: #fff; }
+.spotify-action { align-items: center; min-height: 46px; color: #fff; background: rgba(30, 215, 96, .14); border: 1px solid rgba(30, 215, 96, .38); border-radius: 14px; font-size: 13px; font-weight: 740; transition: transform 160ms ease, color 150ms ease, background 160ms ease, box-shadow 160ms ease; }
+.spotify-action:hover { transform: translateY(-2px); background: rgba(30, 215, 96, .22); box-shadow: 0 12px 28px rgba(30, 215, 96, .12); }
 .roll-error { margin: 7px 0 0; color: #d79a89; font-size: 11px; line-height: 1.45; text-align: center; }
 .feature-retry { display: flex; min-height: 410px; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
 .feature-retry > span { display: grid; place-items: center; width: 48px; height: 48px; color: var(--accent); background: rgba(255,99,56,.1); border-radius: 14px; font-size: 23px; }

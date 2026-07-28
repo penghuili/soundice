@@ -250,10 +250,10 @@ function savedDate(value) {
                   <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
                   {{ state.rolling ? 'Rolling…' : 'Roll again' }}
                 </button>
+                <a v-if="state.current.url" class="spotify-link spotify-action" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
                 <button class="secondary-button remove-button" type="button" :disabled="state.removing || state.rolling" @click="requestRemoval()">
                   {{ state.removing ? 'Removing…' : removeLabels[active] }}
                 </button>
-                <a v-if="state.current.url" class="spotify-link" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
               </div>
               <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
               <p v-if="state.removeError" class="roll-error" role="status">{{ state.removeError }}</p>
