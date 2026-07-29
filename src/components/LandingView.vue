@@ -16,7 +16,6 @@ const categories = [
   <div class="landing-shell">
     <header class="landing-nav">
       <BrandMark />
-      <a class="text-link" href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer">Source code</a>
     </header>
 
     <section class="landing-hero">
