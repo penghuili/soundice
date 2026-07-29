@@ -7,7 +7,7 @@
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "dp": "node ./scripts/update-build-env.js prod && node ./scripts/upload.js"
+    "deploy": "node ./scripts/update-build-env.js prod && node ./scripts/upload.js"
   },
   "dependencies": {
     "vue": "3.5.18"

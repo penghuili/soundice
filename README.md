@@ -83,4 +83,4 @@ Soundice assumes it is hosted at the root of a domain. A provider that publishes
 
 ### Existing S3 deploy script
 
-The repository also includes `npm run dp`, which builds and uploads to the S3 bucket configured by `S3_URL`. It requires the AWS CLI and valid AWS credentials. Most forks should use their hosting provider's standard static-site deployment instead.
+The repository also includes `npm run deploy`, which builds and uploads to the S3 bucket configured by `S3_URL`. It requires the AWS CLI and valid AWS credentials. Most forks should use their hosting provider's standard static-site deployment instead.
