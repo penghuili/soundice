@@ -40,7 +40,11 @@ export const demoService = {
   },
   async getRandomItem(type) {
     await new Promise(resolve => setTimeout(resolve, 420));
-    if (failRandomPick) throw new Error('Spotify is temporarily unreachable. Please try again.');
+    if (failRandomPick) {
+      const error = new Error('Spotify is temporarily unreachable. Please try again.');
+      error.status = 503;
+      throw error;
+    }
     return item(type, Math.floor(Math.random() * 4));
   },
   async getRandomArtistAlbum(artistId) {

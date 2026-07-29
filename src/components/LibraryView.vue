@@ -94,7 +94,7 @@ async function roll(type = active.value, animate = true) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else {
-      target.rollError = error.message || 'Spotify could not pick something right now.';
+      target.rollError = formatError(error, 'Spotify could not pick something right now.');
     }
   } finally {
     target.rolling = false;
@@ -140,7 +140,7 @@ async function confirmRemoval() {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else {
-      target.removeError = error.message || 'Spotify could not update your library right now.';
+      target.removeError = formatError(error, 'Spotify could not update your library right now.');
     }
   } finally {
     target.removing = false;
@@ -163,7 +163,7 @@ async function rollArtistAlbum(artist = states.artists.current, animate = true) 
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else if (artistAlbum.artistId === artistId) {
-      artistAlbum.error = error.message || 'Spotify could not pick an album right now.';
+      artistAlbum.error = formatError(error, 'Spotify could not pick an album right now.');
     }
   } finally {
     if (artistAlbum.artistId === artistId) artistAlbum.rolling = false;
@@ -175,7 +175,12 @@ function handleError(error, target) {
     emit('logout');
     return;
   }
-  target.error = error.message || 'Spotify did not respond. Please try again.';
+  target.error = formatError(error, 'Spotify did not respond. Please try again.');
+}
+
+function formatError(error, fallback) {
+  const message = error.message || fallback;
+  return error.status && !message.includes(String(error.status)) ? `${message} (HTTP ${error.status})` : message;
 }
 
 function savedDate(value) {

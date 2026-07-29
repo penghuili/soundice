@@ -27,7 +27,7 @@ async function spotifyFetch(path, options = {}, retry = true) {
 }
 
 function spotifyError(response) {
-  const error = new Error(`Spotify request failed (${response.status}).`);
+  const error = new Error('Spotify request failed.');
   error.status = response.status;
   return error;
 }
