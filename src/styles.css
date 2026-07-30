@@ -128,8 +128,32 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .roll-button { min-height: 50px; padding: 0 17px; }
 .roll-button .roll-mark { width: 21px; height: 21px; }
 .roll-button .spinning { animation: dice-spin 600ms ease; }
-.remove-button { min-height: 42px; color: #a98d86; background: transparent; border-color: rgba(255, 99, 56, .14); }
-.remove-button:hover:not(:disabled) { color: #ffb7a3; background: rgba(255, 99, 56, .08); }
+.remove-button {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 22px auto 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #6d6664;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .02em;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+.remove-button:hover:not(:disabled) {
+  color: #d79a89;
+  text-decoration-color: rgba(215, 154, 137, .55);
+}
+.remove-button:disabled {
+  cursor: wait;
+  opacity: .65;
+}
 .spotify-link { display: flex; justify-content: center; padding: 10px; color: #94969e; font-size: 12px; font-weight: 670; transition: color 150ms ease; }
 .spotify-link:hover { color: #fff; }
 .spotify-action { align-items: center; min-height: 46px; color: #fff; background: rgba(30, 215, 96, .14); border: 1px solid rgba(30, 215, 96, .38); border-radius: 14px; font-size: 13px; font-weight: 740; transition: transform 160ms ease, color 150ms ease, background 160ms ease, box-shadow 160ms ease; }
