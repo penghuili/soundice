@@ -111,20 +111,23 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .content-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, .85fr); gap: 20px; padding: 20px 0 58px; }
 .feature-stack { display: flex; min-width: 0; flex-direction: column; gap: 20px; }
 .feature-card, .artist-album-card, .recent-panel { overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
-.feature-card { min-height: 510px; padding: 22px; }
+.feature-card { display: flex; min-height: 510px; flex-direction: column; padding: 22px; }
 .feature-topline { display: flex; align-items: center; justify-content: space-between; margin-bottom: 21px; color: #72757f; font-size: 10px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
 .library-count { padding: 6px 9px; color: #9799a1; background: #1b1d22; border-radius: 7px; font-variant-numeric: tabular-nums; letter-spacing: 0; text-transform: none; }
-.feature-content { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(220px, .9fr); gap: clamp(25px, 4vw, 48px); align-items: center; }
+.feature-content { display: grid; flex: 1; min-height: 0; grid-template-columns: minmax(260px, 1fr) minmax(220px, .9fr); gap: clamp(25px, 4vw, 48px); align-items: stretch; }
 .artwork { position: relative; aspect-ratio: 1; overflow: hidden; background: linear-gradient(145deg, #282b34, #111216); border-radius: 18px; box-shadow: 0 28px 55px rgba(0,0,0,.34); }
 .artwork::after { content: ""; position: absolute; inset: 0; border: 1px solid rgba(255,255,255,.09); border-radius: inherit; pointer-events: none; }
 .artwork img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .artwork-fallback { display: grid; place-items: center; width: 100%; height: 100%; color: rgba(255,255,255,.28); background: radial-gradient(circle at 30% 20%, rgba(255,99,56,.36), transparent 42%), linear-gradient(145deg,#31201f,#101116); font-size: 42px; }
 .feature-kicker { margin: 0 0 12px; color: var(--accent); font-size: 10px; font-weight: 780; letter-spacing: .12em; text-transform: uppercase; }
 .feature-details h2 { display: -webkit-box; margin: 0; overflow: hidden; color: #f6f4f0; font-size: clamp(28px, 3vw, 42px); line-height: 1.04; letter-spacing: -.045em; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.feature-details { display: flex; min-height: 0; flex-direction: column; }
 .feature-subtitle { margin: 13px 0 0; color: #c7c5c2; font-size: 15px; line-height: 1.45; }
+.artist-link { color: inherit; text-decoration: underline; text-decoration-color: rgba(255,255,255,.35); text-underline-offset: 3px; transition: color 150ms ease, text-decoration-color 150ms ease; }
+.artist-link:hover { color: #fff; text-decoration-color: var(--accent); }
 .feature-meta { margin: 7px 0 0; color: #757882; font-size: 12px; }
 .feature-saved { margin: 19px 0 0; color: #5f626b; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
-.feature-actions { display: flex; flex-direction: column; align-items: stretch; gap: 11px; margin-top: 28px; }
+.feature-actions { display: flex; flex-direction: column; align-items: stretch; gap: 11px; margin-top: auto; }
 .roll-button { min-height: 50px; padding: 0 17px; }
 .roll-button .roll-mark { width: 21px; height: 21px; }
 .roll-button .spinning { animation: dice-spin 600ms ease; }
@@ -185,6 +188,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .recent-list { padding-top: 5px; }
 .recent-item { display: grid; grid-template-columns: 48px minmax(0,1fr) 20px; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 12px; transition: background 150ms ease; }
 .recent-item:hover { background: #1a1c22; }
+.recent-title-link { display: block; overflow: hidden; color: inherit; text-overflow: ellipsis; white-space: nowrap; }
+.recent-title-link:hover { color: #fff; }
 .artwork.small { width: 48px; height: 48px; border-radius: 9px; box-shadow: none; }
 .artwork.small .artwork-fallback { font-size: 13px; }
 .recent-item > div:nth-child(2) { min-width: 0; }
@@ -289,9 +294,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .feature-stack { gap: 14px; }
   .feature-topline { margin: 5px 2px 16px; }
   .feature-content { grid-template-columns: 1fr; gap: 25px; }
-  .feature-details { padding: 0 5px 5px; }
+  .feature-details { min-height: 410px; padding: 0 5px 5px; }
   .feature-details h2 { font-size: 34px; }
-  .feature-actions { margin-top: 23px; }
+  .feature-actions { margin-top: auto; }
   .artist-album-card { padding: 15px; border-radius: 20px; }
   .artist-album-content { grid-template-columns: 112px minmax(0, 1fr); gap: 16px; }
   .artist-album-details h2 { font-size: 22px; }
@@ -311,4 +316,3 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
-

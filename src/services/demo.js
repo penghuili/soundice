@@ -20,10 +20,12 @@ const counts = { albums: 286, artists: 94, songs: 1248, podcasts: 67 };
 const failRandomPick = import.meta.env.DEV && new URLSearchParams(window.location.search).get('demo') === 'error';
 
 function item(type, index) {
+  const artistName = ['Tame Impala', 'Little Simz', 'Japanese Breakfast', 'Sampha'][index % 4];
   return {
     id: `${type}-${index}`,
     title: names[type][index % names[type].length],
-    subtitle: type === 'podcasts' ? 'A saved episode' : ['Tame Impala', 'Little Simz', 'Japanese Breakfast', 'Sampha'][index % 4],
+    subtitle: type === 'podcasts' ? 'A saved episode' : artistName,
+    artistLinks: type === 'albums' ? [{ id: `artist-${index}`, name: artistName, url: 'https://open.spotify.com/' }] : [],
     detail: type === 'artists' ? `${(index + 2) * 134}K followers` : 'Saved in your Spotify library',
     imageStyle: covers[index % covers.length],
     url: 'https://open.spotify.com/',

@@ -41,6 +41,9 @@ async function readSpotifyResponse(response) {
 const spotifyUrl = item => item?.external_urls?.spotify || null;
 const imageUrl = item => item?.images?.[0]?.url || null;
 const artistNames = (artists = []) => artists.map(artist => artist.name).filter(Boolean).join(', ');
+const artistLinks = (artists = []) => artists
+  .filter(artist => artist?.name)
+  .map(artist => ({ id: artist.id, name: artist.name, url: spotifyUrl(artist) }));
 
 function formatFollowers(value) {
   if (!Number.isFinite(value)) return null;
@@ -52,6 +55,7 @@ function normalizeAlbum(item, addedAt) {
     id: item.id,
     title: item.name,
     subtitle: artistNames(item.artists),
+    artistLinks: artistLinks(item.artists),
     detail: [item.release_date?.slice(0, 4), `${item.total_tracks || 0} tracks`]
       .filter(Boolean)
       .join(' · '),
@@ -67,6 +71,7 @@ function normalizeSong(item, addedAt) {
     id: item.id,
     title: item.name,
     subtitle: artistNames(item.artists),
+    artistLinks: artistLinks(item.artists),
     detail: item.album?.name,
     image: imageUrl(item.album),
     url: spotifyUrl(item),

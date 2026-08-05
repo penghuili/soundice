@@ -247,7 +247,14 @@ function savedDate(value) {
             <div class="feature-details">
               <p class="feature-kicker">Soundice picked</p>
               <h2>{{ state.current.title }}</h2>
-              <p class="feature-subtitle">{{ state.current.subtitle }}</p>
+              <p class="feature-subtitle">
+                <template v-if="active === 'albums' && state.current.artistLinks?.length">
+                  <template v-for="(artist, index) in state.current.artistLinks" :key="artist.id || artist.name">
+                    <span v-if="index">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
+                  </template>
+                </template>
+                <template v-else>{{ state.current.subtitle }}</template>
+              </p>
               <p v-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
               <p v-if="state.current.addedAt" class="feature-saved">Saved {{ savedDate(state.current.addedAt) }}</p>
               <div class="feature-actions">
@@ -286,7 +293,14 @@ function savedDate(value) {
               <div class="artist-album-details">
                 <p class="feature-kicker">From their catalog</p>
                 <h2>{{ artistAlbum.current.title }}</h2>
-                <p class="feature-subtitle">{{ artistAlbum.current.subtitle }}</p>
+                <p class="feature-subtitle">
+                  <template v-if="artistAlbum.current.artistLinks?.length">
+                    <template v-for="(artist, index) in artistAlbum.current.artistLinks" :key="artist.id || artist.name">
+                      <span v-if="index">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
+                    </template>
+                  </template>
+                  <template v-else>{{ artistAlbum.current.subtitle }}</template>
+                </p>
                 <p v-if="artistAlbum.current.detail" class="feature-meta">{{ artistAlbum.current.detail }}</p>
                 <button class="secondary-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
                   {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
@@ -308,11 +322,20 @@ function savedDate(value) {
       <section class="recent-panel">
         <div class="panel-heading"><div><p>{{ meta.recent }}</p><h2>Your latest {{ meta.label.toLowerCase() }}</h2></div><span>{{ state.latest.length }}</span></div>
         <div class="recent-list">
-          <a v-for="(item, index) in state.latest" :key="`${item.id}-${index}`" :href="item.url || undefined" target="_blank" rel="noreferrer" class="recent-item">
+          <div v-for="(item, index) in state.latest" :key="`${item.id}-${index}`" class="recent-item">
             <MediaArtwork :item="item" small />
-            <div><strong>{{ item.title }}</strong><span>{{ item.subtitle || item.detail }}</span></div>
+            <div>
+              <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer"><strong>{{ item.title }}</strong></a>
+              <strong v-else>{{ item.title }}</strong>
+              <span v-if="active === 'albums' && item.artistLinks?.length">
+                <template v-for="(artist, artistIndex) in item.artistLinks" :key="artist.id || artist.name">
+                  <span v-if="artistIndex">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
+                </template>
+              </span>
+              <span v-else>{{ item.subtitle || item.detail }}</span>
+            </div>
             <span class="recent-arrow">↗</span>
-          </a>
+          </div>
         </div>
       </section>
     </div>
@@ -342,4 +365,3 @@ function savedDate(value) {
     </Transition>
   </div>
 </template>
-
