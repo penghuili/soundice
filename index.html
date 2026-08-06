@@ -17,6 +17,43 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#08090c" />
+    <script>
+      (() => {
+        const reloadKey = 'soundice:asset-reload';
+        const reloadWindowMs = 30_000;
+
+        function refreshAfterAssetFailure() {
+          try {
+            const previousReload = Number(sessionStorage.getItem(reloadKey));
+            if (previousReload && Date.now() - previousReload < reloadWindowMs) return;
+            sessionStorage.setItem(reloadKey, String(Date.now()));
+          } catch {
+            // Continue with the reload if sessionStorage is unavailable.
+          }
+
+          const url = new URL(window.location.href);
+          url.searchParams.set('_asset_refresh', String(Date.now()));
+          window.location.replace(url.href);
+        }
+
+        window.addEventListener('error', event => {
+          const script = event.target;
+          if (!(script instanceof HTMLScriptElement) || !script.src) return;
+
+          const scriptUrl = new URL(script.src, window.location.href);
+          if (scriptUrl.origin === window.location.origin && scriptUrl.pathname.endsWith('.js')) {
+            refreshAfterAssetFailure();
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', event => {
+          const message = event.reason?.message || String(event.reason || '');
+          if (/failed to fetch|dynamically imported module|importing a module script failed/i.test(message)) {
+            refreshAfterAssetFailure();
+          }
+        });
+      })();
+    </script>
   </head>
   <body>
     <noscript>Soundice needs JavaScript to connect to Spotify.</noscript>
