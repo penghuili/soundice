@@ -23,6 +23,9 @@
         const reloadWindowMs = 30_000;
 
         function refreshAfterAssetFailure() {
+          const url = new URL(window.location.href);
+          if (url.searchParams.has('_asset_refresh')) return;
+
           try {
             const previousReload = Number(sessionStorage.getItem(reloadKey));
             if (previousReload && Date.now() - previousReload < reloadWindowMs) return;
@@ -31,7 +34,6 @@
             // Continue with the reload if sessionStorage is unavailable.
           }
 
-          const url = new URL(window.location.href);
           url.searchParams.set('_asset_refresh', String(Date.now()));
           window.location.replace(url.href);
         }
