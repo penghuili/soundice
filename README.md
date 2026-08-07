@@ -2,7 +2,9 @@
 
 Soundice picks a random album, artist, song, or podcast episode from your Spotify library.
 
-It is a static Vue 3 + Vite app, installable as a PWA on supported mobile and desktop browsers. Spotify authentication uses Authorization Code with PKCE, so tokens and library data stay in the browser and no backend or client secret is required.
+It is a Vue 3 + Vite app with a Cloudflare Pages Function and D1 database for favorites, installable as a PWA on supported mobile and desktop browsers. Sign-in uses Spotify Authorization Code with PKCE; Soundice does not use Cloudflare email or password login.
+
+Spotify access and refresh tokens stay in the browser, and Spotify library data is fetched directly from Spotify. When a user saves a favorite, Soundice sends the Spotify profile ID and the displayed item metadata to `/api/favorites`; the Pages Function stores that favorite in Cloudflare D1. The app never needs a Spotify client secret in the browser.
 
 ## Deploy it with your AI
 
@@ -69,7 +71,7 @@ Open `http://127.0.0.1:3003`. Add `?demo=1` in development to preview the signed
 
 ## Manual deployment
 
-If you prefer not to use an AI agent, any static host works with these settings:
+If you only need the Spotify library picker, any static host works with these settings:
 
 - Build command: `npm run build`
 - Publish directory: `dist`
@@ -78,6 +80,8 @@ If you prefer not to use an AI agent, any static host works with these settings:
 - HTTPS is required for Spotify login outside local development
 
 Set `VITE_REDIRECT_URL` to the site's public HTTPS origin, add the same value to the Spotify app's redirect URIs, run `npm run build`, and upload `dist`.
+
+The Favorites page requires the included Cloudflare Pages Function and D1 database. A static-only deployment can serve the picker, but `/api/favorites` will not be available unless you deploy that backend separately.
 
 ### Cloudflare Pages deployment
 
@@ -89,8 +93,6 @@ npm run deploy
 
 The command builds the app, applies `db/schema.sql` to the `soundice` D1 database, and deploys the Pages bundle and `functions/` API. The default production redirect URI is `https://soundice.pages.dev`; add that exact URL to the Spotify app's Redirect URIs.
 
+The deployment uses the `main` production branch. To use a custom domain, set `VITE_REDIRECT_URL` to that exact HTTPS origin before running the command and add the same value to Spotify.
+
 Soundice assumes it is hosted at the root of a domain. A provider that publishes it under a path such as `example.github.io/soundice/` needs additional Vite base-path and service-worker configuration. GitHub Pages works without those changes when it uses a custom domain at the root.
-
-### Existing S3 deploy script
-
-The repository also includes `npm run deploy`, which builds and uploads to the S3 bucket configured by `S3_URL`. It requires the AWS CLI and valid AWS credentials. Most forks should use their hosting provider's standard static-site deployment instead.
