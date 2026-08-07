@@ -26,7 +26,7 @@ const removeLabels = {
 
 const requestedTab = new URLSearchParams(window.location.search).get('tab');
 const active = ref(categories.some(category => category.id === requestedTab) ? requestedTab : 'albums');
-const artistAlbum = reactive({ current: null, rolling: false, error: '', artistId: null });
+const artistAlbum = reactive({ current: null, previous: null, rolling: false, error: '', artistId: null });
 const pendingRemoval = reactive({ type: null, item: null });
 const states = reactive(
   Object.fromEntries(
@@ -36,6 +36,8 @@ const states = reactive(
         count: null,
         latest: [],
         current: null,
+        previous: null,
+        previousArtistAlbum: null,
         loading: false,
         rolling: false,
         removing: false,
@@ -88,8 +90,16 @@ async function roll(type = active.value, animate = true) {
   target.rollError = '';
   target.removeError = '';
   try {
-    target.current = await props.service.getRandomItem(type, target.count);
-    if (type === 'artists' && target.current) await rollArtistAlbum(target.current, animate);
+    const next = await props.service.getRandomItem(type, target.count);
+    if (target.current) {
+      target.previous = target.current;
+      if (type === 'artists') target.previousArtistAlbum = artistAlbum.current;
+    }
+    target.current = next;
+    if (type === 'artists' && target.current) {
+      artistAlbum.previous = null;
+      await rollArtistAlbum(target.current, animate);
+    }
   } catch (error) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
@@ -98,6 +108,23 @@ async function roll(type = active.value, animate = true) {
     }
   } finally {
     target.rolling = false;
+  }
+}
+
+function goBack(type = active.value) {
+  const target = states[type];
+  if (!target.previous || target.rolling || target.removing) return;
+  target.current = target.previous;
+  target.previous = null;
+  target.rollError = '';
+  target.removeError = '';
+  if (type === 'artists') {
+    artistAlbum.current = target.previousArtistAlbum;
+    target.previousArtistAlbum = null;
+    artistAlbum.previous = null;
+    artistAlbum.artistId = target.current?.id ?? null;
+    artistAlbum.error = '';
+    artistAlbum.rolling = false;
   }
 }
 
@@ -130,8 +157,11 @@ async function confirmRemoval() {
     target.count = Math.max((target.count || 1) - 1, 0);
     target.latest = target.latest.filter(latestItem => latestItem.id !== item.id);
     target.current = null;
+    if (target.previous?.id === item.id) target.previous = null;
     if (type === 'artists') {
+      if (target.previousArtistAlbum?.id === item.id) target.previousArtistAlbum = null;
       artistAlbum.current = null;
+      artistAlbum.previous = null;
       artistAlbum.error = '';
       artistAlbum.artistId = null;
     }
@@ -152,12 +182,16 @@ async function confirmRemoval() {
 async function rollArtistAlbum(artist = states.artists.current, animate = true) {
   if (!artist?.id || artistAlbum.rolling) return;
   const artistId = artist.id;
+  const sameArtist = artistAlbum.artistId === artistId;
   artistAlbum.rolling = animate;
   artistAlbum.error = '';
   artistAlbum.artistId = artistId;
   try {
     const album = await props.service.getRandomArtistAlbum(artistId);
-    if (artistAlbum.artistId === artistId) artistAlbum.current = album;
+    if (artistAlbum.artistId !== artistId) return;
+    if (sameArtist && artistAlbum.current) artistAlbum.previous = artistAlbum.current;
+    else artistAlbum.previous = null;
+    artistAlbum.current = album;
     if (!album) artistAlbum.error = `Spotify did not return an album for ${artist.title}.`;
   } catch (error) {
     if (error instanceof AuthRequiredError) {
@@ -168,6 +202,13 @@ async function rollArtistAlbum(artist = states.artists.current, animate = true) 
   } finally {
     if (artistAlbum.artistId === artistId) artistAlbum.rolling = false;
   }
+}
+
+function goBackArtistAlbum() {
+  if (!artistAlbum.previous || artistAlbum.rolling) return;
+  artistAlbum.current = artistAlbum.previous;
+  artistAlbum.previous = null;
+  artistAlbum.error = '';
 }
 
 function handleError(error, target) {
@@ -238,7 +279,6 @@ function savedDate(value) {
         <section class="feature-card">
         <div class="feature-topline">
           <span>Random {{ meta.singular }}</span>
-          <span class="library-count">1 of {{ state.count?.toLocaleString() }}</span>
         </div>
 
         <Transition name="swap" mode="out-in">
@@ -258,10 +298,21 @@ function savedDate(value) {
               <p v-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
               <p v-if="state.current.addedAt" class="feature-saved">Saved {{ savedDate(state.current.addedAt) }}</p>
               <div class="feature-actions">
-                <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
-                  <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
-                  {{ state.rolling ? 'Rolling…' : 'Roll again' }}
-                </button>
+                <div class="roll-actions">
+                  <button
+                    v-if="state.previous"
+                    class="secondary-button previous-button"
+                    type="button"
+                    :disabled="state.rolling || state.removing"
+                    @click="goBack()"
+                  >
+                    Previous
+                  </button>
+                  <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
+                    <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
+                    {{ state.rolling ? 'Rolling…' : 'Roll again' }}
+                  </button>
+                </div>
                 <a v-if="state.current.url" class="spotify-link spotify-action" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
               </div>
               <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
@@ -302,9 +353,20 @@ function savedDate(value) {
                   <template v-else>{{ artistAlbum.current.subtitle }}</template>
                 </p>
                 <p v-if="artistAlbum.current.detail" class="feature-meta">{{ artistAlbum.current.detail }}</p>
-                <button class="secondary-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
-                  {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
-                </button>
+                <div class="roll-actions">
+                  <button
+                    v-if="artistAlbum.previous"
+                    class="secondary-button previous-button"
+                    type="button"
+                    :disabled="artistAlbum.rolling"
+                    @click="goBackArtistAlbum()"
+                  >
+                    Previous
+                  </button>
+                  <button class="secondary-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
+                    {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
+                  </button>
+                </div>
                 <a v-if="artistAlbum.current.url" class="spotify-link" :href="artistAlbum.current.url" target="_blank" rel="noreferrer">Open album in Spotify ↗</a>
               </div>
             </div>
