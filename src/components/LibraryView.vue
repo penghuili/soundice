@@ -1,5 +1,5 @@
 ﻿<script setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 
 import { AuthRequiredError } from '../services/auth.js';
 import BrandMark from './BrandMark.vue';
@@ -8,6 +8,7 @@ import MediaArtwork from './MediaArtwork.vue';
 const props = defineProps({
   profile: { type: Object, default: null },
   service: { type: Object, required: true },
+  favorites: { type: Object, required: true },
 });
 const emit = defineEmits(['logout']);
 
@@ -16,6 +17,7 @@ const categories = [
   { id: 'artists', label: 'Artists', singular: 'artist', symbol: '✦', recent: 'Recently followed' },
   { id: 'songs', label: 'Songs', singular: 'song', symbol: '♪', recent: 'Recently liked' },
   { id: 'podcasts', label: 'Podcasts', singular: 'episode', symbol: '◉', recent: 'Recently saved' },
+  { id: 'favorites', label: 'Favorites', singular: 'favorite', symbol: '★', recent: 'Saved to Soundice' },
 ];
 const removeLabels = {
   albums: 'Remove album',
@@ -28,6 +30,7 @@ const requestedTab = new URLSearchParams(window.location.search).get('tab');
 const active = ref(categories.some(category => category.id === requestedTab) ? requestedTab : 'albums');
 const artistAlbum = reactive({ current: null, previous: null, rolling: false, error: '', artistId: null });
 const pendingRemoval = reactive({ type: null, item: null });
+const favoriteError = ref('');
 const states = reactive(
   Object.fromEntries(
     categories.map(category => [
@@ -54,6 +57,7 @@ const meta = computed(() => categories.find(category => category.id === active.v
 const state = computed(() => states[active.value]);
 const displayName = computed(() => props.profile?.display_name || props.profile?.id || 'Spotify user');
 const pendingRemovalLabel = computed(() => pendingRemoval.type ? removeLabels[pendingRemoval.type] : '');
+const favoriteState = computed(() => states.favorites);
 
 watch(active, type => {
   const url = new URL(window.location.href);
@@ -70,6 +74,12 @@ async function load() {
   target.error = '';
   target.rollError = '';
   try {
+    if (type === 'favorites') {
+      target.latest = await props.favorites.list(props.profile?.id);
+      target.count = target.latest.length;
+      target.loaded = true;
+      return;
+    }
     const data = await props.service.loadCategory(type);
     target.count = data.count;
     target.latest = data.latest;
@@ -81,6 +91,55 @@ async function load() {
   } finally {
     target.loading = false;
   }
+}
+
+onMounted(() => {
+  loadFavorites().catch(() => {});
+});
+
+async function loadFavorites() {
+  const target = states.favorites;
+  if (target.loaded || target.loading) return;
+  target.loading = true;
+  favoriteError.value = '';
+  try {
+    target.latest = await props.favorites.list(props.profile?.id);
+    target.count = target.latest.length;
+    target.loaded = true;
+  } catch (error) {
+    favoriteError.value = formatError(error, 'Soundice could not load your favorites.');
+  } finally {
+    target.loading = false;
+  }
+}
+
+function isFavorite(type, item) {
+  return Boolean(item?.id && favoriteState.value.latest.some(favorite => favorite.type === type && favorite.item?.id === item.id));
+}
+
+async function toggleFavorite(type, item) {
+  if (!item || favoriteState.value.loading) return;
+  if (!favoriteState.value.loaded) await loadFavorites();
+  if (favoriteError.value) return;
+  const target = favoriteState.value;
+  const existing = target.latest.find(favorite => favorite.type === type && favorite.item?.id === item.id);
+  favoriteError.value = '';
+  try {
+    if (existing) {
+      await props.favorites.remove(props.profile?.id, type, item.id);
+      target.latest = target.latest.filter(favorite => favorite !== existing);
+    } else {
+      const favorite = await props.favorites.add(props.profile?.id, type, item);
+      target.latest = [favorite, ...target.latest];
+    }
+    target.count = target.latest.length;
+  } catch (error) {
+    favoriteError.value = formatError(error, 'Could not update this favorite.');
+  }
+}
+
+function favoriteTypeLabel(type) {
+  return categories.find(category => category.id === type)?.singular || type;
 }
 
 async function roll(type = active.value, animate = true) {
@@ -268,6 +327,37 @@ function savedDate(value) {
       <button type="button" class="secondary-button" @click="state.loaded = false; load()">Try again</button>
     </div>
 
+    <section v-else-if="active === 'favorites'" class="favorites-page">
+      <div class="favorites-heading">
+        <div>
+          <p class="feature-kicker">Your personal shelf</p>
+          <h1>Favorites</h1>
+          <p>Keep the albums, artists, songs, and podcasts you want to find again.</p>
+        </div>
+        <span class="favorites-count">{{ state.count }}</span>
+      </div>
+      <div v-if="!state.latest.length" class="favorites-empty">
+        <span>★</span>
+        <h2>Nothing saved here yet</h2>
+        <p>Tap the star on anything Soundice picks to build your shelf.</p>
+      </div>
+      <div v-else class="favorites-list">
+        <article v-for="favorite in state.latest" :key="`${favorite.type}-${favorite.item.id}`" class="favorite-item">
+          <MediaArtwork :item="favorite.item" small />
+          <div class="favorite-item-copy">
+            <span class="favorite-type">{{ favoriteTypeLabel(favorite.type) }}</span>
+            <a v-if="favorite.item.url" class="recent-title-link" :href="favorite.item.url" target="_blank" rel="noreferrer"><strong>{{ favorite.item.title }}</strong></a>
+            <strong v-else>{{ favorite.item.title }}</strong>
+            <span>{{ favorite.item.subtitle || favorite.item.detail }}</span>
+          </div>
+          <button class="icon-button favorite-toggle favorite-toggle-small active" type="button" :aria-label="`Remove ${favorite.item.title} from favorites`" :title="`Remove ${favorite.item.title} from favorites`" @click="toggleFavorite(favorite.type, favorite.item)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+          </button>
+        </article>
+      </div>
+      <p v-if="favoriteError" class="favorites-error" role="alert">{{ favoriteError }}</p>
+    </section>
+
     <div v-else-if="state.loaded && !state.count" class="empty-panel">
       <span>{{ meta.symbol }}</span>
       <h2>No {{ meta.label.toLowerCase() }} yet</h2>
@@ -314,9 +404,14 @@ function savedDate(value) {
                   {{ state.rolling ? 'Rolling…' : 'Roll again' }}
                 </button>
                 <a v-if="state.current.url" class="spotify-link spotify-action" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
+                <button class="favorite-toggle" :class="{ active: isFavorite(active, state.current) }" type="button" :aria-pressed="isFavorite(active, state.current)" @click="toggleFavorite(active, state.current)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+                  {{ isFavorite(active, state.current) ? 'Saved to favorites' : 'Save to favorites' }}
+                </button>
               </div>
               <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
               <p v-if="state.removeError" class="roll-error" role="status">{{ state.removeError }}</p>
+              <p v-if="favoriteError" class="roll-error" role="status">{{ favoriteError }}</p>
               <button class="remove-button" type="button" :disabled="state.removing || state.rolling" @click="requestRemoval()">
                 {{ state.removing ? 'Removing…' : removeLabels[active] }}
               </button>
@@ -367,6 +462,10 @@ function savedDate(value) {
                 <button class="secondary-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
                   {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
                 </button>
+                <button class="favorite-toggle" :class="{ active: isFavorite('albums', artistAlbum.current) }" type="button" :aria-pressed="isFavorite('albums', artistAlbum.current)" @click="toggleFavorite('albums', artistAlbum.current)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+                  {{ isFavorite('albums', artistAlbum.current) ? 'Saved to favorites' : 'Save album to favorites' }}
+                </button>
                 <a v-if="artistAlbum.current.url" class="spotify-link" :href="artistAlbum.current.url" target="_blank" rel="noreferrer">Open album in Spotify ↗</a>
               </div>
             </div>
@@ -396,14 +495,16 @@ function savedDate(value) {
               </span>
               <span v-else>{{ item.subtitle || item.detail }}</span>
             </div>
-            <span class="recent-arrow">↗</span>
+            <button class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(active, item) }" type="button" :aria-label="`${isFavorite(active, item) ? 'Remove' : 'Save'} ${item.title} ${favoriteTypeLabel(active)}`" @click="toggleFavorite(active, item)">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+            </button>
           </div>
         </div>
       </section>
     </div>
 
     <footer class="app-footer">
-      <p><strong>Soundice</strong> picks from your Spotify library. Nothing is stored on our servers.</p>
+      <p><strong>Soundice</strong> picks from your Spotify library. Favorites are saved securely in Cloudflare.</p>
       <div>
         <a class="status-link" href="https://x.com/SpotifyStatus" target="_blank" rel="noreferrer">Spotify Status</a>
         <a class="github-link" href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer" title="View on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg></a>

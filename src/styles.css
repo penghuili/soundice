@@ -164,6 +164,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .spotify-link:hover { color: #fff; }
 .spotify-action { align-items: center; min-height: 46px; color: #fff; background: rgba(30, 215, 96, .14); border: 1px solid rgba(30, 215, 96, .38); border-radius: 14px; font-size: 13px; font-weight: 740; transition: transform 160ms ease, color 150ms ease, background 160ms ease, box-shadow 160ms ease; }
 .spotify-action:hover { transform: translateY(-2px); background: rgba(30, 215, 96, .22); box-shadow: 0 12px 28px rgba(30, 215, 96, .12); }
+.favorite-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 0 14px; color: #aaa8a4; background: rgba(255,255,255,.035); border: 1px solid var(--line); border-radius: 13px; cursor: pointer; font-size: 12px; font-weight: 720; transition: color 150ms ease, background 150ms ease, border-color 150ms ease, transform 150ms ease; }
+.favorite-toggle:hover { color: #fff; background: rgba(255,99,56,.1); border-color: rgba(255,99,56,.38); transform: translateY(-1px); }
+.favorite-toggle.active { color: #ffb09a; background: rgba(255,99,56,.12); border-color: rgba(255,99,56,.38); }
+.favorite-toggle svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-linejoin: round; stroke-width: 1.7; }
+.favorite-toggle.active svg { fill: currentColor; stroke: currentColor; }
+.feature-actions .favorite-toggle { width: 100%; }
+.artist-album-details .favorite-toggle { width: 100%; margin-top: 10px; }
 .roll-error { margin: 7px 0 0; color: #d79a89; font-size: 11px; line-height: 1.45; text-align: center; }
 .feature-retry { display: flex; min-height: 410px; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
 .feature-retry > span { display: grid; place-items: center; width: 48px; height: 48px; color: var(--accent); background: rgba(255,99,56,.1); border-radius: 14px; font-size: 23px; }
@@ -199,8 +206,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .recent-item strong, .recent-item span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .recent-item strong { color: #d9d7d4; font-size: 12px; }
 .recent-item span { margin-top: 5px; color: #686b74; font-size: 10px; }
-.recent-arrow { color: #555861 !important; font-size: 12px !important; }
-.recent-item:hover .recent-arrow { color: var(--accent) !important; }
+.favorite-toggle-small { width: 32px; min-height: 32px; padding: 0; border: 0; background: transparent; }
+.favorite-toggle-small svg { width: 16px; height: 16px; }
+.favorite-toggle-small:hover, .favorite-toggle-small.active { background: rgba(255,99,56,.1); }
 .empty-panel, .error-panel { min-height: 410px; margin: 20px 0 58px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
 .empty-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 .empty-panel > span { color: var(--accent); font-size: 38px; }
@@ -227,6 +235,25 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .app-footer strong { color: #9d9fa6; }
 .app-footer div { display: flex; gap: 22px; }
 .app-footer a:hover { color: #fff; }
+.favorites-page { margin: 20px 0 58px; padding: 26px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.favorites-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; padding: 3px 2px 23px; border-bottom: 1px solid var(--line); }
+.favorites-heading .feature-kicker { margin-bottom: 9px; }
+.favorites-heading h1 { margin: 0; color: #f6f4f0; font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -.055em; }
+.favorites-heading p:last-child { max-width: 480px; margin: 12px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.favorites-count { display: grid; place-items: center; flex: 0 0 auto; width: 46px; height: 46px; color: #ffb09a; background: rgba(255,99,56,.12); border: 1px solid rgba(255,99,56,.25); border-radius: 14px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.favorites-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 13px; }
+.favorite-item { display: grid; grid-template-columns: 48px minmax(0, 1fr) 32px; align-items: center; gap: 12px; min-width: 0; padding: 9px 10px; border-radius: 13px; transition: background 150ms ease; }
+.favorite-item:hover { background: #1a1c22; }
+.favorite-item-copy { min-width: 0; }
+.favorite-item-copy strong, .favorite-item-copy > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.favorite-item-copy strong { color: #d9d7d4; font-size: 12px; }
+.favorite-item-copy > span { margin-top: 5px; color: #686b74; font-size: 10px; }
+.favorite-item-copy .favorite-type { margin: 0 0 4px; color: var(--accent); font-size: 9px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.favorites-empty { display: flex; min-height: 270px; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.favorites-empty > span { color: var(--accent); font-size: 38px; }
+.favorites-empty h2 { margin: 17px 0 7px; font-size: 22px; }
+.favorites-empty p { margin: 0; color: var(--muted); font-size: 13px; }
+.favorites-error { margin: 16px 0 0; color: #d79a89; font-size: 12px; text-align: center; }
 
 /* Loading and transitions */
 .boot-screen { display: grid; place-content: center; min-height: 100vh; background: #08090c; }
@@ -261,6 +288,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .card-podcast { right: 14%; }
   .content-grid { grid-template-columns: 1fr; }
   .recent-panel { min-height: auto; }
+  .favorites-list { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
@@ -306,6 +334,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .artist-album-details .feature-kicker { margin-bottom: 8px; }
   .artist-album-roll { min-height: 42px; margin-top: 14px; }
   .recent-panel { padding-top: 18px; border-radius: 20px; }
+  .favorites-page { margin-top: 14px; padding: 17px 15px; border-radius: 20px; }
+  .favorites-heading { align-items: flex-start; }
   .app-footer { align-items: flex-start; gap: 18px; flex-direction: column; }
   .dialog-backdrop { align-items: end; padding: 14px; }
   .confirm-dialog { padding: 18px; border-radius: 18px; }

@@ -79,6 +79,16 @@ If you prefer not to use an AI agent, any static host works with these settings:
 
 Set `VITE_REDIRECT_URL` to the site's public HTTPS origin, add the same value to the Spotify app's redirect URIs, run `npm run build`, and upload `dist`.
 
+### Cloudflare Pages deployment
+
+This repository includes a Cloudflare Pages Function for favorites and a D1 schema. With Wrangler already authenticated, run:
+
+```bash
+npm run deploy
+```
+
+The command builds the app, applies `db/schema.sql` to the `soundice` D1 database, and deploys the Pages bundle and `functions/` API. The default production redirect URI is `https://soundice.pages.dev`; add that exact URL to the Spotify app's Redirect URIs.
+
 Soundice assumes it is hosted at the root of a domain. A provider that publishes it under a path such as `example.github.io/soundice/` needs additional Vite base-path and service-worker configuration. GitHub Pages works without those changes when it uses a custom domain at the root.
 
 ### Existing S3 deploy script

@@ -11,6 +11,7 @@ import {
   signOut,
 } from './services/auth.js';
 import { demoProfile, demoService } from './services/demo.js';
+import * as favoritesService from './services/favorites.js';
 import * as spotifyService from './services/spotify.js';
 
 const demoMode = import.meta.env.DEV && new URLSearchParams(window.location.search).has('demo');
@@ -76,6 +77,7 @@ function logout() {
     v-else
     :profile="profile"
     :service="demoMode ? demoService : spotifyService"
+    :favorites="demoMode ? demoService : favoritesService"
     @logout="logout"
   />
 </template>

@@ -1,0 +1,8 @@
+name = "soundice"
+compatibility_date = "2026-08-07"
+pages_build_output_dir = "./dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "soundice"
+database_id = "7a35ec90-400b-4e0f-b283-1ea3f2378593"
