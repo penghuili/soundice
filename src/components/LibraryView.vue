@@ -279,6 +279,17 @@ function savedDate(value) {
         <section class="feature-card">
         <div class="feature-topline">
           <span>Random {{ meta.singular }}</span>
+          <button
+            v-if="state.previous"
+            class="icon-button previous-button"
+            type="button"
+            aria-label="Previous"
+            title="Previous"
+            :disabled="state.rolling || state.removing"
+            @click="goBack()"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.71 6.71 10.41 11H20v2h-9.59l4.3 4.29-1.42 1.42L6.59 12l6.7-6.71 1.42 1.42Z" /></svg>
+          </button>
         </div>
 
         <Transition name="swap" mode="out-in">
@@ -298,21 +309,10 @@ function savedDate(value) {
               <p v-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
               <p v-if="state.current.addedAt" class="feature-saved">Saved {{ savedDate(state.current.addedAt) }}</p>
               <div class="feature-actions">
-                <div class="roll-actions">
-                  <button
-                    v-if="state.previous"
-                    class="secondary-button previous-button"
-                    type="button"
-                    :disabled="state.rolling || state.removing"
-                    @click="goBack()"
-                  >
-                    Previous
-                  </button>
-                  <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
-                    <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
-                    {{ state.rolling ? 'Rolling…' : 'Roll again' }}
-                  </button>
-                </div>
+                <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
+                  <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
+                  {{ state.rolling ? 'Rolling…' : 'Roll again' }}
+                </button>
                 <a v-if="state.current.url" class="spotify-link spotify-action" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
               </div>
               <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
@@ -336,7 +336,18 @@ function savedDate(value) {
         <section v-if="active === 'artists'" class="artist-album-card">
           <div class="feature-topline">
             <span>Random album by {{ state.current?.title }}</span>
-            <span class="album-symbol">◐</span>
+            <button
+              v-if="artistAlbum.previous"
+              class="icon-button previous-button"
+              type="button"
+              aria-label="Previous album"
+              title="Previous album"
+              :disabled="artistAlbum.rolling"
+              @click="goBackArtistAlbum()"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.71 6.71 10.41 11H20v2h-9.59l4.3 4.29-1.42 1.42L6.59 12l6.7-6.71 1.42 1.42Z" /></svg>
+            </button>
+            <span v-else class="album-symbol">◐</span>
           </div>
           <Transition name="swap" mode="out-in">
             <div v-if="artistAlbum.current" :key="artistAlbum.current.id" class="artist-album-content">
@@ -353,20 +364,9 @@ function savedDate(value) {
                   <template v-else>{{ artistAlbum.current.subtitle }}</template>
                 </p>
                 <p v-if="artistAlbum.current.detail" class="feature-meta">{{ artistAlbum.current.detail }}</p>
-                <div class="roll-actions">
-                  <button
-                    v-if="artistAlbum.previous"
-                    class="secondary-button previous-button"
-                    type="button"
-                    :disabled="artistAlbum.rolling"
-                    @click="goBackArtistAlbum()"
-                  >
-                    Previous
-                  </button>
-                  <button class="secondary-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
-                    {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
-                  </button>
-                </div>
+                <button class="secondary-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
+                  {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
+                </button>
                 <a v-if="artistAlbum.current.url" class="spotify-link" :href="artistAlbum.current.url" target="_blank" rel="noreferrer">Open album in Spotify ↗</a>
               </div>
             </div>

@@ -127,11 +127,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .feature-meta { margin: 7px 0 0; color: #757882; font-size: 12px; }
 .feature-saved { margin: 19px 0 0; color: #5f626b; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
 .feature-actions { display: flex; flex-direction: column; align-items: stretch; gap: 11px; margin-top: auto; }
-.roll-actions { display: flex; align-items: stretch; gap: 10px; }
-.roll-actions .roll-button,
-.roll-actions .artist-album-roll { flex: 1; min-width: 0; }
-.previous-button { min-height: 50px; padding: 0 16px; white-space: nowrap; }
-.artist-album-card .previous-button { min-height: 44px; }
+.feature-topline .previous-button { width: 30px; height: 30px; margin: -6px -4px -6px 0; color: #8b8e97; }
+.feature-topline .previous-button:hover:not(:disabled) { color: #fff; background: #1b1d22; }
+.feature-topline .previous-button:disabled { cursor: wait; opacity: .55; }
+.feature-topline .previous-button svg { width: 18px; height: 18px; }
 .roll-button { min-height: 50px; padding: 0 17px; }
 .roll-button .roll-mark { width: 21px; height: 21px; }
 .roll-button .spinning { animation: dice-spin 600ms ease; }
