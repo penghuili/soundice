@@ -31,6 +31,7 @@ const active = ref(categories.some(category => category.id === requestedTab) ? r
 const artistAlbum = reactive({ current: null, previous: null, rolling: false, error: '', artistId: null });
 const pendingRemoval = reactive({ type: null, item: null });
 const favoriteError = ref('');
+let favoritesLoadPromise = null;
 const states = reactive(
   Object.fromEntries(
     categories.map(category => [
@@ -63,23 +64,22 @@ watch(active, type => {
   const url = new URL(window.location.href);
   url.searchParams.set('tab', type);
   window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-  load();
+  if (type === 'favorites') loadFavorites(true).catch(() => {});
+  else load();
 }, { immediate: true });
 
 async function load() {
   const type = active.value;
   const target = states[type];
+  if (type === 'favorites') {
+    await loadFavorites();
+    return;
+  }
   if (target.loaded || target.loading) return;
   target.loading = true;
   target.error = '';
   target.rollError = '';
   try {
-    if (type === 'favorites') {
-      target.latest = await props.favorites.list(props.profile?.id);
-      target.count = target.latest.length;
-      target.loaded = true;
-      return;
-    }
     const data = await props.service.loadCategory(type);
     target.count = data.count;
     target.latest = data.latest;
@@ -97,20 +97,31 @@ onMounted(() => {
   loadFavorites().catch(() => {});
 });
 
-async function loadFavorites() {
+async function loadFavorites(force = false) {
   const target = states.favorites;
-  if (target.loaded || target.loading) return;
+  if (target.loaded && !force) return target.latest;
+  if (favoritesLoadPromise) return favoritesLoadPromise;
+
   target.loading = true;
+  target.error = '';
   favoriteError.value = '';
-  try {
-    target.latest = await props.favorites.list(props.profile?.id);
-    target.count = target.latest.length;
-    target.loaded = true;
-  } catch (error) {
-    favoriteError.value = formatError(error, 'Soundice could not load your favorites.');
-  } finally {
-    target.loading = false;
-  }
+  favoritesLoadPromise = props.favorites.list(props.profile?.id)
+    .then(items => {
+      target.latest = items;
+      target.count = items.length;
+      target.loaded = true;
+      return items;
+    })
+    .catch(error => {
+      target.error = formatError(error, 'Soundice could not load your favorites.');
+      favoriteError.value = target.error;
+      throw error;
+    })
+    .finally(() => {
+      target.loading = false;
+      favoritesLoadPromise = null;
+    });
+  return favoritesLoadPromise;
 }
 
 function isFavorite(type, item) {
@@ -118,8 +129,8 @@ function isFavorite(type, item) {
 }
 
 async function toggleFavorite(type, item) {
-  if (!item || favoriteState.value.loading) return;
-  if (!favoriteState.value.loaded) await loadFavorites();
+  if (!item) return;
+  await loadFavorites();
   if (favoriteError.value) return;
   const target = favoriteState.value;
   const existing = target.latest.find(favorite => favorite.type === type && favorite.item?.id === item.id);
@@ -295,6 +306,11 @@ function savedDate(value) {
       <BrandMark />
       <div class="account-menu">
         <div class="account-copy"><small>Connected as</small><strong>{{ displayName }}</strong></div>
+        <button class="favorites-shortcut" type="button" :class="{ active: active === 'favorites' }" :aria-pressed="active === 'favorites'" @click="active = 'favorites'">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+          <span>Favorites</span>
+          <small v-if="states.favorites.count !== null">{{ states.favorites.count }}</small>
+        </button>
         <button class="icon-button" type="button" aria-label="Log out" title="Log out" @click="$emit('logout')">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5v2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5v2Zm5.59 2.59L20 12l-4.41 4.41L14.17 15l2-2H8v-2h8.17l-2-2 1.42-1.41Z" /></svg>
         </button>
@@ -334,7 +350,12 @@ function savedDate(value) {
           <h1>Favorites</h1>
           <p>Keep the albums, artists, songs, and podcasts you want to find again.</p>
         </div>
-        <span class="favorites-count">{{ state.count }}</span>
+        <div class="favorites-heading-actions">
+          <button class="icon-button" type="button" aria-label="Refresh favorites" title="Refresh favorites" :disabled="state.loading" @click="loadFavorites(true)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" /></svg>
+          </button>
+          <span class="favorites-count">{{ state.count }}</span>
+        </div>
       </div>
       <div v-if="!state.latest.length" class="favorites-empty">
         <span>★</span>

@@ -97,6 +97,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .account-copy { display: flex; flex-direction: column; align-items: flex-end; margin-right: 2px; line-height: 1.25; }
 .account-copy small { color: #6f727b; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
 .account-copy strong { max-width: 180px; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.favorites-shortcut { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 11px; color: #aaa8a4; background: rgba(255,255,255,.035); border: 1px solid var(--line); border-radius: 11px; cursor: pointer; font-size: 11px; font-weight: 720; transition: color 150ms ease, background 150ms ease, border-color 150ms ease; }
+.favorites-shortcut:hover, .favorites-shortcut.active { color: #ffb09a; background: rgba(255,99,56,.1); border-color: rgba(255,99,56,.38); }
+.favorites-shortcut svg { width: 15px; height: 15px; fill: currentColor; }
+.favorites-shortcut small { color: #777981; font-size: 9px; font-variant-numeric: tabular-nums; }
+.favorites-shortcut.active small { color: #ffb09a; }
 .icon-button { display: grid; place-items: center; width: 36px; height: 36px; margin-left: 4px; color: #7f828b; background: transparent; border: 0; border-radius: 10px; cursor: pointer; }
 .icon-button:hover { color: #fff; background: #17191f; }
 .icon-button svg { width: 18px; height: 18px; fill: currentColor; }
@@ -240,6 +245,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .favorites-heading .feature-kicker { margin-bottom: 9px; }
 .favorites-heading h1 { margin: 0; color: #f6f4f0; font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -.055em; }
 .favorites-heading p:last-child { max-width: 480px; margin: 12px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.favorites-heading-actions { display: flex; align-items: center; gap: 8px; }
+.favorites-heading-actions .icon-button { margin: 0; }
+.favorites-heading-actions .icon-button:disabled { cursor: wait; opacity: .55; }
 .favorites-count { display: grid; place-items: center; flex: 0 0 auto; width: 46px; height: 46px; color: #ffb09a; background: rgba(255,99,56,.12); border: 1px solid rgba(255,99,56,.25); border-radius: 14px; font-size: 13px; font-variant-numeric: tabular-nums; }
 .favorites-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 13px; }
 .favorite-item { display: grid; grid-template-columns: 48px minmax(0, 1fr) 32px; align-items: center; gap: 12px; min-width: 0; padding: 9px 10px; border-radius: 13px; transition: background 150ms ease; }
