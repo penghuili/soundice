@@ -105,7 +105,7 @@ async function loadFavorites(force = false) {
   target.loading = true;
   target.error = '';
   favoriteError.value = '';
-  favoritesLoadPromise = props.favorites.list(props.profile?.id)
+  favoritesLoadPromise = props.favorites.list()
     .then(items => {
       target.latest = items;
       target.count = items.length;
@@ -113,6 +113,7 @@ async function loadFavorites(force = false) {
       return items;
     })
     .catch(error => {
+      if (error instanceof AuthRequiredError) emit('logout');
       target.error = formatError(error, 'Soundice could not load your favorites.');
       favoriteError.value = target.error;
       throw error;
@@ -130,22 +131,30 @@ function isFavorite(type, item) {
 
 async function toggleFavorite(type, item) {
   if (!item) return;
-  await loadFavorites();
+  try {
+    await loadFavorites();
+  } catch {
+    return;
+  }
   if (favoriteError.value) return;
   const target = favoriteState.value;
   const existing = target.latest.find(favorite => favorite.type === type && favorite.item?.id === item.id);
   favoriteError.value = '';
   try {
     if (existing) {
-      await props.favorites.remove(props.profile?.id, type, item.id);
+      await props.favorites.remove(type, item.id);
       target.latest = target.latest.filter(favorite => favorite !== existing);
     } else {
-      const favorite = await props.favorites.add(props.profile?.id, type, item);
+      const favorite = await props.favorites.add(type, item);
       target.latest = [favorite, ...target.latest];
     }
     target.count = target.latest.length;
   } catch (error) {
-    favoriteError.value = formatError(error, 'Could not update this favorite.');
+    if (error instanceof AuthRequiredError) {
+      emit('logout');
+    } else {
+      favoriteError.value = formatError(error, 'Could not update this favorite.');
+    }
   }
 }
 

@@ -70,7 +70,7 @@ export const demoService = {
     await new Promise(resolve => setTimeout(resolve, 180));
     return demoFavorites.map(favorite => ({ ...favorite, item: { ...favorite.item } }));
   },
-  async add(userId, type, favoriteItem) {
+  async add(type, favoriteItem) {
     await new Promise(resolve => setTimeout(resolve, 180));
     const favorite = { type, item: { ...favoriteItem }, createdAt: new Date().toISOString() };
     const existingIndex = demoFavorites.findIndex(item => item.type === type && item.item.id === favoriteItem.id);
@@ -78,7 +78,7 @@ export const demoService = {
     demoFavorites.unshift(favorite);
     return favorite;
   },
-  async remove(userId, type, itemId) {
+  async remove(type, itemId) {
     await new Promise(resolve => setTimeout(resolve, 180));
     const index = demoFavorites.findIndex(item => item.type === type && item.item.id === itemId);
     if (index >= 0) demoFavorites.splice(index, 1);

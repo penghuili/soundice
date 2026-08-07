@@ -4,7 +4,7 @@ Soundice picks a random album, artist, song, or podcast episode from your Spotif
 
 It is a Vue 3 + Vite app with a Cloudflare Pages Function and D1 database for favorites, installable as a PWA on supported mobile and desktop browsers. Sign-in uses Spotify Authorization Code with PKCE; Soundice does not use Cloudflare email or password login.
 
-Spotify access and refresh tokens stay in the browser, and Spotify library data is fetched directly from Spotify. When a user saves a favorite, Soundice sends the Spotify profile ID and the displayed item metadata to `/api/favorites`; the Pages Function stores that favorite in Cloudflare D1. The app never needs a Spotify client secret in the browser.
+Spotify access and refresh tokens stay in the browser, and Spotify library data is fetched directly from Spotify. When a user saves a favorite, Soundice sends the short-lived Spotify access token and displayed item metadata to `/api/favorites`; the Pages Function verifies the token with Spotify's `/v1/me` endpoint, derives the user's canonical account identity, and stores only the favorite in Cloudflare D1. The app never needs a Spotify client secret in the browser, and Cloudflare never stores the access token.
 
 ## Deploy it with your AI
 
