@@ -283,12 +283,12 @@ function savedDate(value) {
             v-if="state.previous"
             class="icon-button previous-button"
             type="button"
-            aria-label="Previous"
-            title="Previous"
+            aria-label="Undo"
+            title="Undo"
             :disabled="state.rolling || state.removing"
             @click="goBack()"
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.71 6.71 10.41 11H20v2h-9.59l4.3 4.29-1.42 1.42L6.59 12l6.7-6.71 1.42 1.42Z" /></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.5 8C9.85 8 7.45 8.99 5.6 10.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8Z" /></svg>
           </button>
         </div>
 
@@ -340,12 +340,12 @@ function savedDate(value) {
               v-if="artistAlbum.previous"
               class="icon-button previous-button"
               type="button"
-              aria-label="Previous album"
-              title="Previous album"
+              aria-label="Undo"
+              title="Undo"
               :disabled="artistAlbum.rolling"
               @click="goBackArtistAlbum()"
             >
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.71 6.71 10.41 11H20v2h-9.59l4.3 4.29-1.42 1.42L6.59 12l6.7-6.71 1.42 1.42Z" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.5 8C9.85 8 7.45 8.99 5.6 10.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8Z" /></svg>
             </button>
             <span v-else class="album-symbol">◐</span>
           </div>
