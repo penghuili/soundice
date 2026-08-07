@@ -2,6 +2,7 @@ const { execFileSync } = require('child_process');
 
 const projectName = process.env.CLOUDFLARE_PAGES_PROJECT || 'soundice';
 const databaseName = process.env.CLOUDFLARE_D1_DATABASE || 'soundice';
+const branch = process.env.CLOUDFLARE_PAGES_BRANCH || 'main';
 const redirectUrl = process.env.VITE_REDIRECT_URL || `https://${projectName}.pages.dev`;
 
 function run(command, args, options = {}) {
@@ -23,5 +24,5 @@ const cliOptions = process.platform === 'win32' ? { shell: true } : {};
 run(npx, ['wrangler', 'd1', 'execute', databaseName, '--remote', '--file=db/schema.sql'], cliOptions);
 
 console.log(`Deploying ${projectName} to Cloudflare Pages...`);
-run(npx, ['wrangler', 'pages', 'deploy', 'dist', '--project-name', projectName], cliOptions);
+run(npx, ['wrangler', 'pages', 'deploy', 'dist', '--project-name', projectName, '--branch', branch], cliOptions);
 console.log(`Cloudflare deployment completed: https://${projectName}.pages.dev`);
