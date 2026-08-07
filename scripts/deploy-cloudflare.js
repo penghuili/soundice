@@ -19,8 +19,9 @@ if (process.platform === 'win32') {
 }
 
 console.log(`Applying D1 schema to ${databaseName}...`);
-run(npx, ['wrangler', 'd1', 'execute', databaseName, '--remote', '--file=db/schema.sql']);
+const cliOptions = process.platform === 'win32' ? { shell: true } : {};
+run(npx, ['wrangler', 'd1', 'execute', databaseName, '--remote', '--file=db/schema.sql'], cliOptions);
 
 console.log(`Deploying ${projectName} to Cloudflare Pages...`);
-run(npx, ['wrangler', 'pages', 'deploy', 'dist', '--project-name', projectName]);
+run(npx, ['wrangler', 'pages', 'deploy', 'dist', '--project-name', projectName], cliOptions);
 console.log(`Cloudflare deployment completed: https://${projectName}.pages.dev`);
