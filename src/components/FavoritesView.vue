@@ -182,9 +182,9 @@ function formatError(error, fallback) {
                     {{ rollState.rolling ? 'Rolling…' : 'Roll again' }}
                   </button>
                   <a v-if="rollState.current.item.url" class="spotify-link spotify-action" :href="rollState.current.item.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
-                  <button class="favorite-toggle active" type="button" aria-pressed="true" @click="removeFavorite(rollState.current)">
+                  <button class="favorite-toggle favorite-toggle-compact active" type="button" aria-pressed="true" @click="removeFavorite(rollState.current)">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
-                    Saved to favorites
+                    Favorited
                   </button>
                 </div>
               </div>

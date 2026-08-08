@@ -397,35 +397,39 @@ function savedDate(value) {
           <div v-if="state.current" :key="state.current.id" class="feature-content">
             <MediaArtwork :item="state.current" />
             <div class="feature-details">
-              <p class="feature-kicker">Soundice picked</p>
-              <h2>{{ state.current.title }}</h2>
-              <p class="feature-subtitle">
-                <template v-if="active === 'albums' && state.current.artistLinks?.length">
-                  <template v-for="(artist, index) in state.current.artistLinks" :key="artist.id || artist.name">
-                    <span v-if="index">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
+              <div class="feature-copy">
+                <p class="feature-kicker">Soundice picked</p>
+                <h2>{{ state.current.title }}</h2>
+                <p class="feature-subtitle">
+                  <template v-if="active === 'albums' && state.current.artistLinks?.length">
+                    <template v-for="(artist, index) in state.current.artistLinks" :key="artist.id || artist.name">
+                      <span v-if="index">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
+                    </template>
                   </template>
-                </template>
-                <template v-else>{{ state.current.subtitle }}</template>
-              </p>
-              <p v-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
-              <p v-if="state.current.addedAt" class="feature-saved">Saved {{ savedDate(state.current.addedAt) }}</p>
+                  <template v-else>{{ state.current.subtitle }}</template>
+                </p>
+                <p v-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
+                <p v-if="state.current.addedAt" class="feature-saved">Saved {{ savedDate(state.current.addedAt) }}</p>
+              </div>
               <div class="feature-actions">
                 <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
                   <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
                   {{ state.rolling ? 'Rolling…' : 'Roll again' }}
                 </button>
                 <a v-if="state.current.url" class="spotify-link spotify-action" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
-                <button class="favorite-toggle" :class="{ active: isFavorite(active, state.current) }" type="button" :aria-pressed="isFavorite(active, state.current)" @click="toggleFavorite(active, state.current)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
-                  {{ isFavorite(active, state.current) ? 'Saved to favorites' : 'Save to favorites' }}
-                </button>
+                <div class="feature-secondary-actions">
+                  <button class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite(active, state.current) }" type="button" :aria-pressed="isFavorite(active, state.current)" @click="toggleFavorite(active, state.current)">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+                    {{ isFavorite(active, state.current) ? 'Favorited' : 'Favorite' }}
+                  </button>
+                  <button class="remove-button" type="button" :disabled="state.removing || state.rolling" @click="requestRemoval()">
+                    {{ state.removing ? 'Removing…' : removeLabels[active] }}
+                  </button>
+                </div>
+                <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
+                <p v-if="state.removeError" class="roll-error" role="status">{{ state.removeError }}</p>
+                <p v-if="favoriteError" class="roll-error" role="status">{{ favoriteError }}</p>
               </div>
-              <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
-              <p v-if="state.removeError" class="roll-error" role="status">{{ state.removeError }}</p>
-              <p v-if="favoriteError" class="roll-error" role="status">{{ favoriteError }}</p>
-              <button class="remove-button" type="button" :disabled="state.removing || state.rolling" @click="requestRemoval()">
-                {{ state.removing ? 'Removing…' : removeLabels[active] }}
-              </button>
             </div>
           </div>
           <div v-else class="feature-retry">
