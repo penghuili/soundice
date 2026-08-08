@@ -249,7 +249,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .favorites-heading-actions .icon-button { margin: 0; }
 .favorites-heading-actions .icon-button:disabled { cursor: wait; opacity: .55; }
 .favorites-count { display: grid; place-items: center; flex: 0 0 auto; width: 46px; height: 46px; color: #ffb09a; background: rgba(255,99,56,.12); border: 1px solid rgba(255,99,56,.25); border-radius: 14px; font-size: 13px; font-variant-numeric: tabular-nums; }
-.favorites-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 13px; }
+.favorites-body { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .85fr); gap: 18px; padding-top: 18px; }
+.favorites-random-card { min-height: 480px; background: var(--panel-raised); }
+.favorites-random-card .favorite-type-badge { margin: 0 0 10px; color: var(--accent); font-size: 10px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+.favorites-list-panel { overflow: hidden; min-height: 480px; padding: 18px 10px 12px; background: var(--panel-raised); border: 1px solid var(--line); border-radius: var(--radius); }
+.favorites-list-panel .panel-heading { padding: 0 10px 15px; }
+.favorites-list { display: grid; grid-template-columns: 1fr; gap: 4px; padding-top: 6px; }
 .favorite-item { display: grid; grid-template-columns: 48px minmax(0, 1fr) 32px; align-items: center; gap: 12px; min-width: 0; padding: 9px 10px; border-radius: 13px; transition: background 150ms ease; }
 .favorite-item:hover { background: #1a1c22; }
 .favorite-item-copy { min-width: 0; }
@@ -296,7 +301,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .card-podcast { right: 14%; }
   .content-grid { grid-template-columns: 1fr; }
   .recent-panel { min-height: auto; }
-  .favorites-list { grid-template-columns: 1fr; }
+  .favorites-body { grid-template-columns: 1fr; }
+  .favorites-list-panel { min-height: auto; }
 }
 
 @media (max-width: 640px) {
@@ -344,6 +350,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .recent-panel { padding-top: 18px; border-radius: 20px; }
   .favorites-page { margin-top: 14px; padding: 17px 15px; border-radius: 20px; }
   .favorites-heading { align-items: flex-start; }
+  .favorites-body { gap: 14px; padding-top: 14px; }
+  .favorites-random-card { min-height: auto; border-radius: 20px; }
+  .favorites-list-panel { padding-top: 16px; border-radius: 20px; }
   .app-footer { align-items: flex-start; gap: 18px; flex-direction: column; }
   .dialog-backdrop { align-items: end; padding: 14px; }
   .confirm-dialog { padding: 18px; border-radius: 18px; }
