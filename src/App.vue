@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 
+import FavoritesView from './components/FavoritesView.vue';
 import LandingView from './components/LandingView.vue';
 import LibraryView from './components/LibraryView.vue';
 import {
@@ -18,8 +19,34 @@ const demoMode = import.meta.env.DEV && new URLSearchParams(window.location.sear
 const status = ref('loading');
 const profile = ref(null);
 const message = ref('');
+const view = ref(window.location.pathname.replace(/\/+$/, '') === '/favorites' ? 'favorites' : 'library');
+const libraryUrl = ref(view.value === 'library' ? `${window.location.pathname}${window.location.search}${window.location.hash}` : '/');
+
+function setView(nextView, replace = false) {
+  const path = nextView === 'favorites' ? '/favorites' : '/';
+  const method = replace ? 'replaceState' : 'pushState';
+  window.history[method]({}, '', path);
+  view.value = nextView;
+}
+
+function openFavorites() {
+  libraryUrl.value = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  setView('favorites');
+}
+
+function openLibrary() {
+  window.history.pushState({}, '', libraryUrl.value);
+  view.value = 'library';
+}
 
 onMounted(async () => {
+  if (view.value === 'library' && new URLSearchParams(window.location.search).get('tab') === 'favorites') {
+    setView('favorites', true);
+  }
+  window.addEventListener('popstate', () => {
+    view.value = window.location.pathname.replace(/\/+$/, '') === '/favorites' ? 'favorites' : 'library';
+  });
+
   if (demoMode) {
     profile.value = demoProfile;
     status.value = 'ready';
@@ -73,11 +100,20 @@ function logout() {
 
   <LandingView v-else-if="status === 'guest'" :message="message" @connect="connect" />
 
+  <FavoritesView
+    v-else-if="view === 'favorites'"
+    :profile="profile"
+    :favorites="demoMode ? demoService : favoritesService"
+    @open-library="openLibrary"
+    @logout="logout"
+  />
+
   <LibraryView
     v-else
     :profile="profile"
     :service="demoMode ? demoService : spotifyService"
     :favorites="demoMode ? demoService : favoritesService"
+    @open-favorites="openFavorites"
     @logout="logout"
   />
 </template>

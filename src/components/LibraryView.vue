@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 
 import { AuthRequiredError } from '../services/auth.js';
-import BrandMark from './BrandMark.vue';
+import AppHeader from './AppHeader.vue';
 import MediaArtwork from './MediaArtwork.vue';
 
 const props = defineProps({
@@ -10,14 +10,13 @@ const props = defineProps({
   service: { type: Object, required: true },
   favorites: { type: Object, required: true },
 });
-const emit = defineEmits(['logout']);
+const emit = defineEmits(['logout', 'open-favorites']);
 
 const categories = [
   { id: 'albums', label: 'Albums', singular: 'album', symbol: '◐', recent: 'Recently saved' },
   { id: 'artists', label: 'Artists', singular: 'artist', symbol: '✦', recent: 'Recently followed' },
   { id: 'songs', label: 'Songs', singular: 'song', symbol: '♪', recent: 'Recently liked' },
   { id: 'podcasts', label: 'Podcasts', singular: 'episode', symbol: '◉', recent: 'Recently saved' },
-  { id: 'favorites', label: 'Favorites', singular: 'favorite', symbol: '★', recent: 'Saved to Soundice' },
 ];
 const removeLabels = {
   albums: 'Remove album',
@@ -31,6 +30,7 @@ const active = ref(categories.some(category => category.id === requestedTab) ? r
 const artistAlbum = reactive({ current: null, previous: null, rolling: false, error: '', artistId: null });
 const pendingRemoval = reactive({ type: null, item: null });
 const favoriteError = ref('');
+const favoriteState = reactive({ count: null, latest: [], loading: false, loaded: false, error: '' });
 let favoritesLoadPromise = null;
 const states = reactive(
   Object.fromEntries(
@@ -56,25 +56,18 @@ const states = reactive(
 
 const meta = computed(() => categories.find(category => category.id === active.value));
 const state = computed(() => states[active.value]);
-const displayName = computed(() => props.profile?.display_name || props.profile?.id || 'Spotify user');
 const pendingRemovalLabel = computed(() => pendingRemoval.type ? removeLabels[pendingRemoval.type] : '');
-const favoriteState = computed(() => states.favorites);
 
 watch(active, type => {
   const url = new URL(window.location.href);
   url.searchParams.set('tab', type);
   window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-  if (type === 'favorites') loadFavorites(true).catch(() => {});
-  else load();
+  load();
 }, { immediate: true });
 
 async function load() {
   const type = active.value;
   const target = states[type];
-  if (type === 'favorites') {
-    await loadFavorites();
-    return;
-  }
   if (target.loaded || target.loading) return;
   target.loading = true;
   target.error = '';
@@ -98,35 +91,34 @@ onMounted(() => {
 });
 
 async function loadFavorites(force = false) {
-  const target = states.favorites;
-  if (target.loaded && !force) return target.latest;
+  if (favoriteState.loaded && !force) return favoriteState.latest;
   if (favoritesLoadPromise) return favoritesLoadPromise;
 
-  target.loading = true;
-  target.error = '';
+  favoriteState.loading = true;
+  favoriteState.error = '';
   favoriteError.value = '';
   favoritesLoadPromise = props.favorites.list()
     .then(items => {
-      target.latest = items;
-      target.count = items.length;
-      target.loaded = true;
+      favoriteState.latest = items;
+      favoriteState.count = items.length;
+      favoriteState.loaded = true;
       return items;
     })
     .catch(error => {
       if (error instanceof AuthRequiredError) emit('logout');
-      target.error = formatError(error, 'Soundice could not load your favorites.');
-      favoriteError.value = target.error;
+      favoriteState.error = formatError(error, 'Soundice could not load your favorites.');
+      favoriteError.value = favoriteState.error;
       throw error;
     })
     .finally(() => {
-      target.loading = false;
+      favoriteState.loading = false;
       favoritesLoadPromise = null;
     });
   return favoritesLoadPromise;
 }
 
 function isFavorite(type, item) {
-  return Boolean(item?.id && favoriteState.value.latest.some(favorite => favorite.type === type && favorite.item?.id === item.id));
+  return Boolean(item?.id && favoriteState.latest.some(favorite => favorite.type === type && favorite.item?.id === item.id));
 }
 
 async function toggleFavorite(type, item) {
@@ -137,7 +129,7 @@ async function toggleFavorite(type, item) {
     return;
   }
   if (favoriteError.value) return;
-  const target = favoriteState.value;
+  const target = favoriteState;
   const existing = target.latest.find(favorite => favorite.type === type && favorite.item?.id === item.id);
   favoriteError.value = '';
   try {
@@ -311,20 +303,7 @@ function savedDate(value) {
 
 <template>
   <div class="app-shell">
-    <header class="app-header">
-      <BrandMark />
-      <div class="account-menu">
-        <div class="account-copy"><small>Connected as</small><strong>{{ displayName }}</strong></div>
-        <button class="favorites-shortcut" type="button" :class="{ active: active === 'favorites' }" :aria-pressed="active === 'favorites'" @click="active = 'favorites'">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
-          <span>Favorites</span>
-          <small v-if="states.favorites.count !== null">{{ states.favorites.count }}</small>
-        </button>
-        <button class="icon-button" type="button" aria-label="Log out" title="Log out" @click="$emit('logout')">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5v2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5v2Zm5.59 2.59L20 12l-4.41 4.41L14.17 15l2-2H8v-2h8.17l-2-2 1.42-1.41Z" /></svg>
-        </button>
-      </div>
-    </header>
+    <AppHeader :profile="profile" :favorite-count="favoriteState.count" @open-favorites="emit('open-favorites')" @logout="emit('logout')" />
 
     <nav class="library-tabs" aria-label="Spotify library" role="tablist">
       <button
@@ -352,7 +331,8 @@ function savedDate(value) {
       <button type="button" class="secondary-button" @click="state.loaded = false; load()">Try again</button>
     </div>
 
-    <section v-else-if="active === 'favorites'" class="favorites-page">
+    <!-- Favorites moved to FavoritesView. -->
+    <!--
       <div class="favorites-heading">
         <div>
           <p class="feature-kicker">Your personal shelf</p>
@@ -387,6 +367,7 @@ function savedDate(value) {
       </div>
       <p v-if="favoriteError" class="favorites-error" role="alert">{{ favoriteError }}</p>
     </section>
+    -->
 
     <div v-else-if="state.loaded && !state.count" class="empty-panel">
       <span>{{ meta.symbol }}</span>
