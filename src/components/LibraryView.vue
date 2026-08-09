@@ -12,12 +12,14 @@ const props = defineProps({
 });
 const emit = defineEmits(['logout', 'open-favorites']);
 
-const categories = [
+const allCategory = { id: 'all', label: 'Surprise', singular: 'pick', symbol: '✧', recent: 'Across your library' };
+const libraryCategories = [
   { id: 'albums', label: 'Albums', singular: 'album', symbol: '◐', recent: 'Recently saved' },
   { id: 'artists', label: 'Artists', singular: 'artist', symbol: '✦', recent: 'Recently followed' },
   { id: 'songs', label: 'Songs', singular: 'song', symbol: '♪', recent: 'Recently liked' },
   { id: 'podcasts', label: 'Podcasts', singular: 'episode', symbol: '◉', recent: 'Recently saved' },
 ];
+const categories = [allCategory, ...libraryCategories];
 const removeLabels = {
   albums: 'Remove album',
   artists: 'Unfollow artist',
@@ -26,7 +28,7 @@ const removeLabels = {
 };
 
 const requestedTab = new URLSearchParams(window.location.search).get('tab');
-const active = ref(categories.some(category => category.id === requestedTab) ? requestedTab : 'albums');
+const active = ref(categories.some(category => category.id === requestedTab) ? requestedTab : 'all');
 const artistAlbum = reactive({ current: null, previous: null, rolling: false, error: '', artistId: null });
 const pendingRemoval = reactive({ type: null, item: null });
 const favoriteError = ref('');
@@ -34,7 +36,7 @@ const favoriteState = reactive({ count: null, latest: [], loading: false, loaded
 let favoritesLoadPromise = null;
 const states = reactive(
   Object.fromEntries(
-    categories.map(category => [
+    libraryCategories.map(category => [
       category.id,
       {
         count: null,
@@ -53,22 +55,63 @@ const states = reactive(
     ])
   )
 );
+const randomState = reactive({
+  count: null,
+  latest: [],
+  current: null,
+  currentType: null,
+  currentArtistAlbum: null,
+  previous: null,
+  previousType: null,
+  previousArtistAlbum: null,
+  loading: false,
+  rolling: false,
+  removing: false,
+  loaded: false,
+  error: '',
+  rollError: '',
+  removeError: '',
+});
 
-const meta = computed(() => categories.find(category => category.id === active.value));
-const state = computed(() => states[active.value]);
+const itemType = computed(() => active.value === 'all' ? randomState.currentType : active.value);
+const meta = computed(() => active.value === 'all'
+  ? (categories.find(category => category.id === randomState.currentType) || allCategory)
+  : categories.find(category => category.id === active.value));
+const state = computed(() => active.value === 'all' ? randomState : states[active.value]);
+const removalState = computed(() => pendingRemoval.type && active.value === 'all' ? randomState : states[pendingRemoval.type]);
+
+function itemCategory(item) {
+  return item?.categoryType || itemType.value;
+}
+function categoryCount(type) {
+  return type === 'all' ? randomState.count : states[type].count;
+}
 const pendingRemovalLabel = computed(() => pendingRemoval.type ? removeLabels[pendingRemoval.type] : '');
 
 watch(active, type => {
   const url = new URL(window.location.href);
   url.searchParams.set('tab', type);
   window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-  load();
+  if (type === 'all') {
+    if (randomState.currentType === 'artists') {
+      artistAlbum.current = randomState.currentArtistAlbum;
+      artistAlbum.artistId = randomState.current?.id ?? null;
+    } else {
+      artistAlbum.current = null;
+      artistAlbum.artistId = null;
+    }
+    loadAll();
+  } else load(type);
 }, { immediate: true });
 
-async function load() {
-  const type = active.value;
+async function load(type = active.value, pick = true) {
+  if (type === 'all') return loadAll();
   const target = states[type];
-  if (target.loaded || target.loading) return;
+  if (target.loading) return;
+  if (target.loaded) {
+    if (pick && target.count && !target.current) await roll(type, false);
+    return;
+  }
   target.loading = true;
   target.error = '';
   target.rollError = '';
@@ -78,11 +121,31 @@ async function load() {
     target.latest = data.latest;
     target.loaded = true;
     target.removeError = '';
-    if (data.count) await roll(type, false);
+    if (data.count && pick) await roll(type, false);
   } catch (error) {
     handleError(error, target);
   } finally {
     target.loading = false;
+  }
+}
+
+async function loadAll() {
+  if (randomState.loaded || randomState.loading) return;
+  randomState.loading = true;
+  randomState.error = '';
+  randomState.rollError = '';
+  try {
+    await Promise.all(libraryCategories.map(category => load(category.id, false)));
+    randomState.count = libraryCategories.reduce((total, category) => total + (states[category.id].count || 0), 0);
+    randomState.latest = libraryCategories
+      .flatMap(category => states[category.id].latest.map(item => ({ ...item, categoryType: category.id })))
+      .sort((a, b) => new Date(b.addedAt || 0) - new Date(a.addedAt || 0));
+    randomState.loaded = true;
+    if (randomState.count) await rollRandom(false);
+  } catch (error) {
+    randomState.error = formatError(error, 'Spotify did not respond. Please try again.');
+  } finally {
+    randomState.loading = false;
   }
 }
 
@@ -155,7 +218,11 @@ function favoriteTypeLabel(type) {
 }
 
 async function roll(type = active.value, animate = true) {
-  const target = states[type];
+  if (type === 'all') return rollRandom(animate);
+  return rollCategory(type, states[type], animate);
+}
+
+async function rollCategory(type, target, animate = true) {
   if (!target.count || target.rolling) return;
   target.rolling = animate;
   target.rollError = '';
@@ -182,7 +249,70 @@ async function roll(type = active.value, animate = true) {
   }
 }
 
+async function rollRandom(animate = true) {
+  if (!randomState.count || randomState.rolling) return;
+  const available = libraryCategories.filter(category => states[category.id].count);
+  if (!available.length) return;
+  randomState.rolling = animate;
+  randomState.rollError = '';
+  randomState.removeError = '';
+  try {
+    const type = available[Math.floor(Math.random() * available.length)].id;
+    const next = await props.service.getRandomItem(type, states[type].count);
+    if (randomState.current) {
+      randomState.previous = randomState.current;
+      randomState.previousType = randomState.currentType;
+      randomState.previousArtistAlbum = randomState.currentType === 'artists' ? artistAlbum.current : null;
+    }
+    randomState.current = next;
+    randomState.currentType = type;
+    if (type === 'artists' && randomState.current) {
+      artistAlbum.previous = null;
+      await rollArtistAlbum(randomState.current, animate);
+      randomState.currentArtistAlbum = artistAlbum.current;
+    } else {
+      randomState.currentArtistAlbum = null;
+      artistAlbum.current = null;
+      artistAlbum.previous = null;
+      artistAlbum.error = '';
+      artistAlbum.artistId = null;
+    }
+  } catch (error) {
+    if (error instanceof AuthRequiredError) {
+      emit('logout');
+    } else {
+      randomState.rollError = formatError(error, 'Spotify could not pick something right now.');
+    }
+  } finally {
+    randomState.rolling = false;
+  }
+}
+
 function goBack(type = active.value) {
+  if (type === 'all') {
+    if (!randomState.previous || randomState.rolling || randomState.removing) return;
+    randomState.current = randomState.previous;
+    randomState.currentType = randomState.previousType;
+    randomState.previous = null;
+    randomState.previousType = null;
+    randomState.rollError = '';
+    randomState.removeError = '';
+    if (randomState.currentType === 'artists') {
+      artistAlbum.current = randomState.previousArtistAlbum;
+      randomState.currentArtistAlbum = randomState.previousArtistAlbum;
+      artistAlbum.previous = null;
+      artistAlbum.artistId = randomState.current?.id ?? null;
+      artistAlbum.error = '';
+      artistAlbum.rolling = false;
+    } else {
+      randomState.currentArtistAlbum = null;
+      artistAlbum.current = null;
+      artistAlbum.previous = null;
+      artistAlbum.artistId = null;
+    }
+    randomState.previousArtistAlbum = null;
+    return;
+  }
   const target = states[type];
   if (!target.previous || target.rolling || target.removing) return;
   target.current = target.previous;
@@ -199,8 +329,8 @@ function goBack(type = active.value) {
   }
 }
 
-function requestRemoval(type = active.value) {
-  const target = states[type];
+function requestRemoval(type = itemType.value) {
+  const target = active.value === 'all' ? randomState : states[type];
   const item = target.current;
   if (!item || target.removing) return;
   pendingRemoval.type = type;
@@ -217,7 +347,7 @@ async function confirmRemoval() {
   const type = pendingRemoval.type;
   const item = pendingRemoval.item;
   if (!type || !item) return;
-  const target = states[type];
+  const target = active.value === 'all' ? randomState : states[type];
   if (target.removing) return;
 
   target.removing = true;
@@ -236,7 +366,14 @@ async function confirmRemoval() {
       artistAlbum.error = '';
       artistAlbum.artistId = null;
     }
-    if (target.count) await roll(type, false);
+    if (active.value === 'all') randomState.currentArtistAlbum = null;
+    if (active.value === 'all') {
+      const categoryState = states[type];
+      categoryState.count = Math.max((categoryState.count || 1) - 1, 0);
+      categoryState.latest = categoryState.latest.filter(latestItem => latestItem.id !== item.id);
+      randomState.count = libraryCategories.reduce((total, category) => total + (states[category.id].count || 0), 0);
+    }
+    if (target.count) await roll(active.value, false);
   } catch (error) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
@@ -317,7 +454,7 @@ function savedDate(value) {
       >
         <span class="tab-symbol">{{ category.symbol }}</span>
         <span>{{ category.label }}</span>
-        <small v-if="states[category.id].count !== null">{{ states[category.id].count.toLocaleString() }}</small>
+        <small v-if="categoryCount(category.id) !== null">{{ categoryCount(category.id).toLocaleString() }}</small>
       </button>
     </nav>
 
@@ -371,7 +508,7 @@ function savedDate(value) {
 
     <div v-else-if="state.loaded && !state.count" class="empty-panel">
       <span>{{ meta.symbol }}</span>
-      <h2>No {{ meta.label.toLowerCase() }} yet</h2>
+      <h2>No {{ active === 'all' ? 'library items' : meta.label.toLowerCase() }} yet</h2>
       <p>Save something in Spotify, then come back for a surprise.</p>
     </div>
 
@@ -379,7 +516,7 @@ function savedDate(value) {
       <div class="feature-stack">
         <section class="feature-card">
         <div class="feature-topline">
-          <span>Random {{ meta.singular }}</span>
+          <span>{{ active === 'all' ? 'Random anything' : `Random ${meta.singular}` }}</span>
           <button
             v-if="state.previous"
             class="icon-button previous-button"
@@ -398,10 +535,10 @@ function savedDate(value) {
             <MediaArtwork :item="state.current" />
             <div class="feature-details">
               <div class="feature-copy">
-                <p class="feature-kicker">Soundice picked</p>
+                <p class="feature-kicker">Soundice picked<span v-if="active === 'all'"> · {{ meta.label }}</span></p>
                 <h2>{{ state.current.title }}</h2>
                 <p class="feature-subtitle">
-                  <template v-if="active === 'albums' && state.current.artistLinks?.length">
+                  <template v-if="itemType === 'albums' && state.current.artistLinks?.length">
                     <template v-for="(artist, index) in state.current.artistLinks" :key="artist.id || artist.name">
                       <span v-if="index">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
                     </template>
@@ -418,12 +555,12 @@ function savedDate(value) {
                 </button>
                 <a v-if="state.current.url" class="spotify-link spotify-action" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
                 <div class="feature-secondary-actions">
-                  <button class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite(active, state.current) }" type="button" :aria-pressed="isFavorite(active, state.current)" @click="toggleFavorite(active, state.current)">
+                  <button class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite(itemType, state.current) }" type="button" :aria-pressed="isFavorite(itemType, state.current)" @click="toggleFavorite(itemType, state.current)">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
-                    {{ isFavorite(active, state.current) ? 'Favorited' : 'Favorite' }}
+                    {{ isFavorite(itemType, state.current) ? 'Favorited' : 'Favorite' }}
                   </button>
                   <button class="remove-button" type="button" :disabled="state.removing || state.rolling" @click="requestRemoval()">
-                    {{ state.removing ? 'Removing…' : removeLabels[active] }}
+                    {{ state.removing ? 'Removing…' : removeLabels[itemType] }}
                   </button>
                 </div>
                 <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
@@ -443,7 +580,7 @@ function savedDate(value) {
         </Transition>
         </section>
 
-        <section v-if="active === 'artists'" class="artist-album-card">
+        <section v-if="itemType === 'artists'" class="artist-album-card">
           <div class="feature-topline">
             <span>Random album by {{ state.current?.title }}</span>
             <button
@@ -496,21 +633,21 @@ function savedDate(value) {
       </div>
 
       <section class="recent-panel">
-        <div class="panel-heading"><div><p>{{ meta.recent }}</p><h2>Your latest {{ meta.label.toLowerCase() }}</h2></div><span>{{ state.latest.length }}</span></div>
+        <div class="panel-heading"><div><p>{{ active === 'all' ? allCategory.recent : meta.recent }}</p><h2>Your latest {{ active === 'all' ? 'picks' : meta.label.toLowerCase() }}</h2></div><span>{{ state.latest.length }}</span></div>
         <div class="recent-list">
           <div v-for="(item, index) in state.latest" :key="`${item.id}-${index}`" class="recent-item">
             <MediaArtwork :item="item" small />
             <div>
               <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer"><strong>{{ item.title }}</strong></a>
               <strong v-else>{{ item.title }}</strong>
-              <span v-if="active === 'albums' && item.artistLinks?.length">
+              <span v-if="itemCategory(item) === 'albums' && item.artistLinks?.length">
                 <template v-for="(artist, artistIndex) in item.artistLinks" :key="artist.id || artist.name">
                   <span v-if="artistIndex">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
                 </template>
               </span>
               <span v-else>{{ item.subtitle || item.detail }}</span>
             </div>
-            <button class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(active, item) }" type="button" :aria-label="`${isFavorite(active, item) ? 'Remove' : 'Save'} ${item.title} ${favoriteTypeLabel(active)}`" @click="toggleFavorite(active, item)">
+            <button class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(itemCategory(item), item) }" type="button" :aria-label="`${isFavorite(itemCategory(item), item) ? 'Remove' : 'Save'} ${item.title} ${favoriteTypeLabel(itemCategory(item))}`" @click="toggleFavorite(itemCategory(item), item)">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
             </button>
           </div>
@@ -533,9 +670,9 @@ function savedDate(value) {
           <h2 id="remove-dialog-title">{{ pendingRemoval.item.title }}</h2>
           <p>This will update your Spotify library.</p>
           <div class="dialog-actions">
-            <button class="secondary-button" type="button" :disabled="states[pendingRemoval.type]?.removing" @click="closeRemovalDialog">Cancel</button>
-            <button class="primary-button confirm-remove-button" type="button" :disabled="states[pendingRemoval.type]?.removing" @click="confirmRemoval">
-              {{ states[pendingRemoval.type]?.removing ? 'Removing…' : pendingRemovalLabel }}
+            <button class="secondary-button" type="button" :disabled="removalState?.removing" @click="closeRemovalDialog">Cancel</button>
+            <button class="primary-button confirm-remove-button" type="button" :disabled="removalState?.removing" @click="confirmRemoval">
+              {{ removalState?.removing ? 'Removing…' : pendingRemovalLabel }}
             </button>
           </div>
         </section>
