@@ -114,6 +114,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .library-tabs .active small { color: #9b9da4; }
 .tab-symbol { width: 20px; color: var(--accent); font-size: 17px; text-align: center; }
 .content-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, .85fr); gap: 20px; padding: 20px 0 58px; }
+.content-grid.single-column { grid-template-columns: 1fr; }
 .feature-stack { display: flex; min-width: 0; flex-direction: column; gap: 20px; }
 .feature-card, .artist-album-card, .recent-panel { overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
 .feature-card { display: flex; min-height: 510px; flex-direction: column; padding: 22px; }

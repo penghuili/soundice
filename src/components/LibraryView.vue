@@ -12,7 +12,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['logout', 'open-favorites']);
 
-const allCategory = { id: 'all', label: 'Surprise', singular: 'pick', symbol: '✧', recent: 'Across your library' };
+const allCategory = { id: 'all', label: 'Surprise', singular: 'pick', symbol: '✧' };
 const libraryCategories = [
   { id: 'albums', label: 'Albums', singular: 'album', symbol: '◐', recent: 'Recently saved' },
   { id: 'artists', label: 'Artists', singular: 'artist', symbol: '✦', recent: 'Recently followed' },
@@ -458,9 +458,9 @@ function savedDate(value) {
       </button>
     </nav>
 
-    <div v-if="state.loading" class="content-grid" aria-live="polite">
+    <div v-if="state.loading" class="content-grid" :class="{ 'single-column': active === 'all' }" aria-live="polite">
       <section class="feature-card skeleton-card"><div class="skeleton-art" /><div class="skeleton-lines"><i /><i /><i /></div></section>
-      <section class="recent-panel"><div class="skeleton-title" /><div v-for="n in 5" :key="n" class="skeleton-row"><i /><span /></div></section>
+      <section v-if="active !== 'all'" class="recent-panel"><div class="skeleton-title" /><div v-for="n in 5" :key="n" class="skeleton-row"><i /><span /></div></section>
     </div>
 
     <div v-else-if="state.error" class="error-panel" role="alert">
@@ -512,7 +512,7 @@ function savedDate(value) {
       <p>Save something in Spotify, then come back for a surprise.</p>
     </div>
 
-    <div v-else class="content-grid">
+    <div v-else class="content-grid" :class="{ 'single-column': active === 'all' }">
       <div class="feature-stack">
         <section class="feature-card">
         <div class="feature-topline">
@@ -632,8 +632,8 @@ function savedDate(value) {
         </section>
       </div>
 
-      <section class="recent-panel">
-        <div class="panel-heading"><div><p>{{ active === 'all' ? allCategory.recent : meta.recent }}</p><h2>Your latest {{ active === 'all' ? 'picks' : meta.label.toLowerCase() }}</h2></div><span>{{ state.latest.length }}</span></div>
+      <section v-if="active !== 'all'" class="recent-panel">
+        <div class="panel-heading"><div><p>{{ meta.recent }}</p><h2>Your latest {{ meta.label.toLowerCase() }}</h2></div><span>{{ state.latest.length }}</span></div>
         <div class="recent-list">
           <div v-for="(item, index) in state.latest" :key="`${item.id}-${index}`" class="recent-item">
             <MediaArtwork :item="item" small />
