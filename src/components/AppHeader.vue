@@ -2,7 +2,6 @@
 import BrandMark from './BrandMark.vue';
 
 defineProps({
-  profile: { type: Object, default: null },
   favoriteCount: { type: Number, default: null },
   favoritesActive: Boolean,
   showRandomize: Boolean,
@@ -16,7 +15,6 @@ defineEmits(['open-favorites', 'logout', 'randomize']);
   <header class="app-header">
     <BrandMark />
     <div class="account-menu">
-      <div class="account-copy"><small>Connected as</small><strong>{{ profile?.display_name || profile?.id || 'Spotify user' }}</strong></div>
       <button
         v-if="showRandomize"
         class="icon-button randomize-button"

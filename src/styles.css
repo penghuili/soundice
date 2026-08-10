@@ -94,9 +94,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .app-shell { width: min(1180px, calc(100% - 48px)); min-height: 100vh; margin: 0 auto; }
 .app-header { display: flex; align-items: center; justify-content: space-between; height: 88px; border-bottom: 1px solid var(--line); }
 .account-menu { display: flex; align-items: center; gap: 10px; }
-.account-copy { display: flex; flex-direction: column; align-items: flex-end; margin-right: 2px; line-height: 1.25; }
-.account-copy small { color: #6f727b; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
-.account-copy strong { max-width: 180px; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .favorites-shortcut { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 11px; color: #aaa8a4; background: rgba(255,255,255,.035); border: 1px solid var(--line); border-radius: 11px; cursor: pointer; font-size: 11px; font-weight: 720; transition: color 150ms ease, background 150ms ease, border-color 150ms ease; }
 .favorites-shortcut:hover, .favorites-shortcut.active { color: #ffb09a; background: rgba(255,99,56,.1); border-color: rgba(255,99,56,.38); }
 .favorites-shortcut svg { width: 15px; height: 15px; fill: currentColor; }
@@ -249,6 +246,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .app-footer { display: flex; align-items: center; justify-content: space-between; padding: 28px 0 36px; color: #5f626b; border-top: 1px solid var(--line); font-size: 11px; }
 .app-footer p { margin: 0; }
 .app-footer strong { color: #9d9fa6; }
+.footer-account { display: flex; flex-direction: column; gap: 4px; line-height: 1.25; }
+.footer-account span { color: #6f727b; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.footer-account strong { max-width: 220px; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .app-footer div { display: flex; gap: 22px; }
 .app-footer a:hover { color: #fff; }
 .favorites-page { margin: 20px 0 58px; padding: 26px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
@@ -343,7 +343,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .category-chip:nth-child(2) { border-right: 0; }
   .category-chip:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .landing-footer { gap: 15px; flex-direction: column; }
-  .account-copy { display: none; }
   .library-tabs { margin-top: 20px; margin-right: 0; border-radius: 14px; border-right: 1px solid var(--line); }
   .library-tabs button { flex-basis: 128px; min-height: 45px; padding: 0 12px; }
   .content-grid { gap: 14px; padding-top: 14px; }
