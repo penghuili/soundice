@@ -1,6 +1,11 @@
 import { AuthRequiredError, getAccessToken } from './auth.js';
 
 const endpoint = '/api/favorites';
+const favoriteType = 'albums';
+
+function assertAlbum(type) {
+  if (type !== favoriteType) throw new Error('Only albums can be favorited.');
+}
 
 async function authorizedFetch(url, options = {}, retry = true) {
   const accessToken = await getAccessToken();
@@ -46,10 +51,11 @@ async function readResponse(response) {
 export async function list() {
   const response = await authorizedFetch(endpoint);
   const data = await readResponse(response);
-  return data.favorites || [];
+  return (data.favorites || []).filter(favorite => favorite.type === favoriteType);
 }
 
 export async function add(type, item) {
+  assertAlbum(type);
   const response = await authorizedFetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -60,6 +66,7 @@ export async function add(type, item) {
 }
 
 export async function remove(type, itemId) {
+  assertAlbum(type);
   const response = await authorizedFetch(endpoint, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },

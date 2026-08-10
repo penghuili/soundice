@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS favorites (
   user_id TEXT NOT NULL,
-  item_type TEXT NOT NULL,
+  item_type TEXT NOT NULL CHECK (item_type = 'albums'),
   item_id TEXT NOT NULL,
   item_json TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,

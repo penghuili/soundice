@@ -68,9 +68,10 @@ export const demoService = {
   },
   async list() {
     await new Promise(resolve => setTimeout(resolve, 180));
-    return demoFavorites.map(favorite => ({ ...favorite, item: { ...favorite.item } }));
+    return demoFavorites.filter(favorite => favorite.type === 'albums').map(favorite => ({ ...favorite, item: { ...favorite.item } }));
   },
   async add(type, favoriteItem) {
+    if (type !== 'albums') throw new Error('Only albums can be favorited.');
     await new Promise(resolve => setTimeout(resolve, 180));
     const favorite = { type, item: { ...favoriteItem }, createdAt: new Date().toISOString() };
     const existingIndex = demoFavorites.findIndex(item => item.type === type && item.item.id === favoriteItem.id);
@@ -79,6 +80,7 @@ export const demoService = {
     return favorite;
   },
   async remove(type, itemId) {
+    if (type !== 'albums') throw new Error('Only albums can be favorited.');
     await new Promise(resolve => setTimeout(resolve, 180));
     const index = demoFavorites.findIndex(item => item.type === type && item.item.id === itemId);
     if (index >= 0) demoFavorites.splice(index, 1);

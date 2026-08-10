@@ -1,4 +1,4 @@
-const ALLOWED_TYPES = new Set(['albums', 'artists', 'songs', 'podcasts']);
+const ALLOWED_TYPES = new Set(['albums']);
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -96,7 +96,7 @@ export async function onRequest(context) {
 
     const values = [...identity.ids];
     const userFilter = userPlaceholders(identity);
-    let query = `SELECT item_type, item_id, item_json, created_at FROM favorites WHERE user_id IN (${userFilter})`;
+    let query = `SELECT item_type, item_id, item_json, created_at FROM favorites WHERE user_id IN (${userFilter}) AND item_type = 'albums'`;
     if (type) {
       query += ` AND item_type = ?${values.length + 1}`;
       values.push(type);

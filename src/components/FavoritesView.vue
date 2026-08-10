@@ -13,9 +13,6 @@ const emit = defineEmits(['logout', 'open-library']);
 
 const types = {
   albums: 'album',
-  artists: 'artist',
-  songs: 'song',
-  podcasts: 'episode',
 };
 const state = reactive({ items: [], loading: false, loaded: false, error: '' });
 const rollState = reactive({ current: null, previous: null, rolling: false });
@@ -29,7 +26,7 @@ async function loadFavorites(force = false) {
   state.error = '';
   favoriteError.value = '';
   try {
-    state.items = await props.favorites.list();
+    state.items = (await props.favorites.list()).filter(favorite => favorite.type === 'albums');
     state.loaded = true;
     if (state.items.length) {
       await roll(false);
@@ -116,7 +113,7 @@ function formatError(error, fallback) {
         <div>
           <p class="feature-kicker">Your personal shelf</p>
           <h1>Favorites</h1>
-          <p>Keep the albums, artists, songs, and podcasts you want to find again.</p>
+          <p>Keep the albums you want to find again.</p>
         </div>
         <div class="favorites-heading-actions">
           <button class="secondary-button favorites-back-button" type="button" @click="$emit('open-library')">Back to library</button>
@@ -141,7 +138,7 @@ function formatError(error, fallback) {
       <div v-else-if="!state.items.length" class="favorites-empty">
         <span>★</span>
         <h2>Nothing saved here yet</h2>
-        <p>Tap the star on anything Soundice picks to build your shelf.</p>
+        <p>Tap the star on an album Soundice picks to build your shelf.</p>
       </div>
       <div v-else class="favorites-body">
         <section class="feature-card favorites-random-card">

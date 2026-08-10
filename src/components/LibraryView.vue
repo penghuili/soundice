@@ -118,8 +118,8 @@ async function loadFavorites(force = false) {
   favoriteError.value = '';
   favoritesLoadPromise = props.favorites.list()
     .then(items => {
-      favoriteState.latest = items;
-      favoriteState.count = items.length;
+      favoriteState.latest = items.filter(item => item.type === 'albums');
+      favoriteState.count = favoriteState.latest.length;
       favoriteState.loaded = true;
       return items;
     })
@@ -141,7 +141,7 @@ function isFavorite(type, item) {
 }
 
 async function toggleFavorite(type, item) {
-  if (!item) return;
+  if (type !== 'albums' || !item) return;
   try {
     await loadFavorites();
   } catch {
@@ -167,10 +167,6 @@ async function toggleFavorite(type, item) {
       favoriteError.value = formatError(error, 'Could not update this favorite.');
     }
   }
-}
-
-function favoriteTypeLabel(type) {
-  return categories.find(category => category.id === type)?.singular || type;
 }
 
 async function roll(type = active.value, animate = true) {
@@ -461,7 +457,7 @@ function savedDate(value) {
                 </button>
                 <a v-if="state.current.url" class="spotify-link spotify-action" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
                 <div class="feature-secondary-actions">
-                  <button class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite(itemType, state.current) }" type="button" :aria-pressed="isFavorite(itemType, state.current)" @click="toggleFavorite(itemType, state.current)">
+                  <button v-if="itemType === 'albums'" class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite(itemType, state.current) }" type="button" :aria-pressed="isFavorite(itemType, state.current)" @click="toggleFavorite(itemType, state.current)">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
                     {{ isFavorite(itemType, state.current) ? 'Favorited' : 'Favorite' }}
                   </button>
@@ -553,7 +549,7 @@ function savedDate(value) {
               </span>
               <span v-else>{{ item.subtitle || item.detail }}</span>
             </div>
-            <button class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(itemCategory(item), item) }" type="button" :aria-label="`${isFavorite(itemCategory(item), item) ? 'Remove' : 'Save'} ${item.title} ${favoriteTypeLabel(itemCategory(item))}`" @click="toggleFavorite(itemCategory(item), item)">
+            <button v-if="itemCategory(item) === 'albums'" class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(itemCategory(item), item) }" type="button" :aria-label="`${isFavorite(itemCategory(item), item) ? 'Remove' : 'Save'} ${item.title} album`" @click="toggleFavorite(itemCategory(item), item)">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
             </button>
           </div>
