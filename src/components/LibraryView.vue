@@ -346,36 +346,23 @@ function savedDate(value) {
 
 <template>
   <div class="app-shell">
-    <AppHeader :profile="profile" :favorite-count="favoriteState.count" @open-favorites="emit('open-favorites')" @logout="emit('logout')" />
+    <AppHeader :profile="profile" :favorite-count="favoriteState.count" show-randomize :randomizing="randomizing" @open-favorites="emit('open-favorites')" @randomize="randomize" @logout="emit('logout')" />
 
-    <div class="library-navigation">
-      <nav class="library-tabs" aria-label="Spotify library" role="tablist">
-        <button
-          v-for="category in categories"
-          :key="category.id"
-          type="button"
-          role="tab"
-          :aria-selected="active === category.id"
-          :class="{ active: active === category.id }"
-          @click="active = category.id"
-        >
-          <span class="tab-symbol">{{ category.symbol }}</span>
-          <span>{{ category.label }}</span>
-          <small v-if="categoryCount(category.id) !== null">{{ categoryCount(category.id).toLocaleString() }}</small>
-        </button>
-      </nav>
+    <nav class="library-tabs" aria-label="Spotify library" role="tablist">
       <button
-        class="icon-button randomize-button"
-        :class="{ spinning: randomizing }"
+        v-for="category in categories"
+        :key="category.id"
         type="button"
-        aria-label="Pick a random tab and item"
-        title="Pick a random tab and item"
-        :disabled="randomizing"
-        @click="randomize"
+        role="tab"
+        :aria-selected="active === category.id"
+        :class="{ active: active === category.id }"
+        @click="active = category.id"
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" /></svg>
+        <span class="tab-symbol">{{ category.symbol }}</span>
+        <span>{{ category.label }}</span>
+        <small v-if="categoryCount(category.id) !== null">{{ categoryCount(category.id).toLocaleString() }}</small>
       </button>
-    </div>
+    </nav>
 
     <div v-if="state.loading" class="content-grid" aria-live="polite">
       <section class="feature-card skeleton-card"><div class="skeleton-art" /><div class="skeleton-lines"><i /><i /><i /></div></section>
