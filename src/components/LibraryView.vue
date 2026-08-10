@@ -12,14 +12,13 @@ const props = defineProps({
 });
 const emit = defineEmits(['logout', 'open-favorites']);
 
-const allCategory = { id: 'all', label: 'Surprise', singular: 'pick', symbol: '✧' };
 const libraryCategories = [
   { id: 'albums', label: 'Albums', singular: 'album', symbol: '◐', recent: 'Recently saved' },
   { id: 'artists', label: 'Artists', singular: 'artist', symbol: '✦', recent: 'Recently followed' },
   { id: 'songs', label: 'Songs', singular: 'song', symbol: '♪', recent: 'Recently liked' },
   { id: 'podcasts', label: 'Podcasts', singular: 'episode', symbol: '◉', recent: 'Recently saved' },
 ];
-const categories = [allCategory, ...libraryCategories];
+const categories = libraryCategories;
 const removeLabels = {
   albums: 'Remove album',
   artists: 'Unfollow artist',
@@ -28,9 +27,10 @@ const removeLabels = {
 };
 
 const requestedTab = new URLSearchParams(window.location.search).get('tab');
-const active = ref(categories.some(category => category.id === requestedTab) ? requestedTab : 'all');
+const active = ref(categories.some(category => category.id === requestedTab) ? requestedTab : 'albums');
 const artistAlbum = reactive({ current: null, previous: null, rolling: false, error: '', artistId: null });
 const pendingRemoval = reactive({ type: null, item: null });
+const randomizing = ref(false);
 const favoriteError = ref('');
 const favoriteState = reactive({ count: null, latest: [], loading: false, loaded: false, error: '' });
 let favoritesLoadPromise = null;
@@ -55,36 +55,17 @@ const states = reactive(
     ])
   )
 );
-const randomState = reactive({
-  count: null,
-  latest: [],
-  current: null,
-  currentType: null,
-  currentArtistAlbum: null,
-  previous: null,
-  previousType: null,
-  previousArtistAlbum: null,
-  loading: false,
-  rolling: false,
-  removing: false,
-  loaded: false,
-  error: '',
-  rollError: '',
-  removeError: '',
-});
-
-const itemType = computed(() => active.value === 'all' ? randomState.currentType : active.value);
-const meta = computed(() => active.value === 'all'
-  ? (categories.find(category => category.id === randomState.currentType) || allCategory)
-  : categories.find(category => category.id === active.value));
-const state = computed(() => active.value === 'all' ? randomState : states[active.value]);
-const removalState = computed(() => pendingRemoval.type && active.value === 'all' ? randomState : states[pendingRemoval.type]);
+const itemType = computed(() => active.value);
+const meta = computed(() => categories.find(category => category.id === active.value));
+const state = computed(() => states[active.value]);
+const removalState = computed(() => states[pendingRemoval.type]);
+const categoryLoadPromises = new Map();
 
 function itemCategory(item) {
   return item?.categoryType || itemType.value;
 }
 function categoryCount(type) {
-  return type === 'all' ? randomState.count : states[type].count;
+  return states[type].count;
 }
 const pendingRemovalLabel = computed(() => pendingRemoval.type ? removeLabels[pendingRemoval.type] : '');
 
@@ -92,22 +73,12 @@ watch(active, type => {
   const url = new URL(window.location.href);
   url.searchParams.set('tab', type);
   window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-  if (type === 'all') {
-    if (randomState.currentType === 'artists') {
-      artistAlbum.current = randomState.currentArtistAlbum;
-      artistAlbum.artistId = randomState.current?.id ?? null;
-    } else {
-      artistAlbum.current = null;
-      artistAlbum.artistId = null;
-    }
-    loadAll();
-  } else load(type);
+  load(type);
 }, { immediate: true });
 
 async function load(type = active.value, pick = true) {
-  if (type === 'all') return loadAll();
   const target = states[type];
-  if (target.loading) return;
+  if (target.loading) return categoryLoadPromises.get(type);
   if (target.loaded) {
     if (pick && target.count && !target.current) await roll(type, false);
     return;
@@ -115,38 +86,23 @@ async function load(type = active.value, pick = true) {
   target.loading = true;
   target.error = '';
   target.rollError = '';
-  try {
-    const data = await props.service.loadCategory(type);
-    target.count = data.count;
-    target.latest = data.latest;
-    target.loaded = true;
-    target.removeError = '';
-    if (data.count && pick) await roll(type, false);
-  } catch (error) {
-    handleError(error, target);
-  } finally {
-    target.loading = false;
-  }
-}
-
-async function loadAll() {
-  if (randomState.loaded || randomState.loading) return;
-  randomState.loading = true;
-  randomState.error = '';
-  randomState.rollError = '';
-  try {
-    await Promise.all(libraryCategories.map(category => load(category.id, false)));
-    randomState.count = libraryCategories.reduce((total, category) => total + (states[category.id].count || 0), 0);
-    randomState.latest = libraryCategories
-      .flatMap(category => states[category.id].latest.map(item => ({ ...item, categoryType: category.id })))
-      .sort((a, b) => new Date(b.addedAt || 0) - new Date(a.addedAt || 0));
-    randomState.loaded = true;
-    if (randomState.count) await rollRandom(false);
-  } catch (error) {
-    randomState.error = formatError(error, 'Spotify did not respond. Please try again.');
-  } finally {
-    randomState.loading = false;
-  }
+  const promise = (async () => {
+    try {
+      const data = await props.service.loadCategory(type);
+      target.count = data.count;
+      target.latest = data.latest;
+      target.loaded = true;
+      target.removeError = '';
+      if (data.count && pick) await roll(type, false);
+    } catch (error) {
+      handleError(error, target);
+    } finally {
+      target.loading = false;
+      categoryLoadPromises.delete(type);
+    }
+  })();
+  categoryLoadPromises.set(type, promise);
+  return promise;
 }
 
 onMounted(() => {
@@ -218,7 +174,6 @@ function favoriteTypeLabel(type) {
 }
 
 async function roll(type = active.value, animate = true) {
-  if (type === 'all') return rollRandom(animate);
   return rollCategory(type, states[type], animate);
 }
 
@@ -249,70 +204,28 @@ async function rollCategory(type, target, animate = true) {
   }
 }
 
-async function rollRandom(animate = true) {
-  if (!randomState.count || randomState.rolling) return;
-  const available = libraryCategories.filter(category => states[category.id].count);
-  if (!available.length) return;
-  randomState.rolling = animate;
-  randomState.rollError = '';
-  randomState.removeError = '';
+async function randomize() {
+  if (randomizing.value) return;
+  randomizing.value = true;
   try {
+    await Promise.all(libraryCategories.map(category => load(category.id, false)));
+    const available = libraryCategories.filter(category => states[category.id].count);
+    if (!available.length) return;
     const type = available[Math.floor(Math.random() * available.length)].id;
-    const next = await props.service.getRandomItem(type, states[type].count);
-    if (randomState.current) {
-      randomState.previous = randomState.current;
-      randomState.previousType = randomState.currentType;
-      randomState.previousArtistAlbum = randomState.currentType === 'artists' ? artistAlbum.current : null;
-    }
-    randomState.current = next;
-    randomState.currentType = type;
-    if (type === 'artists' && randomState.current) {
-      artistAlbum.previous = null;
-      await rollArtistAlbum(randomState.current, animate);
-      randomState.currentArtistAlbum = artistAlbum.current;
-    } else {
-      randomState.currentArtistAlbum = null;
-      artistAlbum.current = null;
-      artistAlbum.previous = null;
-      artistAlbum.error = '';
-      artistAlbum.artistId = null;
-    }
+    await roll(type);
+    active.value = type;
   } catch (error) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else {
-      randomState.rollError = formatError(error, 'Spotify could not pick something right now.');
+      state.value.rollError = formatError(error, 'Spotify could not pick something right now.');
     }
   } finally {
-    randomState.rolling = false;
+    randomizing.value = false;
   }
 }
 
 function goBack(type = active.value) {
-  if (type === 'all') {
-    if (!randomState.previous || randomState.rolling || randomState.removing) return;
-    randomState.current = randomState.previous;
-    randomState.currentType = randomState.previousType;
-    randomState.previous = null;
-    randomState.previousType = null;
-    randomState.rollError = '';
-    randomState.removeError = '';
-    if (randomState.currentType === 'artists') {
-      artistAlbum.current = randomState.previousArtistAlbum;
-      randomState.currentArtistAlbum = randomState.previousArtistAlbum;
-      artistAlbum.previous = null;
-      artistAlbum.artistId = randomState.current?.id ?? null;
-      artistAlbum.error = '';
-      artistAlbum.rolling = false;
-    } else {
-      randomState.currentArtistAlbum = null;
-      artistAlbum.current = null;
-      artistAlbum.previous = null;
-      artistAlbum.artistId = null;
-    }
-    randomState.previousArtistAlbum = null;
-    return;
-  }
   const target = states[type];
   if (!target.previous || target.rolling || target.removing) return;
   target.current = target.previous;
@@ -330,7 +243,7 @@ function goBack(type = active.value) {
 }
 
 function requestRemoval(type = itemType.value) {
-  const target = active.value === 'all' ? randomState : states[type];
+  const target = states[type];
   const item = target.current;
   if (!item || target.removing) return;
   pendingRemoval.type = type;
@@ -347,7 +260,7 @@ async function confirmRemoval() {
   const type = pendingRemoval.type;
   const item = pendingRemoval.item;
   if (!type || !item) return;
-  const target = active.value === 'all' ? randomState : states[type];
+  const target = states[type];
   if (target.removing) return;
 
   target.removing = true;
@@ -366,14 +279,7 @@ async function confirmRemoval() {
       artistAlbum.error = '';
       artistAlbum.artistId = null;
     }
-    if (active.value === 'all') randomState.currentArtistAlbum = null;
-    if (active.value === 'all') {
-      const categoryState = states[type];
-      categoryState.count = Math.max((categoryState.count || 1) - 1, 0);
-      categoryState.latest = categoryState.latest.filter(latestItem => latestItem.id !== item.id);
-      randomState.count = libraryCategories.reduce((total, category) => total + (states[category.id].count || 0), 0);
-    }
-    if (target.count) await roll(active.value, false);
+    if (target.count) await roll(type, false);
   } catch (error) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
@@ -442,25 +348,38 @@ function savedDate(value) {
   <div class="app-shell">
     <AppHeader :profile="profile" :favorite-count="favoriteState.count" @open-favorites="emit('open-favorites')" @logout="emit('logout')" />
 
-    <nav class="library-tabs" aria-label="Spotify library" role="tablist">
+    <div class="library-navigation">
+      <nav class="library-tabs" aria-label="Spotify library" role="tablist">
+        <button
+          v-for="category in categories"
+          :key="category.id"
+          type="button"
+          role="tab"
+          :aria-selected="active === category.id"
+          :class="{ active: active === category.id }"
+          @click="active = category.id"
+        >
+          <span class="tab-symbol">{{ category.symbol }}</span>
+          <span>{{ category.label }}</span>
+          <small v-if="categoryCount(category.id) !== null">{{ categoryCount(category.id).toLocaleString() }}</small>
+        </button>
+      </nav>
       <button
-        v-for="category in categories"
-        :key="category.id"
+        class="icon-button randomize-button"
+        :class="{ spinning: randomizing }"
         type="button"
-        role="tab"
-        :aria-selected="active === category.id"
-        :class="{ active: active === category.id }"
-        @click="active = category.id"
+        aria-label="Pick a random tab and item"
+        title="Pick a random tab and item"
+        :disabled="randomizing"
+        @click="randomize"
       >
-        <span class="tab-symbol">{{ category.symbol }}</span>
-        <span>{{ category.label }}</span>
-        <small v-if="categoryCount(category.id) !== null">{{ categoryCount(category.id).toLocaleString() }}</small>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" /></svg>
       </button>
-    </nav>
+    </div>
 
-    <div v-if="state.loading" class="content-grid" :class="{ 'single-column': active === 'all' }" aria-live="polite">
+    <div v-if="state.loading" class="content-grid" aria-live="polite">
       <section class="feature-card skeleton-card"><div class="skeleton-art" /><div class="skeleton-lines"><i /><i /><i /></div></section>
-      <section v-if="active !== 'all'" class="recent-panel"><div class="skeleton-title" /><div v-for="n in 5" :key="n" class="skeleton-row"><i /><span /></div></section>
+      <section class="recent-panel"><div class="skeleton-title" /><div v-for="n in 5" :key="n" class="skeleton-row"><i /><span /></div></section>
     </div>
 
     <div v-else-if="state.error" class="error-panel" role="alert">
@@ -508,15 +427,15 @@ function savedDate(value) {
 
     <div v-else-if="state.loaded && !state.count" class="empty-panel">
       <span>{{ meta.symbol }}</span>
-      <h2>No {{ active === 'all' ? 'library items' : meta.label.toLowerCase() }} yet</h2>
+      <h2>No {{ meta.label.toLowerCase() }} yet</h2>
       <p>Save something in Spotify, then come back for a surprise.</p>
     </div>
 
-    <div v-else class="content-grid" :class="{ 'single-column': active === 'all' }">
+    <div v-else class="content-grid">
       <div class="feature-stack">
         <section class="feature-card">
         <div class="feature-topline">
-          <span>{{ active === 'all' ? 'Random anything' : `Random ${meta.singular}` }}</span>
+          <span>Random {{ meta.singular }}</span>
           <button
             v-if="state.previous"
             class="icon-button previous-button"
@@ -535,7 +454,7 @@ function savedDate(value) {
             <MediaArtwork :item="state.current" />
             <div class="feature-details">
               <div class="feature-copy">
-                <p class="feature-kicker">Soundice picked<span v-if="active === 'all'"> · {{ meta.label }}</span></p>
+                <p class="feature-kicker">Soundice picked</p>
                 <h2>{{ state.current.title }}</h2>
                 <p class="feature-subtitle">
                   <template v-if="itemType === 'albums' && state.current.artistLinks?.length">
@@ -632,7 +551,7 @@ function savedDate(value) {
         </section>
       </div>
 
-      <section v-if="active !== 'all'" class="recent-panel">
+      <section class="recent-panel">
         <div class="panel-heading"><div><p>{{ meta.recent }}</p><h2>Your latest {{ meta.label.toLowerCase() }}</h2></div><span>{{ state.latest.length }}</span></div>
         <div class="recent-list">
           <div v-for="(item, index) in state.latest" :key="`${item.id}-${index}`" class="recent-item">

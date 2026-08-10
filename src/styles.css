@@ -105,7 +105,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .icon-button { display: grid; place-items: center; width: 36px; height: 36px; margin-left: 4px; color: #7f828b; background: transparent; border: 0; border-radius: 10px; cursor: pointer; }
 .icon-button:hover { color: #fff; background: #17191f; }
 .icon-button svg { width: 18px; height: 18px; fill: currentColor; }
-.library-tabs { display: flex; gap: 6px; margin-top: 28px; padding: 6px; overflow-x: auto; background: #0e1014; border: 1px solid var(--line); border-radius: 16px; scrollbar-width: none; }
+.library-navigation { display: flex; align-items: center; gap: 8px; margin-top: 28px; }
+.library-navigation .library-tabs { flex: 1; min-width: 0; margin-top: 0; }
+.randomize-button { flex: 0 0 42px; width: 42px; height: 42px; margin: 0; color: var(--accent); background: #0e1014; border: 1px solid var(--line); }
+.randomize-button:hover { color: #ffb09a; background: #17191f; border-color: rgba(255,99,56,.38); }
+.randomize-button:disabled { cursor: wait; opacity: .65; }
+.randomize-button.spinning svg { animation: refresh-spin 700ms linear infinite; }
+.library-tabs { display: flex; gap: 6px; padding: 6px; overflow-x: auto; background: #0e1014; border: 1px solid var(--line); border-radius: 16px; scrollbar-width: none; }
 .library-tabs::-webkit-scrollbar { display: none; }
 .library-tabs button { display: flex; align-items: center; justify-content: center; flex: 1 0 150px; gap: 9px; min-height: 48px; padding: 0 16px; color: #7f828b; background: transparent; border: 0; border-radius: 11px; cursor: pointer; font-size: 13px; font-weight: 680; transition: color 150ms ease, background 150ms ease; }
 .library-tabs button:hover { color: #d9d7d3; }
@@ -114,7 +120,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .library-tabs .active small { color: #9b9da4; }
 .tab-symbol { width: 20px; color: var(--accent); font-size: 17px; text-align: center; }
 .content-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, .85fr); gap: 20px; padding: 20px 0 58px; }
-.content-grid.single-column { grid-template-columns: 1fr; }
 .feature-stack { display: flex; min-width: 0; flex-direction: column; gap: 20px; }
 .feature-card, .artist-album-card, .recent-panel { overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
 .feature-card { display: flex; min-height: 510px; flex-direction: column; padding: 22px; }
@@ -296,6 +301,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .swap-enter-from { opacity: 0; transform: translateY(8px); }
 .swap-leave-to { opacity: 0; transform: translateY(-6px); }
 @keyframes dice-spin { 50% { transform: rotate(110deg) scale(.84); } 100% { transform: rotate(180deg); } }
+@keyframes refresh-spin { to { transform: rotate(360deg); } }
 @keyframes boot { to { transform: translateX(110%); } }
 @keyframes shimmer { to { background-position-x: -200%; } }
 
@@ -340,7 +346,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .category-chip:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .landing-footer { gap: 15px; flex-direction: column; }
   .account-copy { display: none; }
-  .library-tabs { margin-top: 20px; margin-right: -14px; border-radius: 14px 0 0 14px; border-right: 0; }
+  .library-navigation { margin-top: 20px; }
+  .library-tabs { margin-right: 0; border-radius: 14px 0 0 14px; border-right: 0; }
   .library-tabs button { flex-basis: 128px; min-height: 45px; padding: 0 12px; }
   .content-grid { gap: 14px; padding-top: 14px; }
   .feature-card { min-height: auto; padding: 15px; border-radius: 20px; }
