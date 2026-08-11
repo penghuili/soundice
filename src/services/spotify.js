@@ -177,7 +177,7 @@ export async function getRandomItem(type, count) {
 
 export async function getRandomArtistAlbum(artistId) {
   if (!artistId) return null;
-  const path = `/artists/${encodeURIComponent(artistId)}/albums?include_groups=album,single&limit=1`;
+  const path = `/artists/${encodeURIComponent(artistId)}/albums?include_groups=album&limit=1`;
   const firstPage = await spotifyFetch(`${path}&offset=0`);
   if (!firstPage.total) return null;
 

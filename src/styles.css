@@ -197,15 +197,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .feature-retry h2 { margin: 18px 0 7px; font-size: 25px; }
 .feature-retry p { max-width: 360px; margin: 0; color: var(--muted); font-size: 13px; }
 .feature-retry .roll-button { min-width: 180px; margin-top: 24px; }
-.artist-album-card { padding: 22px; }
+.artist-album-card { display: flex; min-height: 510px; flex-direction: column; padding: 22px; }
 .artist-album-card .feature-topline { margin-bottom: 18px; }
 .album-symbol { color: var(--accent); font-size: 17px; }
-.artist-album-content { display: grid; grid-template-columns: 156px minmax(0, 1fr); align-items: center; gap: 24px; }
-.artist-album-content .artwork { border-radius: 14px; }
-.artist-album-details { min-width: 0; }
-.artist-album-details h2 { display: -webkit-box; margin: 0; overflow: hidden; font-size: 26px; line-height: 1.08; letter-spacing: -.035em; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-.artist-album-details .feature-subtitle { margin-top: 9px; font-size: 13px; }
-.artist-album-actions { margin-top: 18px; }
+.artist-album-content { display: grid; flex: 1; min-height: 0; grid-template-columns: minmax(260px, 1fr) minmax(220px, .9fr); gap: clamp(25px, 4vw, 48px); align-items: center; }
+.artist-album-content .artwork { border-radius: 18px; }
+.artist-album-details { display: flex; min-width: 0; min-height: 0; flex-direction: column; align-self: stretch; gap: 16px; }
+.artist-album-details h2 { display: -webkit-box; margin: 0; overflow: hidden; color: #f6f4f0; font-size: clamp(28px, 3vw, 42px); line-height: 1.04; letter-spacing: -.045em; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.artist-album-details .feature-subtitle { margin-top: 0; color: #c7c5c2; font-size: 15px; line-height: 1.45; }
+.artist-album-actions { margin-top: auto; }
 .artist-album-roll { width: 100%; }
 .artist-album-roll:disabled { cursor: wait; opacity: .65; }
 .artist-album-actions .spotify-action { min-height: 44px; }
@@ -363,9 +363,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .feature-details h2 { font-size: 34px; }
   .feature-actions { margin-top: auto; }
   .feature-secondary-actions { gap: 7px; }
-  .artist-album-card { padding: 15px; border-radius: 20px; }
-  .artist-album-content { grid-template-columns: 112px minmax(0, 1fr); gap: 16px; }
-  .artist-album-details h2 { font-size: 22px; }
+  .artist-album-card { min-height: auto; padding: 15px; border-radius: 20px; }
+  .artist-album-content { grid-template-columns: 1fr; gap: 25px; }
+  .artist-album-details { min-height: 410px; gap: 14px; padding: 0 5px 5px; }
+  .artist-album-details h2 { font-size: 34px; }
   .artist-album-details .feature-kicker { margin-bottom: 8px; }
   .artist-album-actions { margin-top: 14px; }
   .artist-album-roll { min-height: 42px; }
