@@ -34,8 +34,8 @@ const { updateAvailable, applyAppUpdate } = useAppUpdate();
         class="icon-button randomize-button"
         :class="{ spinning: randomizing }"
         type="button"
-        aria-label="Pick a random tab and item"
-        title="Pick a random tab and item"
+        aria-label="Pick a random album or artist"
+        title="Pick a random album or artist"
         :disabled="randomizing"
         @click="$emit('randomize')"
       >

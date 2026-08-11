@@ -204,8 +204,9 @@ async function randomize() {
   if (randomizing.value) return;
   randomizing.value = true;
   try {
-    await Promise.all(libraryCategories.map(category => load(category.id, false)));
-    const available = libraryCategories.filter(category => states[category.id].count);
+    const randomizeCategories = libraryCategories.filter(category => ['albums', 'artists'].includes(category.id));
+    await Promise.all(randomizeCategories.map(category => load(category.id, false)));
+    const available = randomizeCategories.filter(category => states[category.id].count);
     if (!available.length) return;
     const type = available[Math.floor(Math.random() * available.length)].id;
     await roll(type);
