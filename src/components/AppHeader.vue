@@ -1,5 +1,6 @@
 <script setup>
 import BrandMark from './BrandMark.vue';
+import { useAppUpdate } from '../composables/useAppUpdate.js';
 
 defineProps({
   favoriteCount: { type: Number, default: null },
@@ -9,12 +10,25 @@ defineProps({
 });
 
 defineEmits(['open-favorites', 'logout', 'randomize']);
+
+const { updateAvailable, applyAppUpdate } = useAppUpdate();
 </script>
 
 <template>
   <header class="app-header">
     <BrandMark />
     <div class="account-menu">
+      <button
+        v-if="updateAvailable"
+        class="icon-button update-button"
+        type="button"
+        aria-label="New version — tap to refresh"
+        title="New version — tap to refresh"
+        @click="applyAppUpdate"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" fill="currentColor" /></svg>
+        <span class="update-dot" aria-hidden="true"></span>
+      </button>
       <button
         v-if="showRandomize"
         class="icon-button randomize-button"

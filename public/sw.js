@@ -22,6 +22,9 @@ self.addEventListener('fetch', (event) => {
   // Never cache the service worker script itself, or it can block its own updates.
   if (url.pathname === '/sw.js') return;
 
+  // Version probe must always hit the network for the in-app update button.
+  if (url.pathname === '/version.json') return;
+
   // API responses are user-specific and must always come from the network.
   if (url.pathname.startsWith('/api/')) return;
 

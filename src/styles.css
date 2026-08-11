@@ -94,6 +94,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .app-shell { width: min(1180px, calc(100% - 48px)); min-height: 100vh; margin: 0 auto; }
 .app-header { display: flex; align-items: center; justify-content: space-between; height: 88px; border-bottom: 1px solid var(--line); }
 .account-menu { display: flex; align-items: center; gap: 10px; }
+.update-button { position: relative; margin: 0 6px 0 0; color: #fde68a; background: linear-gradient(135deg, rgba(245,158,11,.22), rgba(251,113,133,.1)); border: 1px solid rgba(251,191,36,.4); animation: nav-update-pulse 1.8s ease-in-out infinite; }
+.update-button:hover { color: #fff7d6; background: linear-gradient(135deg, rgba(245,158,11,.32), rgba(251,113,133,.16)); border-color: rgba(251,191,36,.55); }
+.update-dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border-radius: 999px; background: #fbbf24; box-shadow: 0 0 0 2px #0e1014, 0 0 10px rgba(251,191,36,.8); }
+@keyframes nav-update-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 0 4px rgba(251,191,36,.14); }
+}
 .favorites-shortcut { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 0 11px; color: #aaa8a4; background: rgba(255,255,255,.035); border: 1px solid var(--line); border-radius: 11px; cursor: pointer; font-size: 11px; font-weight: 720; transition: color 150ms ease, background 150ms ease, border-color 150ms ease; }
 .favorites-shortcut:hover, .favorites-shortcut.active { color: #ffb09a; background: rgba(255,99,56,.1); border-color: rgba(255,99,56,.38); }
 .favorites-shortcut svg { width: 15px; height: 15px; fill: currentColor; }
