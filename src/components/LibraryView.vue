@@ -514,19 +514,24 @@ function savedDate(value) {
                   <template v-else>{{ artistAlbum.current.subtitle }}</template>
                 </p>
                 <p v-if="artistAlbum.current.detail" class="feature-meta">{{ artistAlbum.current.detail }}</p>
-                <button class="secondary-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
-                  {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
-                </button>
-                <button class="favorite-toggle" :class="{ active: isFavorite('albums', artistAlbum.current) }" type="button" :aria-pressed="isFavorite('albums', artistAlbum.current)" @click="toggleFavorite('albums', artistAlbum.current)">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
-                  {{ isFavorite('albums', artistAlbum.current) ? 'Saved to favorites' : 'Save album to favorites' }}
-                </button>
-                <a v-if="artistAlbum.current.url" class="spotify-link" :href="artistAlbum.current.url" target="_blank" rel="noreferrer">Open album in Spotify ↗</a>
+                <div class="feature-actions artist-album-actions">
+                  <button class="primary-button roll-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
+                    <img :class="{ spinning: artistAlbum.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
+                    {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
+                  </button>
+                  <a v-if="artistAlbum.current.url" class="spotify-link spotify-action" :href="artistAlbum.current.url" target="_blank" rel="noreferrer">Open album in Spotify ↗</a>
+                  <div class="feature-secondary-actions">
+                    <button class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite('albums', artistAlbum.current) }" type="button" :aria-pressed="isFavorite('albums', artistAlbum.current)" @click="toggleFavorite('albums', artistAlbum.current)">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+                      {{ isFavorite('albums', artistAlbum.current) ? 'Favorited' : 'Favorite' }}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <div v-else class="artist-album-empty">
               <p>{{ artistAlbum.error || 'No album landed for this artist.' }}</p>
-              <button class="secondary-button" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
+              <button class="primary-button roll-button" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
                 {{ artistAlbum.rolling ? 'Trying…' : 'Try an album' }}
               </button>
             </div>

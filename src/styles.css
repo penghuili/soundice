@@ -205,9 +205,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .artist-album-details { min-width: 0; }
 .artist-album-details h2 { display: -webkit-box; margin: 0; overflow: hidden; font-size: 26px; line-height: 1.08; letter-spacing: -.035em; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .artist-album-details .feature-subtitle { margin-top: 9px; font-size: 13px; }
-.artist-album-roll { width: 100%; margin-top: 18px; }
+.artist-album-actions { margin-top: 18px; }
+.artist-album-roll { width: 100%; }
 .artist-album-roll:disabled { cursor: wait; opacity: .65; }
-.artist-album-details .spotify-link { padding-bottom: 0; }
+.artist-album-actions .spotify-action { min-height: 44px; }
+.artist-album-details .favorite-toggle { width: auto; margin-top: 0; }
 .artist-album-empty { display: flex; min-height: 156px; flex-direction: column; align-items: center; justify-content: center; gap: 17px; color: var(--muted); text-align: center; }
 .artist-album-empty p { margin: 0; font-size: 13px; }
 .recent-panel { min-height: 510px; padding: 22px 10px 12px; }
@@ -365,7 +367,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .artist-album-content { grid-template-columns: 112px minmax(0, 1fr); gap: 16px; }
   .artist-album-details h2 { font-size: 22px; }
   .artist-album-details .feature-kicker { margin-bottom: 8px; }
-  .artist-album-roll { min-height: 42px; margin-top: 14px; }
+  .artist-album-actions { margin-top: 14px; }
+  .artist-album-roll { min-height: 42px; }
   .recent-panel { padding-top: 18px; border-radius: 20px; }
   .favorites-page { margin-top: 14px; padding: 17px 15px; border-radius: 20px; }
   .favorites-heading { align-items: flex-start; }
