@@ -253,11 +253,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .error-panel p { margin-top: 4px; color: var(--muted); font-size: 12px; }
 .error-panel button { margin-left: auto; }
 .app-footer { display: flex; align-items: center; justify-content: space-between; padding: 28px 0 36px; color: #5f626b; border-top: 1px solid var(--line); font-size: 11px; }
-.app-footer p { margin: 0; }
-.app-footer strong { color: #9d9fa6; }
-.footer-account { display: flex; flex-direction: column; gap: 4px; line-height: 1.25; }
-.footer-account span { color: #6f727b; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
-.footer-account strong { max-width: 220px; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
 .app-footer div { display: flex; gap: 22px; }
 .app-footer a:hover { color: #fff; }
 .favorites-page { margin: 20px 0 58px; padding: 26px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
