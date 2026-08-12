@@ -197,7 +197,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .feature-retry h2 { margin: 18px 0 7px; font-size: 25px; }
 .feature-retry p { max-width: 360px; margin: 0; color: var(--muted); font-size: 13px; }
 .feature-retry .roll-button { min-width: 180px; margin-top: 24px; }
-.artist-album-card { display: flex; min-height: 510px; flex-direction: column; padding: 22px; }
+.artist-album-card { display: flex; min-height: 510px; flex-direction: column; padding: 22px; order: -1; }
 .artist-album-card .feature-topline { margin-bottom: 18px; }
 .album-symbol { color: var(--accent); font-size: 17px; }
 .artist-album-content { display: grid; flex: 1; min-height: 0; grid-template-columns: minmax(260px, 1fr) minmax(220px, .9fr); gap: clamp(25px, 4vw, 48px); align-items: center; }
