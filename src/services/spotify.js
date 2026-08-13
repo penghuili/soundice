@@ -50,6 +50,17 @@ function formatFollowers(value) {
   return `${new Intl.NumberFormat('en', { notation: 'compact' }).format(value)} followers`;
 }
 
+function releaseKind(item) {
+  if (item?.album_type === 'compilation') return 'Compilation';
+  if (item?.album_type === 'single') return (item.total_tracks || 0) >= 4 ? 'EP' : 'Single';
+  return null;
+}
+
+function isAlbumOrEp(item) {
+  if (!item) return false;
+  return item.album_type !== 'single' || (item.total_tracks || 0) >= 4;
+}
+
 function normalizeAlbum(item, addedAt) {
   return {
     id: item.id,
@@ -57,7 +68,7 @@ function normalizeAlbum(item, addedAt) {
     subtitle: artistNames(item.artists),
     artistLinks: artistLinks(item.artists),
     albumTitle: item.name,
-    detail: [item.release_date?.slice(0, 4), `${item.total_tracks || 0} tracks`]
+    detail: [item.release_date?.slice(0, 4), releaseKind(item), `${item.total_tracks || 0} tracks`]
       .filter(Boolean)
       .join(' · '),
     image: imageUrl(item),
@@ -179,13 +190,22 @@ export async function getRandomItem(type, count) {
 
 export async function getRandomArtistAlbum(artistId) {
   if (!artistId) return null;
-  const path = `/artists/${encodeURIComponent(artistId)}/albums?include_groups=album&limit=1`;
+  const path = `/artists/${encodeURIComponent(artistId)}/albums?include_groups=album,single&limit=50`;
   const firstPage = await spotifyFetch(`${path}&offset=0`);
-  if (!firstPage.total) return null;
+  const total = firstPage.total || 0;
+  if (!total) return null;
 
-  const offset = Math.floor(Math.random() * firstPage.total);
-  const data = offset ? await spotifyFetch(`${path}&offset=${offset}`) : firstPage;
-  return data.items?.[0] ? normalizeAlbum(data.items[0]) : null;
+  const pageCount = Math.ceil(total / 50);
+  const start = Math.floor(Math.random() * pageCount);
+  for (let step = 0; step < pageCount; step += 1) {
+    const pageIndex = (start + step) % pageCount;
+    const data = pageIndex === 0 ? firstPage : await spotifyFetch(`${path}&offset=${pageIndex * 50}`);
+    const candidates = (data.items || []).filter(isAlbumOrEp);
+    if (candidates.length) {
+      return normalizeAlbum(candidates[Math.floor(Math.random() * candidates.length)]);
+    }
+  }
+  return null;
 }
 
 export async function removeItem(type, item) {

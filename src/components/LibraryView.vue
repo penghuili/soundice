@@ -306,12 +306,12 @@ async function rollArtistAlbum(artist = states.artists.current, animate = true) 
     if (sameArtist && artistAlbum.current) artistAlbum.previous = artistAlbum.current;
     else artistAlbum.previous = null;
     artistAlbum.current = album;
-    if (!album) artistAlbum.error = `Spotify did not return an album for ${artist.title}.`;
+    if (!album) artistAlbum.error = `Spotify did not return an album or EP for ${artist.title}.`;
   } catch (error) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else if (artistAlbum.artistId === artistId) {
-      artistAlbum.error = formatError(error, 'Spotify could not pick an album right now.');
+      artistAlbum.error = formatError(error, 'Spotify could not pick an album or EP right now.');
     }
   } finally {
     if (artistAlbum.artistId === artistId) artistAlbum.rolling = false;
@@ -497,7 +497,7 @@ function savedDate(value) {
 
         <section v-if="itemType === 'artists'" class="artist-album-card">
           <div class="feature-topline">
-            <span>Random album by {{ state.current?.title }}</span>
+            <span>Random album or EP by {{ state.current?.title }}</span>
             <button
               v-if="artistAlbum.previous"
               class="icon-button previous-button"
@@ -529,9 +529,9 @@ function savedDate(value) {
                 <div class="feature-actions artist-album-actions">
                   <button class="primary-button roll-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
                     <img :class="{ spinning: artistAlbum.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
-                    {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album' }}
+                    {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album or EP' }}
                   </button>
-                  <a v-if="artistAlbum.current.url" class="spotify-link spotify-action" :href="artistAlbum.current.url" target="_blank" rel="noreferrer">Open album in Spotify ↗</a>
+                  <a v-if="artistAlbum.current.url" class="spotify-link spotify-action" :href="artistAlbum.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
                   <div class="feature-secondary-actions">
                     <button class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite('albums', artistAlbum.current) }" type="button" :aria-pressed="isFavorite('albums', artistAlbum.current)" @click="toggleFavorite('albums', artistAlbum.current)">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
@@ -542,9 +542,9 @@ function savedDate(value) {
               </div>
             </div>
             <div v-else class="artist-album-empty">
-              <p>{{ artistAlbum.error || 'No album landed for this artist.' }}</p>
+              <p>{{ artistAlbum.error || 'No album or EP landed for this artist.' }}</p>
               <button class="primary-button roll-button" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
-                {{ artistAlbum.rolling ? 'Trying…' : 'Try an album' }}
+                {{ artistAlbum.rolling ? 'Trying…' : 'Try an album or EP' }}
               </button>
             </div>
           </Transition>

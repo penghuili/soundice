@@ -16,12 +16,13 @@ function artistList(artists) {
 
 export function artistAiModeUrl(name) {
   const artist = String(name || '').trim();
-  return artist ? aiModeUrl(`介绍这个歌手/乐队：${artist}`) : null;
+  return artist ? aiModeUrl(`介绍这个歌手/乐队：${artist}。这个歌手/乐队有什么有意思的信息`) : null;
 }
 
 export function albumAiModeUrl(title, artists) {
   const album = String(title || '').trim();
   if (!album) return null;
   const who = artistList(artists);
-  return aiModeUrl(who ? `介绍这张专辑：${album}，这是${who}的专辑` : `介绍这张专辑：${album}`);
+  const intro = who ? `介绍这张专辑：${album}，这是${who}的专辑` : `介绍这张专辑：${album}`;
+  return aiModeUrl(`${intro}。这张专辑有什么有意思的信息`);
 }

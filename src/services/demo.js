@@ -11,10 +11,26 @@ const names = {
   podcasts: ['The Memory Palace', '99% Invisible', 'Search Engine', 'Twenty Thousand Hertz'],
 };
 const artistAlbums = [
-  ['Sometimes I Might Be Introvert', 'GREY Area', 'No Thank You'],
-  ['Mordechai', 'Con Todo El Mundo', 'A LA SALA'],
-  ['Jubilee', 'Soft Sounds from Another Planet', 'For Melancholy Brunettes (& sad women)'],
-  ['Lahai', 'Process', 'Dual'],
+  [
+    { title: 'Sometimes I Might Be Introvert', year: 2021, tracks: 19 },
+    { title: 'GREY Area', year: 2019, tracks: 11 },
+    { title: 'Drop 6', year: 2022, tracks: 5, kind: 'EP' },
+  ],
+  [
+    { title: 'Mordechai', year: 2020, tracks: 10 },
+    { title: 'Con Todo El Mundo', year: 2018, tracks: 10 },
+    { title: 'Texas Sun', year: 2020, tracks: 4, kind: 'EP' },
+  ],
+  [
+    { title: 'Jubilee', year: 2021, tracks: 10 },
+    { title: 'Soft Sounds from Another Planet', year: 2017, tracks: 10 },
+    { title: 'June', year: 2016, tracks: 5, kind: 'EP' },
+  ],
+  [
+    { title: 'Lahai', year: 2023, tracks: 14 },
+    { title: 'Process', year: 2017, tracks: 9 },
+    { title: 'Dual', year: 2013, tracks: 6, kind: 'EP' },
+  ],
 ];
 const counts = { albums: 286, artists: 94, songs: 1248, podcasts: 67 };
 const failRandomPick = import.meta.env.DEV && new URLSearchParams(window.location.search).get('demo') === 'error';
@@ -56,14 +72,15 @@ export const demoService = {
     const artistIndex = Number(artistId?.split('-').at(-1)) || 0;
     const albums = artistAlbums[artistIndex % artistAlbums.length];
     const albumIndex = Math.floor(Math.random() * albums.length);
+    const album = albums[albumIndex];
     return {
       ...item('albums', artistIndex),
       id: `${artistId}-album-${albumIndex}`,
-      title: albums[albumIndex],
+      title: album.title,
       subtitle: names.artists[artistIndex % names.artists.length],
       artistLinks: [{ id: artistId, name: names.artists[artistIndex % names.artists.length], url: 'https://open.spotify.com/' }],
-      albumTitle: albums[albumIndex],
-      detail: `${2018 + albumIndex * 3} · ${10 + albumIndex} tracks`,
+      albumTitle: album.title,
+      detail: [album.year, album.kind, `${album.tracks} tracks`].filter(Boolean).join(' · '),
     };
   },
   async removeItem() {
