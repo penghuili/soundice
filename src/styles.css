@@ -237,10 +237,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .recent-item > div:nth-child(2) { min-width: 0; }
 .recent-item strong, .recent-item span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .recent-item strong { color: #d9d7d4; font-size: 12px; }
-.recent-item span { margin-top: 5px; color: #686b74; font-size: 10px; }
-:is(.recent-item, .favorite-item-copy) .recent-artist-line { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 6px; color: #9b9da6; font-size: 12px; line-height: 1.25; white-space: normal; }
+.recent-item span { margin-top: 5px; color: #858892; font-size: 11px; }
+:is(.recent-item, .favorite-item-copy) .recent-artist-line { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 6px; color: #b0b2bb; font-size: 13px; line-height: 1.3; white-space: normal; }
 :is(.recent-item, .favorite-item-copy) .recent-artist-line .artist-name-with-link { display: inline-flex; min-width: 0; align-items: center; gap: 5px; margin: 0; }
-:is(.recent-item, .favorite-item-copy) .recent-artist-line .ai-lookup-link { min-width: 0; align-items: center; gap: 4px; color: #a7a9b2; font-size: 12px; line-height: 1.25; }
+:is(.recent-item, .favorite-item-copy) .recent-artist-line .ai-lookup-link { min-width: 0; align-items: center; gap: 4px; color: #b0b2bb; font-size: 13px; line-height: 1.3; }
 :is(.recent-item, .favorite-item-copy) .recent-artist-line .ai-lookup-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 :is(.recent-item, .favorite-item-copy) .recent-artist-line .gemini-mark { width: 9px; height: 9px; }
 :is(.recent-item, .favorite-item-copy) .recent-artist-line .artist-spotify-link { display: inline-flex; flex: 0 0 auto; align-items: center; margin: 0; padding: 3px 6px; color: #8ee7a6; background: rgba(30, 215, 96, .1); border: 1px solid rgba(30, 215, 96, .24); border-radius: 999px; font-size: 9px; font-weight: 750; line-height: 1; letter-spacing: .01em; }
@@ -287,7 +287,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .favorite-item-copy { min-width: 0; }
 .favorite-item-copy strong, .favorite-item-copy > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .favorite-item-copy strong { color: #d9d7d4; font-size: 12px; }
-.favorite-item-copy > span { margin-top: 5px; color: #686b74; font-size: 10px; }
+.favorite-item-copy > span { margin-top: 5px; color: #858892; font-size: 11px; }
 .favorite-item-copy .favorite-type { margin: 0 0 4px; color: var(--accent); font-size: 9px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
 .favorites-empty { display: flex; min-height: 270px; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 .favorites-empty > span { color: var(--accent); font-size: 38px; }
