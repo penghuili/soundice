@@ -23,8 +23,8 @@ const favoriteError = ref('');
 
 onMounted(() => loadFavorites());
 
-async function loadFavorites(force = false) {
-  if (state.loaded && !force) return;
+async function loadFavorites() {
+  if (state.loaded) return;
   state.loading = true;
   state.error = '';
   favoriteError.value = '';
@@ -105,7 +105,6 @@ function formatError(error, fallback) {
 <template>
   <div class="app-shell">
     <AppHeader
-      :favorite-count="state.loaded ? state.items.length : null"
       favorites-active
       @logout="$emit('logout')"
     />
@@ -114,12 +113,6 @@ function formatError(error, fallback) {
       <button class="favorites-back-tab" type="button" aria-label="Back to library" title="Back to library" @click="$emit('open-library')">
         <span class="tab-symbol" aria-hidden="true">←</span>
       </button>
-      <div class="favorites-nav-actions">
-        <button class="icon-button" type="button" aria-label="Refresh favorites" title="Refresh favorites" :disabled="state.loading" @click="loadFavorites(true)">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" /></svg>
-        </button>
-        <span class="favorites-count">{{ state.loaded ? state.items.length : '—' }}</span>
-      </div>
     </nav>
 
     <section class="favorites-page">
@@ -132,7 +125,7 @@ function formatError(error, fallback) {
         <span>!</span>
         <h2>Favorites could not load</h2>
         <p>{{ state.error }}</p>
-        <button class="secondary-button" type="button" @click="loadFavorites(true)">Try again</button>
+        <button class="secondary-button" type="button" @click="state.loaded = false; loadFavorites()">Try again</button>
       </div>
       <div v-else-if="!state.items.length" class="favorites-empty">
         <span>★</span>
