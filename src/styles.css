@@ -137,10 +137,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .feature-copy { min-width: 0; min-height: 0; flex: 1 1 auto; }
 .feature-subtitle { margin: 13px 0 0; color: #c7c5c2; font-size: 15px; line-height: 1.45; }
 .ai-lookup-link { display: inline-flex; align-items: baseline; gap: 5px; max-width: 100%; color: inherit; font: inherit; letter-spacing: inherit; line-height: inherit; text-align: inherit; text-decoration: none; }
-.ai-lookup-text { min-width: 0; text-decoration: underline; text-decoration-color: rgba(255,255,255,.35); text-underline-offset: 3px; transition: color 150ms ease, text-decoration-color 150ms ease; }
-.ai-lookup-link:hover .ai-lookup-text { color: #fff; text-decoration-color: var(--accent); }
+.ai-lookup-text { min-width: 0; transition: color 150ms ease; }
+.ai-lookup-link:hover .ai-lookup-text { color: #fff; }
 .ai-lookup-link.heading { align-items: flex-start; gap: 8px; }
-.ai-lookup-link.heading .ai-lookup-text { text-underline-offset: 0.14em; text-decoration-color: rgba(255,255,255,.28); }
 .ai-lookup-link.compact { display: flex; align-items: center; min-width: 0; }
 .ai-lookup-link.compact .ai-lookup-text { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gemini-mark { flex: 0 0 auto; width: 13px; height: 13px; translate: 0 1px; }
