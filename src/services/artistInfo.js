@@ -16,7 +16,7 @@ function artistList(artists) {
 
 export function artistAiModeUrl(name) {
   const artist = String(name || '').trim();
-  return artist ? aiModeUrl(`介绍这个歌手：${artist}`) : null;
+  return artist ? aiModeUrl(`介绍这个歌手/乐队：${artist}`) : null;
 }
 
 export function albumAiModeUrl(title, artists) {
