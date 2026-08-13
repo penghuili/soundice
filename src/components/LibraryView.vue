@@ -574,7 +574,7 @@ function savedDate(value) {
               />
               <a v-else-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer"><strong>{{ item.title }}</strong></a>
               <strong v-else>{{ item.title }}</strong>
-              <span>
+              <span class="recent-artist-line">
                 <ArtistNames
                   v-if="item.artistLinks?.length"
                   :artists="item.artistLinks"

@@ -220,7 +220,7 @@ function formatError(error, fallback) {
                   :href="albumAiModeUrl(favorite.item.title, favorite.item.artistLinks)"
                   :label="favorite.item.title"
                 />
-                <span>
+                <span class="recent-artist-line">
                   <ArtistNames
                     v-if="favorite.item.artistLinks?.length"
                     :artists="favorite.item.artistLinks"
