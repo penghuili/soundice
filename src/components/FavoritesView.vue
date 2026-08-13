@@ -106,14 +106,9 @@ function formatError(error, fallback) {
   <div class="app-shell">
     <AppHeader
       favorites-active
+      @open-library="$emit('open-library')"
       @logout="$emit('logout')"
     />
-
-    <nav class="library-tabs favorites-tabs" aria-label="Favorites navigation">
-      <button class="favorites-back-tab" type="button" aria-label="Back to library" title="Back to library" @click="$emit('open-library')">
-        <span class="tab-symbol" aria-hidden="true">←</span>
-      </button>
-    </nav>
 
     <section class="favorites-page">
       <div v-if="state.loading" class="favorites-empty" aria-live="polite">

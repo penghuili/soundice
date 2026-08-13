@@ -93,6 +93,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 /* App */
 .app-shell { width: min(1180px, calc(100% - 48px)); min-height: 100vh; margin: 0 auto; }
 .app-header { display: flex; align-items: center; justify-content: space-between; height: 88px; border-bottom: 1px solid var(--line); }
+.header-back { display: inline-flex; align-items: center; gap: 11px; margin: 0; padding: 0; color: inherit; background: transparent; border: 0; cursor: pointer; font-size: 19px; font-weight: 750; letter-spacing: -0.03em; }
+.header-back-symbol { display: grid; place-items: center; flex: 0 0 auto; width: 32px; height: 32px; color: #9b9da6; border-radius: 10px; font-size: 20px; line-height: 1; transition: color 150ms ease, background 150ms ease; }
+.header-back:hover { color: #fff; }
+.header-back:hover .header-back-symbol { color: #fff; background: #17191f; }
 .account-menu { display: flex; align-items: center; gap: 10px; }
 .update-button { position: relative; margin: 0 6px 0 0; color: #fde68a; background: linear-gradient(135deg, rgba(245,158,11,.22), rgba(251,113,133,.1)); border: 1px solid rgba(251,191,36,.4); animation: nav-update-pulse 1.8s ease-in-out infinite; }
 .update-button:hover { color: #fff7d6; background: linear-gradient(135deg, rgba(245,158,11,.32), rgba(251,113,133,.16)); border-color: rgba(251,191,36,.55); }
@@ -272,10 +276,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .app-footer { display: flex; align-items: center; justify-content: space-between; padding: 28px 0 36px; color: #5f626b; border-top: 1px solid var(--line); font-size: 11px; }
 .app-footer div { display: flex; gap: 22px; }
 .app-footer a:hover { color: #fff; }
-.favorites-tabs { margin-top: 28px; }
-.library-tabs .favorites-back-tab { display: grid; flex: 0 0 48px; place-items: center; width: 48px; min-height: 48px; padding: 0; color: #9b9da6; background: transparent; border: 0; border-radius: 11px; cursor: pointer; }
-.library-tabs .favorites-back-tab:hover { color: #fff; background: #202228; }
-.favorites-back-tab .tab-symbol { color: currentColor; font-size: 20px; }
 .favorites-page { margin: 20px 0 58px; }
 .favorites-body { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, .85fr); gap: 20px; }
 .favorites-random-card { min-height: 510px; }

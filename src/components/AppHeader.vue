@@ -9,14 +9,25 @@ defineProps({
   randomizing: Boolean,
 });
 
-defineEmits(['open-favorites', 'logout', 'randomize']);
+defineEmits(['open-favorites', 'open-library', 'logout', 'randomize']);
 
 const { updateAvailable, applyAppUpdate } = useAppUpdate();
 </script>
 
 <template>
   <header class="app-header">
-    <BrandMark />
+    <button
+      v-if="favoritesActive"
+      class="header-back"
+      type="button"
+      aria-label="Back to library"
+      title="Back to library"
+      @click="$emit('open-library')"
+    >
+      <span class="header-back-symbol" aria-hidden="true">←</span>
+      <span>Library</span>
+    </button>
+    <BrandMark v-else />
     <div class="account-menu">
       <button
         v-if="updateAvailable"
