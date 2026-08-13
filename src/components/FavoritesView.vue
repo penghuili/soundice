@@ -1,10 +1,8 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
 
-import { useArtistBio } from '../composables/useArtistBio.js';
 import { AuthRequiredError } from '../services/auth.js';
 import AppHeader from './AppHeader.vue';
-import ArtistBioDialog from './ArtistBioDialog.vue';
 import ArtistNames from './ArtistNames.vue';
 import MediaArtwork from './MediaArtwork.vue';
 
@@ -20,7 +18,6 @@ const types = {
 const state = reactive({ items: [], loading: false, loaded: false, error: '' });
 const rollState = reactive({ current: null, previous: null, rolling: false });
 const favoriteError = ref('');
-const { selectedArtist, openArtist, closeArtist } = useArtistBio();
 
 onMounted(() => loadFavorites());
 
@@ -172,7 +169,6 @@ function formatError(error, fallback) {
                     v-if="rollState.current.item.artistLinks?.length"
                     :artists="rollState.current.item.artistLinks"
                     :fallback="rollState.current.item.subtitle"
-                    @select="openArtist"
                   />
                   <template v-else>{{ rollState.current.item.subtitle }}</template>
                 </p>
@@ -221,7 +217,6 @@ function formatError(error, fallback) {
                     v-if="favorite.item.artistLinks?.length"
                     :artists="favorite.item.artistLinks"
                     :fallback="favorite.item.subtitle || favorite.item.detail"
-                    @select="openArtist"
                   />
                   <template v-else>{{ favorite.item.subtitle || favorite.item.detail }}</template>
                 </span>
@@ -235,8 +230,6 @@ function formatError(error, fallback) {
       </div>
       <p v-if="favoriteError" class="favorites-error" role="alert">{{ favoriteError }}</p>
     </section>
-
-    <ArtistBioDialog v-if="selectedArtist" :artist="selectedArtist" @close="closeArtist" />
 
     <footer class="app-footer">
       <div>
