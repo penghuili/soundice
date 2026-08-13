@@ -110,6 +110,18 @@ function formatError(error, fallback) {
       @logout="$emit('logout')"
     />
 
+    <nav class="library-tabs favorites-tabs" aria-label="Favorites navigation">
+      <button class="favorites-back-tab" type="button" @click="$emit('open-library')">
+        <span class="tab-symbol">←</span>
+        <span>Back to library</span>
+      </button>
+      <div class="favorites-current-tab" aria-current="page">
+        <span class="tab-symbol">★</span>
+        <span>Favorites</span>
+        <small v-if="state.loaded">{{ state.items.length }}</small>
+      </div>
+    </nav>
+
     <section class="favorites-page">
       <div class="favorites-heading">
         <div>
@@ -118,7 +130,6 @@ function formatError(error, fallback) {
           <p>Keep the albums you want to find again.</p>
         </div>
         <div class="favorites-heading-actions">
-          <button class="secondary-button favorites-back-button" type="button" @click="$emit('open-library')">Back to library</button>
           <button class="icon-button" type="button" aria-label="Refresh favorites" title="Refresh favorites" :disabled="state.loading" @click="loadFavorites(true)">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" /></svg>
           </button>
@@ -164,7 +175,6 @@ function formatError(error, fallback) {
               <MediaArtwork :item="rollState.current.item" />
               <div class="feature-details">
                 <p class="feature-kicker">Soundice picked</p>
-                <p class="favorite-type-badge">{{ types[rollState.current.type] || rollState.current.type }}</p>
                 <h2>
                   <AiLookupLink heading :href="albumAiModeUrl(rollState.current.item.title, rollState.current.item.artistLinks)" :label="rollState.current.item.title" />
                 </h2>

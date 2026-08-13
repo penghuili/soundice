@@ -213,8 +213,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .artist-album-details h2 { display: -webkit-box; margin: 0; overflow: hidden; color: #f6f4f0; font-size: clamp(28px, 3vw, 42px); line-height: 1.04; letter-spacing: -.045em; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .artist-album-details .feature-subtitle { margin-top: 0; color: #c7c5c2; font-size: 15px; line-height: 1.45; }
 .artist-name-with-link { display: inline-flex; align-items: baseline; gap: 7px; }
-.artist-spotify-link { color: #8bd6a4; font-size: .72em; font-weight: 700; white-space: nowrap; transition: color 150ms ease; }
-.artist-spotify-link:hover { color: #b9f4ca; }
+.artist-spotify-link { display: inline-flex; align-items: center; flex: 0 0 auto; gap: 3px; padding: 3px 6px; color: #8ee7a6; background: rgba(30, 215, 96, .1); border: 1px solid rgba(30, 215, 96, .24); border-radius: 999px; font-size: .72em; font-weight: 750; line-height: 1; white-space: nowrap; transition: color 150ms ease, background 150ms ease, border-color 150ms ease; }
+.artist-spotify-link:hover { color: #c5ffd2; background: rgba(30, 215, 96, .16); border-color: rgba(30, 215, 96, .4); }
 .artist-album-actions { margin-top: auto; }
 .artist-album-roll { width: 100%; }
 .artist-album-roll:disabled { cursor: wait; opacity: .65; }
@@ -238,13 +238,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .recent-item strong, .recent-item span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .recent-item strong { color: #d9d7d4; font-size: 12px; }
 .recent-item span { margin-top: 5px; color: #686b74; font-size: 10px; }
-.recent-item .recent-artist-line { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 6px; color: #9b9da6; font-size: 11px; line-height: 1.25; white-space: normal; }
-.recent-item .recent-artist-line .artist-name-with-link { display: inline-flex; min-width: 0; align-items: center; gap: 5px; margin: 0; }
-.recent-item .recent-artist-line .ai-lookup-link { min-width: 0; align-items: center; gap: 4px; color: #a7a9b2; font-size: 11px; line-height: 1.25; }
-.recent-item .recent-artist-line .ai-lookup-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.recent-item .recent-artist-line .gemini-mark { width: 9px; height: 9px; }
-.recent-item .recent-artist-line .artist-spotify-link { display: inline-flex; flex: 0 0 auto; align-items: center; margin: 0; padding: 3px 6px; color: #8ee7a6; background: rgba(30, 215, 96, .1); border: 1px solid rgba(30, 215, 96, .24); border-radius: 999px; font-size: 9px; font-weight: 750; line-height: 1; letter-spacing: .01em; }
-.recent-item .recent-artist-line .artist-spotify-link:hover { color: #c5ffd2; background: rgba(30, 215, 96, .16); border-color: rgba(30, 215, 96, .4); }
+:is(.recent-item, .favorite-item-copy) .recent-artist-line { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; margin-top: 6px; color: #9b9da6; font-size: 12px; line-height: 1.25; white-space: normal; }
+:is(.recent-item, .favorite-item-copy) .recent-artist-line .artist-name-with-link { display: inline-flex; min-width: 0; align-items: center; gap: 5px; margin: 0; }
+:is(.recent-item, .favorite-item-copy) .recent-artist-line .ai-lookup-link { min-width: 0; align-items: center; gap: 4px; color: #a7a9b2; font-size: 12px; line-height: 1.25; }
+:is(.recent-item, .favorite-item-copy) .recent-artist-line .ai-lookup-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(.recent-item, .favorite-item-copy) .recent-artist-line .gemini-mark { width: 9px; height: 9px; }
+:is(.recent-item, .favorite-item-copy) .recent-artist-line .artist-spotify-link { display: inline-flex; flex: 0 0 auto; align-items: center; margin: 0; padding: 3px 6px; color: #8ee7a6; background: rgba(30, 215, 96, .1); border: 1px solid rgba(30, 215, 96, .24); border-radius: 999px; font-size: 9px; font-weight: 750; line-height: 1; letter-spacing: .01em; }
+:is(.recent-item, .favorite-item-copy) .recent-artist-line .artist-spotify-link:hover { color: #c5ffd2; background: rgba(30, 215, 96, .16); border-color: rgba(30, 215, 96, .4); }
 .favorite-toggle-small { width: 32px; min-height: 32px; padding: 0; border: 0; background: transparent; }
 .favorite-toggle-small svg { width: 16px; height: 16px; }
 .favorite-toggle-small:hover, .favorite-toggle-small.active { background: rgba(255,99,56,.1); }
@@ -272,8 +272,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .app-footer { display: flex; align-items: center; justify-content: space-between; padding: 28px 0 36px; color: #5f626b; border-top: 1px solid var(--line); font-size: 11px; }
 .app-footer div { display: flex; gap: 22px; }
 .app-footer a:hover { color: #fff; }
-.favorites-page { margin: 20px 0 58px; padding: 26px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
-.favorites-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; padding: 3px 2px 23px; border-bottom: 1px solid var(--line); }
+.favorites-tabs { margin-top: 28px; }
+.favorites-back-tab { order: 0; }
+.favorites-back-tab .tab-symbol { color: #9b9da6; font-size: 19px; }
+.favorites-current-tab { display: flex; align-items: center; justify-content: center; flex: 1 0 150px; gap: 9px; min-height: 48px; padding: 0 16px; color: #fff; background: #202228; border-radius: 11px; box-shadow: 0 5px 18px rgba(0,0,0,.22); font-size: 13px; font-weight: 680; }
+.favorites-current-tab .tab-symbol { color: var(--accent); font-size: 17px; }
+.favorites-current-tab small { margin-left: auto; color: #9b9da4; font-size: 10px; font-variant-numeric: tabular-nums; }
+.favorites-page { margin: 20px 0 58px; }
+.favorites-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; padding: 3px 0 20px; border-bottom: 1px solid var(--line); }
 .favorites-heading .feature-kicker { margin-bottom: 9px; }
 .favorites-heading h1 { margin: 0; color: #f6f4f0; font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -.055em; }
 .favorites-heading p:last-child { max-width: 480px; margin: 12px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
@@ -281,10 +287,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .favorites-heading-actions .icon-button { margin: 0; }
 .favorites-heading-actions .icon-button:disabled { cursor: wait; opacity: .55; }
 .favorites-count { display: grid; place-items: center; flex: 0 0 auto; width: 46px; height: 46px; color: #ffb09a; background: rgba(255,99,56,.12); border: 1px solid rgba(255,99,56,.25); border-radius: 14px; font-size: 13px; font-variant-numeric: tabular-nums; }
-.favorites-body { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, .85fr); gap: 18px; padding-top: 18px; }
-.favorites-random-card { min-height: 480px; background: var(--panel-raised); }
-.favorites-random-card .favorite-type-badge { margin: 0 0 10px; color: var(--accent); font-size: 10px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
-.favorites-list-panel { overflow: hidden; min-height: 480px; padding: 18px 10px 12px; background: var(--panel-raised); border: 1px solid var(--line); border-radius: var(--radius); }
+.favorites-body { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, .85fr); gap: 20px; padding-top: 20px; }
+.favorites-random-card { min-height: 510px; }
+.favorites-list-panel { overflow: hidden; min-height: 510px; padding: 22px 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
 .favorites-list-panel .panel-heading { padding: 0 10px 15px; }
 .favorites-list { display: grid; grid-template-columns: 1fr; gap: 4px; padding-top: 6px; }
 .favorite-item { display: grid; grid-template-columns: 48px minmax(0, 1fr) 32px; align-items: center; gap: 12px; min-width: 0; padding: 9px 10px; border-radius: 13px; transition: background 150ms ease; }
