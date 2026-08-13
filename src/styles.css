@@ -136,10 +136,16 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .feature-details { display: flex; min-height: 0; flex-direction: column; align-self: stretch; gap: 16px; }
 .feature-copy { min-width: 0; min-height: 0; flex: 1 1 auto; }
 .feature-subtitle { margin: 13px 0 0; color: #c7c5c2; font-size: 15px; line-height: 1.45; }
-.artist-link { padding: 0; border: 0; background: none; color: inherit; font: inherit; line-height: inherit; text-align: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: rgba(255,255,255,.35); text-underline-offset: 3px; transition: color 150ms ease, text-decoration-color 150ms ease; }
-.artist-link:hover { color: #fff; text-decoration-color: var(--accent); }
-.artist-heading-button { display: inline; max-width: 100%; padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; line-height: inherit; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: rgba(255,255,255,.28); text-underline-offset: 0.14em; }
-.artist-heading-button:hover { color: #fff; text-decoration-color: var(--accent); }
+.ai-lookup-link { display: inline-flex; align-items: baseline; gap: 5px; max-width: 100%; color: inherit; font: inherit; letter-spacing: inherit; line-height: inherit; text-align: inherit; text-decoration: none; }
+.ai-lookup-text { min-width: 0; text-decoration: underline; text-decoration-color: rgba(255,255,255,.35); text-underline-offset: 3px; transition: color 150ms ease, text-decoration-color 150ms ease; }
+.ai-lookup-link:hover .ai-lookup-text { color: #fff; text-decoration-color: var(--accent); }
+.ai-lookup-link.heading { align-items: flex-start; gap: 8px; }
+.ai-lookup-link.heading .ai-lookup-text { text-underline-offset: 0.14em; text-decoration-color: rgba(255,255,255,.28); }
+.ai-lookup-link.compact { display: flex; align-items: center; min-width: 0; }
+.ai-lookup-link.compact .ai-lookup-text { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gemini-mark { flex: 0 0 auto; width: 13px; height: 13px; translate: 0 1px; }
+.gemini-mark.small { width: 11px; height: 11px; translate: 0; }
+.feature-details h2 .gemini-mark, .artist-album-details h2 .gemini-mark { width: 18px; height: 18px; margin-top: .22em; translate: 0; }
 .feature-meta { margin: 7px 0 0; color: #757882; font-size: 12px; }
 .feature-saved { margin: 12px 0 0; color: #5f626b; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
 .feature-actions { display: flex; flex: 0 0 auto; flex-direction: column; align-items: stretch; gap: 10px; margin-top: auto; }

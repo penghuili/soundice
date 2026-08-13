@@ -56,6 +56,7 @@ function normalizeAlbum(item, addedAt) {
     title: item.name,
     subtitle: artistNames(item.artists),
     artistLinks: artistLinks(item.artists),
+    albumTitle: item.name,
     detail: [item.release_date?.slice(0, 4), `${item.total_tracks || 0} tracks`]
       .filter(Boolean)
       .join(' · '),
@@ -72,6 +73,7 @@ function normalizeSong(item, addedAt) {
     title: item.name,
     subtitle: artistNames(item.artists),
     artistLinks: artistLinks(item.artists),
+    albumTitle: item.album?.name,
     detail: item.album?.name,
     image: imageUrl(item.album),
     url: spotifyUrl(item),

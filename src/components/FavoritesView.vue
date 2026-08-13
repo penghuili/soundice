@@ -2,6 +2,8 @@
 import { onMounted, reactive, ref } from 'vue';
 
 import { AuthRequiredError } from '../services/auth.js';
+import { albumAiModeUrl } from '../services/artistInfo.js';
+import AiLookupLink from './AiLookupLink.vue';
 import AppHeader from './AppHeader.vue';
 import ArtistNames from './ArtistNames.vue';
 import MediaArtwork from './MediaArtwork.vue';
@@ -163,7 +165,9 @@ function formatError(error, fallback) {
               <div class="feature-details">
                 <p class="feature-kicker">Soundice picked</p>
                 <p class="favorite-type-badge">{{ types[rollState.current.type] || rollState.current.type }}</p>
-                <h2>{{ rollState.current.item.title }}</h2>
+                <h2>
+                  <AiLookupLink heading :href="albumAiModeUrl(rollState.current.item.title, rollState.current.item.artistLinks)" :label="rollState.current.item.title" />
+                </h2>
                 <p class="feature-subtitle">
                   <ArtistNames
                     v-if="rollState.current.item.artistLinks?.length"
@@ -210,8 +214,12 @@ function formatError(error, fallback) {
               <MediaArtwork :item="favorite.item" small />
               <div class="favorite-item-copy">
                 <span class="favorite-type">{{ types[favorite.type] || favorite.type }}</span>
-                <a v-if="favorite.item.url" class="recent-title-link" :href="favorite.item.url" target="_blank" rel="noreferrer"><strong>{{ favorite.item.title }}</strong></a>
-                <strong v-else>{{ favorite.item.title }}</strong>
+                <AiLookupLink
+                  compact
+                  class="recent-title-link"
+                  :href="albumAiModeUrl(favorite.item.title, favorite.item.artistLinks)"
+                  :label="favorite.item.title"
+                />
                 <span>
                   <ArtistNames
                     v-if="favorite.item.artistLinks?.length"

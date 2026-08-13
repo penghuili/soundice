@@ -26,7 +26,8 @@ function item(type, index) {
     title: names[type][index % names[type].length],
     subtitle: type === 'podcasts' ? 'A saved episode' : artistName,
     artistLinks: ['albums', 'songs'].includes(type) ? [{ id: `artist-${index}`, name: artistName, url: 'https://open.spotify.com/' }] : [],
-    detail: type === 'artists' ? `${(index + 2) * 134}K followers` : 'Saved in your Spotify library',
+    albumTitle: type === 'albums' ? names.albums[index % names.albums.length] : type === 'songs' ? names.albums[index % names.albums.length] : null,
+    detail: type === 'artists' ? `${(index + 2) * 134}K followers` : type === 'songs' ? names.albums[index % names.albums.length] : 'Saved in your Spotify library',
     imageStyle: covers[index % covers.length],
     url: 'https://open.spotify.com/',
     uri: `spotify:${type}:${index}`,
@@ -60,6 +61,8 @@ export const demoService = {
       id: `${artistId}-album-${albumIndex}`,
       title: albums[albumIndex],
       subtitle: names.artists[artistIndex % names.artists.length],
+      artistLinks: [{ id: artistId, name: names.artists[artistIndex % names.artists.length], url: 'https://open.spotify.com/' }],
+      albumTitle: albums[albumIndex],
       detail: `${2018 + albumIndex * 3} · ${10 + albumIndex} tracks`,
     };
   },

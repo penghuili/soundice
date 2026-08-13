@@ -2,7 +2,8 @@
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 
 import { AuthRequiredError } from '../services/auth.js';
-import { artistAiModeUrl } from '../services/artistInfo.js';
+import { albumAiModeUrl, artistAiModeUrl } from '../services/artistInfo.js';
+import AiLookupLink from './AiLookupLink.vue';
 import AppHeader from './AppHeader.vue';
 import ArtistNames from './ArtistNames.vue';
 import MediaArtwork from './MediaArtwork.vue';
@@ -441,8 +442,11 @@ function savedDate(value) {
             <div class="feature-details">
               <div class="feature-copy">
                 <p class="feature-kicker">Soundice picked</p>
-                <h2 v-if="itemType === 'artists' && artistAiModeUrl(state.current.title)">
-                  <a class="artist-heading-button" :href="artistAiModeUrl(state.current.title)" target="_blank" rel="noreferrer" :title="`Look up ${state.current.title} in Google AI Mode`">{{ state.current.title }}</a>
+                <h2 v-if="itemType === 'artists'">
+                  <AiLookupLink heading :href="artistAiModeUrl(state.current.title)" :label="state.current.title" />
+                </h2>
+                <h2 v-else-if="itemType === 'albums'">
+                  <AiLookupLink heading :href="albumAiModeUrl(state.current.title, state.current.artistLinks)" :label="state.current.title" />
                 </h2>
                 <h2 v-else>{{ state.current.title }}</h2>
                 <p class="feature-subtitle">
@@ -453,7 +457,10 @@ function savedDate(value) {
                   />
                   <template v-else>{{ state.current.subtitle }}</template>
                 </p>
-                <p v-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
+                <p v-if="itemType === 'songs' && state.current.albumTitle" class="feature-meta">
+                  <AiLookupLink :href="albumAiModeUrl(state.current.albumTitle, state.current.artistLinks)" :label="state.current.albumTitle" />
+                </p>
+                <p v-else-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
                 <p v-if="state.current.addedAt" class="feature-saved">Saved {{ savedDate(state.current.addedAt) }}</p>
               </div>
               <div class="feature-actions">
@@ -509,7 +516,9 @@ function savedDate(value) {
               <MediaArtwork :item="artistAlbum.current" />
               <div class="artist-album-details">
                 <p class="feature-kicker">From their catalog</p>
-                <h2>{{ artistAlbum.current.title }}</h2>
+                <h2>
+                  <AiLookupLink heading :href="albumAiModeUrl(artistAlbum.current.title, artistAlbum.current.artistLinks)" :label="artistAlbum.current.title" />
+                </h2>
                 <p class="feature-subtitle">
                   <ArtistNames
                     :artists="artistAlbum.current.artistLinks"
@@ -549,9 +558,20 @@ function savedDate(value) {
           <div v-for="(item, index) in state.latest" :key="`${item.id}-${index}`" class="recent-item">
             <MediaArtwork :item="item" small />
             <div>
-              <a v-if="itemCategory(item) === 'artists' && artistAiModeUrl(item.title)" class="recent-title-link artist-heading-button" :href="artistAiModeUrl(item.title)" target="_blank" rel="noreferrer" :title="`Look up ${item.title} in Google AI Mode`">
-                <strong>{{ item.title }}</strong>
-              </a>
+              <AiLookupLink
+                v-if="itemCategory(item) === 'artists'"
+                compact
+                class="recent-title-link"
+                :href="artistAiModeUrl(item.title)"
+                :label="item.title"
+              />
+              <AiLookupLink
+                v-else-if="itemCategory(item) === 'albums'"
+                compact
+                class="recent-title-link"
+                :href="albumAiModeUrl(item.title, item.artistLinks)"
+                :label="item.title"
+              />
               <a v-else-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer"><strong>{{ item.title }}</strong></a>
               <strong v-else>{{ item.title }}</strong>
               <span>

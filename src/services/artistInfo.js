@@ -1,8 +1,27 @@
-export function artistAiModeUrl(name) {
-  const artist = String(name || '').trim();
-  if (!artist) return null;
+function aiModeUrl(query) {
+  const text = String(query || '').trim();
+  if (!text) return null;
   const url = new URL('https://www.google.com/search');
-  url.searchParams.set('q', `介绍这个歌手：${artist}`);
+  url.searchParams.set('q', text);
   url.searchParams.set('udm', '50');
   return url.href;
+}
+
+function artistList(artists) {
+  if (Array.isArray(artists)) {
+    return artists.map(artist => artist?.name || artist).filter(Boolean).join('、');
+  }
+  return String(artists || '').trim();
+}
+
+export function artistAiModeUrl(name) {
+  const artist = String(name || '').trim();
+  return artist ? aiModeUrl(`介绍这个歌手：${artist}`) : null;
+}
+
+export function albumAiModeUrl(title, artists) {
+  const album = String(title || '').trim();
+  if (!album) return null;
+  const who = artistList(artists);
+  return aiModeUrl(who ? `介绍这张专辑：${album}，这是${who}的专辑` : `介绍这张专辑：${album}`);
 }
