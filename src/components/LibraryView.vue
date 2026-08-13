@@ -1,8 +1,11 @@
 ﻿<script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 
+import { useArtistBio } from '../composables/useArtistBio.js';
 import { AuthRequiredError } from '../services/auth.js';
 import AppHeader from './AppHeader.vue';
+import ArtistBioDialog from './ArtistBioDialog.vue';
+import ArtistNames from './ArtistNames.vue';
 import MediaArtwork from './MediaArtwork.vue';
 
 const props = defineProps({
@@ -59,6 +62,7 @@ const itemType = computed(() => active.value);
 const meta = computed(() => categories.find(category => category.id === active.value));
 const state = computed(() => states[active.value]);
 const removalState = computed(() => states[pendingRemoval.type]);
+const { selectedArtist, openArtist, closeArtist } = useArtistBio();
 const categoryLoadPromises = new Map();
 
 function itemCategory(item) {
@@ -439,13 +443,17 @@ function savedDate(value) {
             <div class="feature-details">
               <div class="feature-copy">
                 <p class="feature-kicker">Soundice picked</p>
-                <h2>{{ state.current.title }}</h2>
+                <h2 v-if="itemType === 'artists'">
+                  <button type="button" class="artist-heading-button" @click="openArtist(state.current)">{{ state.current.title }}</button>
+                </h2>
+                <h2 v-else>{{ state.current.title }}</h2>
                 <p class="feature-subtitle">
-                  <template v-if="itemType === 'albums' && state.current.artistLinks?.length">
-                    <template v-for="(artist, index) in state.current.artistLinks" :key="artist.id || artist.name">
-                      <span v-if="index">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
-                    </template>
-                  </template>
+                  <ArtistNames
+                    v-if="state.current.artistLinks?.length"
+                    :artists="state.current.artistLinks"
+                    :fallback="state.current.subtitle"
+                    @select="openArtist"
+                  />
                   <template v-else>{{ state.current.subtitle }}</template>
                 </p>
                 <p v-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
@@ -506,12 +514,11 @@ function savedDate(value) {
                 <p class="feature-kicker">From their catalog</p>
                 <h2>{{ artistAlbum.current.title }}</h2>
                 <p class="feature-subtitle">
-                  <template v-if="artistAlbum.current.artistLinks?.length">
-                    <template v-for="(artist, index) in artistAlbum.current.artistLinks" :key="artist.id || artist.name">
-                      <span v-if="index">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
-                    </template>
-                  </template>
-                  <template v-else>{{ artistAlbum.current.subtitle }}</template>
+                  <ArtistNames
+                    :artists="artistAlbum.current.artistLinks"
+                    :fallback="artistAlbum.current.subtitle"
+                    @select="openArtist"
+                  />
                 </p>
                 <p v-if="artistAlbum.current.detail" class="feature-meta">{{ artistAlbum.current.detail }}</p>
                 <div class="feature-actions artist-album-actions">
@@ -546,14 +553,20 @@ function savedDate(value) {
           <div v-for="(item, index) in state.latest" :key="`${item.id}-${index}`" class="recent-item">
             <MediaArtwork :item="item" small />
             <div>
-              <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer"><strong>{{ item.title }}</strong></a>
+              <button v-if="itemCategory(item) === 'artists'" type="button" class="recent-title-link artist-heading-button" @click="openArtist(item)">
+                <strong>{{ item.title }}</strong>
+              </button>
+              <a v-else-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer"><strong>{{ item.title }}</strong></a>
               <strong v-else>{{ item.title }}</strong>
-              <span v-if="itemCategory(item) === 'albums' && item.artistLinks?.length">
-                <template v-for="(artist, artistIndex) in item.artistLinks" :key="artist.id || artist.name">
-                  <span v-if="artistIndex">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
-                </template>
+              <span>
+                <ArtistNames
+                  v-if="item.artistLinks?.length"
+                  :artists="item.artistLinks"
+                  :fallback="item.subtitle || item.detail"
+                  @select="openArtist"
+                />
+                <template v-else>{{ item.subtitle || item.detail }}</template>
               </span>
-              <span v-else>{{ item.subtitle || item.detail }}</span>
             </div>
             <button v-if="itemCategory(item) === 'albums'" class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(itemCategory(item), item) }" type="button" :aria-label="`${isFavorite(itemCategory(item), item) ? 'Remove' : 'Save'} ${item.title} album`" @click="toggleFavorite(itemCategory(item), item)">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
@@ -569,6 +582,8 @@ function savedDate(value) {
         <a class="github-link" href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer" title="View on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg></a>
       </div>
     </footer>
+
+    <ArtistBioDialog v-if="selectedArtist" :artist="selectedArtist" @close="closeArtist" />
 
     <Transition name="dialog-fade">
       <div v-if="pendingRemoval.item" class="dialog-backdrop" role="presentation" @click.self="closeRemovalDialog">

@@ -1,8 +1,11 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
 
+import { useArtistBio } from '../composables/useArtistBio.js';
 import { AuthRequiredError } from '../services/auth.js';
 import AppHeader from './AppHeader.vue';
+import ArtistBioDialog from './ArtistBioDialog.vue';
+import ArtistNames from './ArtistNames.vue';
 import MediaArtwork from './MediaArtwork.vue';
 
 const props = defineProps({
@@ -17,6 +20,7 @@ const types = {
 const state = reactive({ items: [], loading: false, loaded: false, error: '' });
 const rollState = reactive({ current: null, previous: null, rolling: false });
 const favoriteError = ref('');
+const { selectedArtist, openArtist, closeArtist } = useArtistBio();
 
 onMounted(() => loadFavorites());
 
@@ -164,11 +168,12 @@ function formatError(error, fallback) {
                 <p class="favorite-type-badge">{{ types[rollState.current.type] || rollState.current.type }}</p>
                 <h2>{{ rollState.current.item.title }}</h2>
                 <p class="feature-subtitle">
-                  <template v-if="rollState.current.type === 'albums' && rollState.current.item.artistLinks?.length">
-                    <template v-for="(artist, index) in rollState.current.item.artistLinks" :key="artist.id || artist.name">
-                      <span v-if="index">, </span><a v-if="artist.url" class="artist-link" :href="artist.url" target="_blank" rel="noreferrer">{{ artist.name }}</a><span v-else>{{ artist.name }}</span>
-                    </template>
-                  </template>
+                  <ArtistNames
+                    v-if="rollState.current.item.artistLinks?.length"
+                    :artists="rollState.current.item.artistLinks"
+                    :fallback="rollState.current.item.subtitle"
+                    @select="openArtist"
+                  />
                   <template v-else>{{ rollState.current.item.subtitle }}</template>
                 </p>
                 <p v-if="rollState.current.item.detail" class="feature-meta">{{ rollState.current.item.detail }}</p>
@@ -211,7 +216,15 @@ function formatError(error, fallback) {
                 <span class="favorite-type">{{ types[favorite.type] || favorite.type }}</span>
                 <a v-if="favorite.item.url" class="recent-title-link" :href="favorite.item.url" target="_blank" rel="noreferrer"><strong>{{ favorite.item.title }}</strong></a>
                 <strong v-else>{{ favorite.item.title }}</strong>
-                <span>{{ favorite.item.subtitle || favorite.item.detail }}</span>
+                <span>
+                  <ArtistNames
+                    v-if="favorite.item.artistLinks?.length"
+                    :artists="favorite.item.artistLinks"
+                    :fallback="favorite.item.subtitle || favorite.item.detail"
+                    @select="openArtist"
+                  />
+                  <template v-else>{{ favorite.item.subtitle || favorite.item.detail }}</template>
+                </span>
               </div>
               <button class="icon-button favorite-toggle favorite-toggle-small active" type="button" :aria-label="`Remove ${favorite.item.title} from favorites`" :title="`Remove ${favorite.item.title} from favorites`" @click="removeFavorite(favorite)">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
@@ -222,6 +235,8 @@ function formatError(error, fallback) {
       </div>
       <p v-if="favoriteError" class="favorites-error" role="alert">{{ favoriteError }}</p>
     </section>
+
+    <ArtistBioDialog v-if="selectedArtist" :artist="selectedArtist" @close="closeArtist" />
 
     <footer class="app-footer">
       <div>

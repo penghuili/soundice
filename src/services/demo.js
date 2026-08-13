@@ -25,7 +25,7 @@ function item(type, index) {
     id: `${type}-${index}`,
     title: names[type][index % names[type].length],
     subtitle: type === 'podcasts' ? 'A saved episode' : artistName,
-    artistLinks: type === 'albums' ? [{ id: `artist-${index}`, name: artistName, url: 'https://open.spotify.com/' }] : [],
+    artistLinks: ['albums', 'songs'].includes(type) ? [{ id: `artist-${index}`, name: artistName, url: 'https://open.spotify.com/' }] : [],
     detail: type === 'artists' ? `${(index + 2) * 134}K followers` : 'Saved in your Spotify library',
     imageStyle: covers[index % covers.length],
     url: 'https://open.spotify.com/',
