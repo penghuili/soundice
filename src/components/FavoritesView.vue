@@ -111,32 +111,18 @@ function formatError(error, fallback) {
     />
 
     <nav class="library-tabs favorites-tabs" aria-label="Favorites navigation">
-      <button class="favorites-back-tab" type="button" @click="$emit('open-library')">
-        <span class="tab-symbol">←</span>
-        <span>Back to library</span>
+      <button class="favorites-back-tab" type="button" aria-label="Back to library" title="Back to library" @click="$emit('open-library')">
+        <span class="tab-symbol" aria-hidden="true">←</span>
       </button>
-      <div class="favorites-current-tab" aria-current="page">
-        <span class="tab-symbol">★</span>
-        <span>Favorites</span>
-        <small v-if="state.loaded">{{ state.items.length }}</small>
+      <div class="favorites-nav-actions">
+        <button class="icon-button" type="button" aria-label="Refresh favorites" title="Refresh favorites" :disabled="state.loading" @click="loadFavorites(true)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" /></svg>
+        </button>
+        <span class="favorites-count">{{ state.loaded ? state.items.length : '—' }}</span>
       </div>
     </nav>
 
     <section class="favorites-page">
-      <div class="favorites-heading">
-        <div>
-          <p class="feature-kicker">Your personal shelf</p>
-          <h1>Favorites</h1>
-          <p>Keep the albums you want to find again.</p>
-        </div>
-        <div class="favorites-heading-actions">
-          <button class="icon-button" type="button" aria-label="Refresh favorites" title="Refresh favorites" :disabled="state.loading" @click="loadFavorites(true)">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" /></svg>
-          </button>
-          <span class="favorites-count">{{ state.loaded ? state.items.length : '—' }}</span>
-        </div>
-      </div>
-
       <div v-if="state.loading" class="favorites-empty" aria-live="polite">
         <span>↻</span>
         <h2>Loading your shelf</h2>

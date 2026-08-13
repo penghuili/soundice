@@ -41,7 +41,7 @@ const { updateAvailable, applyAppUpdate } = useAppUpdate();
       >
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" /></svg>
       </button>
-      <button class="favorites-shortcut" type="button" :class="{ active: favoritesActive }" :aria-current="favoritesActive ? 'page' : undefined" @click="$emit('open-favorites')">
+      <button v-if="!favoritesActive" class="favorites-shortcut" type="button" @click="$emit('open-favorites')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
         <span>Favorites</span>
         <small v-if="favoriteCount !== null">{{ favoriteCount }}</small>

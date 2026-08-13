@@ -273,21 +273,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .app-footer div { display: flex; gap: 22px; }
 .app-footer a:hover { color: #fff; }
 .favorites-tabs { margin-top: 28px; }
-.favorites-back-tab { order: 0; }
-.favorites-back-tab .tab-symbol { color: #9b9da6; font-size: 19px; }
-.favorites-current-tab { display: flex; align-items: center; justify-content: center; flex: 1 0 150px; gap: 9px; min-height: 48px; padding: 0 16px; color: #fff; background: #202228; border-radius: 11px; box-shadow: 0 5px 18px rgba(0,0,0,.22); font-size: 13px; font-weight: 680; }
-.favorites-current-tab .tab-symbol { color: var(--accent); font-size: 17px; }
-.favorites-current-tab small { margin-left: auto; color: #9b9da4; font-size: 10px; font-variant-numeric: tabular-nums; }
+.library-tabs .favorites-back-tab { display: grid; flex: 0 0 48px; place-items: center; width: 48px; min-height: 48px; padding: 0; color: #9b9da6; background: transparent; border: 0; border-radius: 11px; cursor: pointer; }
+.library-tabs .favorites-back-tab:hover { color: #fff; background: #202228; }
+.favorites-back-tab .tab-symbol { color: currentColor; font-size: 20px; }
+.favorites-nav-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; padding: 0 6px; }
+.library-tabs .favorites-nav-actions .icon-button { flex: 0 0 36px; width: 36px; min-height: 36px; margin: 0; padding: 0; }
 .favorites-page { margin: 20px 0 58px; }
-.favorites-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; padding: 3px 0 20px; border-bottom: 1px solid var(--line); }
-.favorites-heading .feature-kicker { margin-bottom: 9px; }
-.favorites-heading h1 { margin: 0; color: #f6f4f0; font-size: clamp(32px, 4vw, 48px); line-height: 1; letter-spacing: -.055em; }
-.favorites-heading p:last-child { max-width: 480px; margin: 12px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-.favorites-heading-actions { display: flex; align-items: center; gap: 8px; }
-.favorites-heading-actions .icon-button { margin: 0; }
-.favorites-heading-actions .icon-button:disabled { cursor: wait; opacity: .55; }
 .favorites-count { display: grid; place-items: center; flex: 0 0 auto; width: 46px; height: 46px; color: #ffb09a; background: rgba(255,99,56,.12); border: 1px solid rgba(255,99,56,.25); border-radius: 14px; font-size: 13px; font-variant-numeric: tabular-nums; }
-.favorites-body { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, .85fr); gap: 20px; padding-top: 20px; }
+.favorites-body { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(340px, .85fr); gap: 20px; }
 .favorites-random-card { min-height: 510px; }
 .favorites-list-panel { overflow: hidden; min-height: 510px; padding: 22px 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
 .favorites-list-panel .panel-heading { padding: 0 10px 15px; }
@@ -388,8 +381,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
   .artist-album-actions { margin-top: 14px; }
   .artist-album-roll { min-height: 42px; }
   .recent-panel { padding-top: 18px; border-radius: 20px; }
-  .favorites-page { margin-top: 14px; padding: 17px 15px; border-radius: 20px; }
-  .favorites-heading { align-items: flex-start; }
+  .favorites-page { margin-top: 14px; }
   .favorites-body { gap: 14px; padding-top: 14px; }
   .favorites-random-card { min-height: auto; border-radius: 20px; }
   .favorites-list-panel { padding-top: 16px; border-radius: 20px; }
