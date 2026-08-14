@@ -52,7 +52,39 @@ function item(type, index) {
 }
 
 export const demoProfile = { display_name: 'Peng', images: [] };
-const demoFavorites = [];
+const extraSearchAlbums = [
+  { title: 'Homogenic', artist: 'Björk' },
+  { title: 'Vespertine', artist: 'Björk' },
+  { title: 'Dummy', artist: 'Portishead' },
+  { title: 'Mezzanine', artist: 'Massive Attack' },
+  { title: 'Selected Ambient Works 85-92', artist: 'Aphex Twin' },
+  { title: 'In Rainbows', artist: 'Radiohead' },
+];
+const demoFavorites = Array.from({ length: 36 }, (_, index) => {
+  const album = item('albums', index);
+  if (index >= 4) {
+    album.title = `${album.title} ${index + 1}`;
+    album.albumTitle = album.title;
+  }
+  return { type: 'albums', item: album, createdAt: new Date(Date.now() - index * 3600000).toISOString() };
+});
+
+function cloneFavorite(favorite) {
+  return { ...favorite, item: { ...favorite.item } };
+}
+
+function albumCatalogItem(entry, index) {
+  return {
+    ...item('albums', 200 + index),
+    id: `search-${index}`,
+    title: entry.title,
+    subtitle: entry.artist,
+    artistLinks: [{ id: `search-artist-${index}`, name: entry.artist, url: 'https://open.spotify.com/' }],
+    albumTitle: entry.title,
+    detail: 'Album',
+  };
+}
+
 export const demoService = {
   async loadCategory(type) {
     await new Promise(resolve => setTimeout(resolve, 220));
@@ -86,9 +118,32 @@ export const demoService = {
   async removeItem() {
     await new Promise(resolve => setTimeout(resolve, 260));
   },
-  async list() {
+  async list({ limit, offset } = {}) {
     await new Promise(resolve => setTimeout(resolve, 180));
-    return demoFavorites.filter(favorite => favorite.type === 'albums').map(favorite => ({ ...favorite, item: { ...favorite.item } }));
+    const all = demoFavorites.filter(favorite => favorite.type === 'albums').map(cloneFavorite);
+    const start = Number(offset) || 0;
+    const favorites = limit == null ? all : all.slice(start, start + limit);
+    return { favorites, total: all.length };
+  },
+  async existingIds(ids) {
+    await new Promise(resolve => setTimeout(resolve, 80));
+    const known = new Set(demoFavorites.map(favorite => favorite.item.id));
+    return (ids || []).filter(id => known.has(id));
+  },
+  async searchAlbums(query) {
+    await new Promise(resolve => setTimeout(resolve, 220));
+    const needle = String(query || '').trim().toLowerCase();
+    if (!needle) return [];
+    const extras = extraSearchAlbums.map(albumCatalogItem);
+    const pool = [...demoFavorites.map(favorite => favorite.item), ...extras];
+    const seen = new Set();
+    return pool.filter(album => {
+      if (seen.has(album.id)) return false;
+      const haystack = `${album.title} ${album.subtitle}`.toLowerCase();
+      if (!haystack.includes(needle)) return false;
+      seen.add(album.id);
+      return true;
+    }).slice(0, 8);
   },
   async add(type, favoriteItem) {
     if (type !== 'albums') throw new Error('Only albums can be favorited.');

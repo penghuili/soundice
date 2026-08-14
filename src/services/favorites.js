@@ -48,10 +48,26 @@ async function readResponse(response) {
   throw error;
 }
 
-export async function list() {
-  const response = await authorizedFetch(endpoint);
+export async function list({ limit, offset } = {}) {
+  const params = new URLSearchParams();
+  if (limit != null) params.set('limit', String(limit));
+  if (offset != null) params.set('offset', String(offset));
+  const url = params.toString() ? `${endpoint}?${params}` : endpoint;
+  const response = await authorizedFetch(url);
   const data = await readResponse(response);
-  return (data.favorites || []).filter(favorite => favorite.type === favoriteType);
+  const favorites = (data.favorites || []).filter(favorite => favorite.type === favoriteType);
+  return {
+    favorites,
+    total: Number.isFinite(data.total) ? data.total : favorites.length,
+  };
+}
+
+export async function existingIds(ids) {
+  const unique = [...new Set((ids || []).filter(id => typeof id === 'string' && id && id.length <= 256))].slice(0, 20);
+  if (!unique.length) return [];
+  const response = await authorizedFetch(`${endpoint}?check=${unique.map(encodeURIComponent).join(',')}`);
+  const data = await readResponse(response);
+  return data.ids || [];
 }
 
 export async function add(type, item) {

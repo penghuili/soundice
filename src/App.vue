@@ -103,6 +103,7 @@ function logout() {
   <FavoritesView
     v-else-if="view === 'favorites'"
     :profile="profile"
+    :service="demoMode ? demoService : spotifyService"
     :favorites="demoMode ? demoService : favoritesService"
     @open-library="openLibrary"
     @logout="logout"

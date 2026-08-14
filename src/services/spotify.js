@@ -188,6 +188,14 @@ export async function getRandomItem(type, count) {
   return data.items?.[0] ? category.normalize(data.items[0]) : null;
 }
 
+export async function searchAlbums(query, limit = 8) {
+  const q = String(query || '').trim();
+  if (!q) return [];
+  const pageSize = Math.min(Math.max(Number(limit) || 8, 1), 20);
+  const data = await spotifyFetch(`/search?type=album&limit=${pageSize}&q=${encodeURIComponent(q)}`);
+  return (data.albums?.items || []).filter(Boolean).map(item => normalizeAlbum(item));
+}
+
 export async function getRandomArtistAlbum(artistId) {
   if (!artistId) return null;
   const path = `/artists/${encodeURIComponent(artistId)}/albums?include_groups=album,single&limit=50`;

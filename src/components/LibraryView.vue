@@ -120,9 +120,10 @@ async function loadFavorites(force = false) {
   favoriteState.error = '';
   favoriteError.value = '';
   favoritesLoadPromise = props.favorites.list()
-    .then(items => {
+    .then(data => {
+      const items = data.favorites || [];
       favoriteState.latest = items.filter(item => item.type === 'albums');
-      favoriteState.count = favoriteState.latest.length;
+      favoriteState.count = Number.isFinite(data.total) ? data.total : favoriteState.latest.length;
       favoriteState.loaded = true;
       return items;
     })

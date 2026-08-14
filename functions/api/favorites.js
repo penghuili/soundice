@@ -32,6 +32,25 @@ function validateItem(item) {
   return item;
 }
 
+function parsePositiveInt(value, { min = 0, max = Number.MAX_SAFE_INTEGER, fallback = null } = {}) {
+  if (value == null || value === '') return fallback;
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < min) return fallback;
+  return Math.min(parsed, max);
+}
+
+function parseCheckIds(value) {
+  if (typeof value !== 'string' || !value) return [];
+  const ids = [];
+  for (const part of value.split(',')) {
+    const id = part.trim();
+    if (!id || id.length > 256 || ids.includes(id)) continue;
+    ids.push(id);
+    if (ids.length >= 20) break;
+  }
+  return ids;
+}
+
 function serializeRow(row) {
   let item;
   try {
@@ -96,15 +115,46 @@ export async function onRequest(context) {
 
     const values = [...identity.ids];
     const userFilter = userPlaceholders(identity);
-    let query = `SELECT item_type, item_id, item_json, created_at FROM favorites WHERE user_id IN (${userFilter}) AND item_type = 'albums'`;
+    const checkIds = parseCheckIds(url.searchParams.get('check'));
+    if (checkIds.length) {
+      const placeholders = checkIds.map((_, index) => `?${values.length + 1 + index}`).join(', ');
+      const result = await env.DB.prepare(
+        `SELECT item_id FROM favorites WHERE user_id IN (${userFilter}) AND item_type = 'albums' AND item_id IN (${placeholders})`
+      )
+        .bind(...values, ...checkIds)
+        .all();
+      return json({ ids: (result.results || []).map(row => row.item_id) });
+    }
+
+    const limit = parsePositiveInt(url.searchParams.get('limit'), { min: 1, max: 50 });
+    const offset = parsePositiveInt(url.searchParams.get('offset'), { min: 0, fallback: 0 });
+    let where = `WHERE user_id IN (${userFilter}) AND item_type = 'albums'`;
     if (type) {
-      query += ` AND item_type = ?${values.length + 1}`;
+      where += ` AND item_type = ?${values.length + 1}`;
       values.push(type);
     }
-    query += ' ORDER BY created_at DESC';
-    const statement = env.DB.prepare(query).bind(...values);
-    const result = await statement.all();
-    return json({ favorites: (result.results || []).map(serializeRow) });
+
+    if (limit != null) {
+      const countRow = await env.DB.prepare(`SELECT COUNT(*) AS total FROM favorites ${where}`).bind(...values).first();
+      const pageValues = [...values, limit, offset];
+      const result = await env.DB.prepare(
+        `SELECT item_type, item_id, item_json, created_at FROM favorites ${where} ORDER BY created_at DESC LIMIT ?${values.length + 1} OFFSET ?${values.length + 2}`
+      )
+        .bind(...pageValues)
+        .all();
+      return json({
+        favorites: (result.results || []).map(serializeRow),
+        total: Number(countRow?.total) || 0,
+      });
+    }
+
+    const result = await env.DB.prepare(
+      `SELECT item_type, item_id, item_json, created_at FROM favorites ${where} ORDER BY created_at DESC`
+    )
+      .bind(...values)
+      .all();
+    const favorites = (result.results || []).map(serializeRow);
+    return json({ favorites, total: favorites.length });
   }
 
   if (request.method === 'POST') {
