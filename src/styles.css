@@ -283,7 +283,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .favorites-list-panel { display: flex; overflow: hidden; min-height: 510px; max-height: 510px; flex-direction: column; padding: 22px 10px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
 .favorites-list-panel .panel-heading { padding: 0 10px 15px; }
 .favorites-list-panel .panel-heading > span { width: auto; min-width: 27px; padding: 0 7px; }
-.favorites-search { padding: 0 10px 10px; }
+.favorites-search { padding: 12px 10px 10px; }
 .favorites-search input {
   width: 100%;
   min-height: 40px;
