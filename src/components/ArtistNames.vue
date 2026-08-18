@@ -13,18 +13,17 @@ defineProps({
     <template v-for="(artist, index) in artists" :key="artist.id || artist.name">
       <span v-if="index">, </span>
       <span class="artist-name-with-link">
-        <AiLookupLink :href="artistAiModeUrl(artist.name)" :label="artist.name" />
         <a
           v-if="artist.url"
-          class="artist-spotify-link"
+          class="artist-primary-link"
           :href="artist.url"
           target="_blank"
           rel="noreferrer"
           :aria-label="`Open ${artist.name} on Spotify`"
           :title="`Open ${artist.name} on Spotify`"
-        >
-          Spotify ↗
-        </a>
+        >{{ artist.name }}</a>
+        <span v-else>{{ artist.name }}</span>
+        <AiLookupLink compact icon-only :href="artistAiModeUrl(artist.name)" :label="artist.name" />
       </span>
     </template>
   </template>

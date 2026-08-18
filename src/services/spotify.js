@@ -85,6 +85,7 @@ function normalizeSong(item, addedAt) {
     subtitle: artistNames(item.artists),
     artistLinks: artistLinks(item.artists),
     albumTitle: item.album?.name,
+    albumUrl: spotifyUrl(item.album),
     detail: item.album?.name,
     image: imageUrl(item.album),
     url: spotifyUrl(item),

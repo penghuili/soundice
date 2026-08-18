@@ -443,11 +443,15 @@ function savedDate(value) {
             <div class="feature-details">
               <div class="feature-copy">
                 <p class="feature-kicker">Soundice picked</p>
-                <h2 v-if="itemType === 'artists'">
-                  <AiLookupLink heading :href="artistAiModeUrl(state.current.title)" :label="state.current.title" />
+                <h2 v-if="itemType === 'artists'" class="card-title-row">
+                  <a v-if="state.current.url" class="card-title-link" :href="state.current.url" target="_blank" rel="noreferrer" :aria-label="`Open ${state.current.title} on Spotify`" :title="`Open ${state.current.title} on Spotify`">{{ state.current.title }}</a>
+                  <span v-else class="card-title-link">{{ state.current.title }}</span>
+                  <AiLookupLink heading icon-only :href="artistAiModeUrl(state.current.title)" :label="state.current.title" />
                 </h2>
-                <h2 v-else-if="itemType === 'albums'">
-                  <AiLookupLink heading :href="albumAiModeUrl(state.current.title, state.current.artistLinks)" :label="state.current.title" />
+                <h2 v-else-if="itemType === 'albums'" class="card-title-row">
+                  <a v-if="state.current.url" class="card-title-link" :href="state.current.url" target="_blank" rel="noreferrer" :aria-label="`Open ${state.current.title} on Spotify`" :title="`Open ${state.current.title} on Spotify`">{{ state.current.title }}</a>
+                  <span v-else class="card-title-link">{{ state.current.title }}</span>
+                  <AiLookupLink heading icon-only :href="albumAiModeUrl(state.current.title, state.current.artistLinks)" :label="state.current.title" />
                 </h2>
                 <h2 v-else>{{ state.current.title }}</h2>
                 <p class="feature-subtitle">
@@ -458,8 +462,10 @@ function savedDate(value) {
                   />
                   <template v-else>{{ state.current.subtitle }}</template>
                 </p>
-                <p v-if="itemType === 'songs' && state.current.albumTitle" class="feature-meta">
-                  <AiLookupLink :href="albumAiModeUrl(state.current.albumTitle, state.current.artistLinks)" :label="state.current.albumTitle" />
+                <p v-if="itemType === 'songs' && state.current.albumTitle" class="feature-meta card-meta-link-row">
+                  <a v-if="state.current.albumUrl" class="card-meta-link" :href="state.current.albumUrl" target="_blank" rel="noreferrer" :aria-label="`Open ${state.current.albumTitle} on Spotify`" :title="`Open ${state.current.albumTitle} on Spotify`">{{ state.current.albumTitle }}</a>
+                  <span v-else>{{ state.current.albumTitle }}</span>
+                  <AiLookupLink compact icon-only :href="albumAiModeUrl(state.current.albumTitle, state.current.artistLinks)" :label="state.current.albumTitle" />
                 </p>
                 <p v-else-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
                 <p v-if="state.current.addedAt" class="feature-saved">Saved {{ savedDate(state.current.addedAt) }}</p>
@@ -469,7 +475,6 @@ function savedDate(value) {
                   <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
                   {{ state.rolling ? 'Rolling…' : 'Roll again' }}
                 </button>
-                <a v-if="state.current.url" class="spotify-link spotify-action" :href="state.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
                 <div class="feature-secondary-actions">
                   <button v-if="itemType === 'albums'" class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite(itemType, state.current) }" type="button" :aria-pressed="isFavorite(itemType, state.current)" @click="toggleFavorite(itemType, state.current)">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
@@ -517,8 +522,10 @@ function savedDate(value) {
               <MediaArtwork :item="artistAlbum.current" />
               <div class="artist-album-details">
                 <p class="feature-kicker">From their catalog</p>
-                <h2>
-                  <AiLookupLink heading :href="albumAiModeUrl(artistAlbum.current.title, artistAlbum.current.artistLinks)" :label="artistAlbum.current.title" />
+                <h2 class="card-title-row">
+                  <a v-if="artistAlbum.current.url" class="card-title-link" :href="artistAlbum.current.url" target="_blank" rel="noreferrer" :aria-label="`Open ${artistAlbum.current.title} on Spotify`" :title="`Open ${artistAlbum.current.title} on Spotify`">{{ artistAlbum.current.title }}</a>
+                  <span v-else class="card-title-link">{{ artistAlbum.current.title }}</span>
+                  <AiLookupLink heading icon-only :href="albumAiModeUrl(artistAlbum.current.title, artistAlbum.current.artistLinks)" :label="artistAlbum.current.title" />
                 </h2>
                 <p class="feature-subtitle">
                   <ArtistNames
@@ -532,7 +539,6 @@ function savedDate(value) {
                     <img :class="{ spinning: artistAlbum.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
                     {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album or EP' }}
                   </button>
-                  <a v-if="artistAlbum.current.url" class="spotify-link spotify-action" :href="artistAlbum.current.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
                   <div class="feature-secondary-actions">
                     <button class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite('albums', artistAlbum.current) }" type="button" :aria-pressed="isFavorite('albums', artistAlbum.current)" @click="toggleFavorite('albums', artistAlbum.current)">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>

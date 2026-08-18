@@ -312,8 +312,10 @@ function formatError(error, fallback) {
                 <MediaArtwork :item="rollState.current.item" />
                 <div class="feature-details">
                   <p class="feature-kicker">Soundice picked</p>
-                  <h2>
-                    <AiLookupLink heading :href="albumAiModeUrl(rollState.current.item.title, rollState.current.item.artistLinks)" :label="rollState.current.item.title" />
+                  <h2 class="card-title-row">
+                    <a v-if="rollState.current.item.url" class="card-title-link" :href="rollState.current.item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${rollState.current.item.title} on Spotify`" :title="`Open ${rollState.current.item.title} on Spotify`">{{ rollState.current.item.title }}</a>
+                    <span v-else class="card-title-link">{{ rollState.current.item.title }}</span>
+                    <AiLookupLink heading icon-only :href="albumAiModeUrl(rollState.current.item.title, rollState.current.item.artistLinks)" :label="rollState.current.item.title" />
                   </h2>
                   <p class="feature-subtitle">
                     <ArtistNames
@@ -329,7 +331,6 @@ function formatError(error, fallback) {
                       <img :class="{ spinning: rollState.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
                       {{ rollState.rolling ? 'Rolling…' : 'Roll again' }}
                     </button>
-                    <a v-if="rollState.current.item.url" class="spotify-link spotify-action" :href="rollState.current.item.url" target="_blank" rel="noreferrer">Open in Spotify ↗</a>
                     <button class="favorite-toggle favorite-toggle-compact active" type="button" aria-pressed="true" @click="removeFavorite(rollState.current)">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
                       Favorited

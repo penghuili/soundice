@@ -43,6 +43,7 @@ function item(type, index) {
     subtitle: type === 'podcasts' ? 'A saved episode' : artistName,
     artistLinks: ['albums', 'songs'].includes(type) ? [{ id: `artist-${index}`, name: artistName, url: 'https://open.spotify.com/' }] : [],
     albumTitle: type === 'albums' ? names.albums[index % names.albums.length] : type === 'songs' ? names.albums[index % names.albums.length] : null,
+    albumUrl: type === 'songs' ? 'https://open.spotify.com/' : null,
     detail: type === 'artists' ? `${(index + 2) * 134}K followers` : type === 'songs' ? names.albums[index % names.albums.length] : 'Saved in your Spotify library',
     imageStyle: covers[index % covers.length],
     url: 'https://open.spotify.com/',
