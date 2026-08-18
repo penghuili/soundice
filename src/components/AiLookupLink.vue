@@ -6,12 +6,24 @@ defineProps({
   label: { type: String, default: '' },
   heading: Boolean,
   compact: Boolean,
+  iconOnly: Boolean,
 });
 </script>
 
 <template>
   <a
-    v-if="href && label"
+    v-if="iconOnly && href"
+    class="ai-lookup-icon-link"
+    :href="href"
+    target="_blank"
+    rel="noreferrer"
+    :aria-label="`用 Google 搜索 ${label}`"
+    :title="`用 Google 搜索 ${label}`"
+  >
+    <GeminiMark :small="compact" />
+  </a>
+  <a
+    v-else-if="href && label"
     class="ai-lookup-link"
     :class="{ heading, compact }"
     :href="href"

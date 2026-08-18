@@ -383,30 +383,11 @@ function formatError(error, fallback) {
                   <div class="favorite-item-copy">
                     <span class="favorite-type">album</span>
                     <div class="recent-title-row">
-                      <AiLookupLink
-                        compact
-                        class="recent-title-link"
-                        :href="albumAiModeUrl(item.title, item.artistLinks)"
-                        :label="item.title"
-                      />
-                      <a
-                        v-if="item.url"
-                        class="recent-spotify-link"
-                        :href="item.url"
-                        target="_blank"
-                        rel="noreferrer"
-                        :aria-label="`Open ${item.title} on Spotify`"
-                        :title="`Open ${item.title} on Spotify`"
-                      >Spotify ↗</a>
+                      <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${item.title} on Spotify`" :title="`Open ${item.title} on Spotify`"><strong>{{ item.title }}</strong> ↗</a>
+                      <strong v-else>{{ item.title }}</strong>
+                      <AiLookupLink compact icon-only :href="albumAiModeUrl(item.title, item.artistLinks)" :label="item.title" />
                     </div>
-                    <span class="recent-artist-line">
-                      <ArtistNames
-                        v-if="item.artistLinks?.length"
-                        :artists="item.artistLinks"
-                        :fallback="item.subtitle || item.detail"
-                      />
-                      <template v-else>{{ item.subtitle || item.detail }}</template>
-                    </span>
+                    <span class="recent-artist-line">{{ item.subtitle || item.detail }}</span>
                   </div>
                   <button
                     class="icon-button favorite-toggle favorite-toggle-small"
@@ -430,30 +411,11 @@ function formatError(error, fallback) {
                   <div class="favorite-item-copy">
                     <span class="favorite-type">{{ types[favorite.type] || favorite.type }}</span>
                     <div class="recent-title-row">
-                      <AiLookupLink
-                        compact
-                        class="recent-title-link"
-                        :href="albumAiModeUrl(favorite.item.title, favorite.item.artistLinks)"
-                        :label="favorite.item.title"
-                      />
-                      <a
-                        v-if="favorite.item.url"
-                        class="recent-spotify-link"
-                        :href="favorite.item.url"
-                        target="_blank"
-                        rel="noreferrer"
-                        :aria-label="`Open ${favorite.item.title} on Spotify`"
-                        :title="`Open ${favorite.item.title} on Spotify`"
-                      >Spotify ↗</a>
+                      <a v-if="favorite.item.url" class="recent-title-link" :href="favorite.item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${favorite.item.title} on Spotify`" :title="`Open ${favorite.item.title} on Spotify`"><strong>{{ favorite.item.title }}</strong> ↗</a>
+                      <strong v-else>{{ favorite.item.title }}</strong>
+                      <AiLookupLink compact icon-only :href="albumAiModeUrl(favorite.item.title, favorite.item.artistLinks)" :label="favorite.item.title" />
                     </div>
-                    <span class="recent-artist-line">
-                      <ArtistNames
-                        v-if="favorite.item.artistLinks?.length"
-                        :artists="favorite.item.artistLinks"
-                        :fallback="favorite.item.subtitle || favorite.item.detail"
-                      />
-                      <template v-else>{{ favorite.item.subtitle || favorite.item.detail }}</template>
-                    </span>
+                    <span class="recent-artist-line">{{ favorite.item.subtitle || favorite.item.detail }}</span>
                   </div>
                   <button class="icon-button favorite-toggle favorite-toggle-small active" type="button" :aria-label="`Remove ${favorite.item.title} from favorites`" :title="`Remove ${favorite.item.title} from favorites`" @click="removeFavorite(favorite)">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>

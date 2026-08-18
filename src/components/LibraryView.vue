@@ -560,40 +560,18 @@ function savedDate(value) {
             <MediaArtwork :item="item" small />
             <div>
               <div v-if="['artists', 'albums'].includes(itemCategory(item))" class="recent-title-row">
+                <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${item.title} on Spotify`" :title="`Open ${item.title} on Spotify`"><strong>{{ item.title }}</strong> ↗</a>
+                <strong v-else>{{ item.title }}</strong>
                 <AiLookupLink
-                  v-if="itemCategory(item) === 'artists'"
                   compact
-                  class="recent-title-link"
-                  :href="artistAiModeUrl(item.title)"
+                  icon-only
+                  :href="itemCategory(item) === 'artists' ? artistAiModeUrl(item.title) : albumAiModeUrl(item.title, item.artistLinks)"
                   :label="item.title"
                 />
-                <AiLookupLink
-                  v-else
-                  compact
-                  class="recent-title-link"
-                  :href="albumAiModeUrl(item.title, item.artistLinks)"
-                  :label="item.title"
-                />
-                <a
-                  v-if="item.url"
-                  class="recent-spotify-link"
-                  :href="item.url"
-                  target="_blank"
-                  rel="noreferrer"
-                  :aria-label="`Open ${item.title} on Spotify`"
-                  :title="`Open ${item.title} on Spotify`"
-                >Spotify ↗</a>
               </div>
               <a v-else-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer"><strong>{{ item.title }}</strong></a>
               <strong v-else>{{ item.title }}</strong>
-              <span class="recent-artist-line">
-                <ArtistNames
-                  v-if="item.artistLinks?.length"
-                  :artists="item.artistLinks"
-                  :fallback="item.subtitle || item.detail"
-                />
-                <template v-else>{{ item.subtitle || item.detail }}</template>
-              </span>
+              <span class="recent-artist-line">{{ item.subtitle || item.detail }}</span>
             </div>
             <button v-if="itemCategory(item) === 'albums'" class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(itemCategory(item), item) }" type="button" :aria-label="`${isFavorite(itemCategory(item), item) ? 'Remove' : 'Save'} ${item.title} album`" @click="toggleFavorite(itemCategory(item), item)">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
