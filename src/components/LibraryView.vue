@@ -560,7 +560,7 @@ function savedDate(value) {
             <MediaArtwork :item="item" small />
             <div>
               <div v-if="['artists', 'albums'].includes(itemCategory(item))" class="recent-title-row">
-                <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${item.title} on Spotify`" :title="`Open ${item.title} on Spotify`"><strong>{{ item.title }}</strong> ↗</a>
+                <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${item.title} on Spotify`" :title="`Open ${item.title} on Spotify`"><strong>{{ item.title }}</strong></a>
                 <strong v-else>{{ item.title }}</strong>
                 <AiLookupLink
                   compact

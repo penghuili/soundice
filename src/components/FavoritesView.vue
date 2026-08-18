@@ -383,7 +383,7 @@ function formatError(error, fallback) {
                   <div class="favorite-item-copy">
                     <span class="favorite-type">album</span>
                     <div class="recent-title-row">
-                      <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${item.title} on Spotify`" :title="`Open ${item.title} on Spotify`"><strong>{{ item.title }}</strong> ↗</a>
+                      <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${item.title} on Spotify`" :title="`Open ${item.title} on Spotify`"><strong>{{ item.title }}</strong></a>
                       <strong v-else>{{ item.title }}</strong>
                       <AiLookupLink compact icon-only :href="albumAiModeUrl(item.title, item.artistLinks)" :label="item.title" />
                     </div>
@@ -411,7 +411,7 @@ function formatError(error, fallback) {
                   <div class="favorite-item-copy">
                     <span class="favorite-type">{{ types[favorite.type] || favorite.type }}</span>
                     <div class="recent-title-row">
-                      <a v-if="favorite.item.url" class="recent-title-link" :href="favorite.item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${favorite.item.title} on Spotify`" :title="`Open ${favorite.item.title} on Spotify`"><strong>{{ favorite.item.title }}</strong> ↗</a>
+                      <a v-if="favorite.item.url" class="recent-title-link" :href="favorite.item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${favorite.item.title} on Spotify`" :title="`Open ${favorite.item.title} on Spotify`"><strong>{{ favorite.item.title }}</strong></a>
                       <strong v-else>{{ favorite.item.title }}</strong>
                       <AiLookupLink compact icon-only :href="albumAiModeUrl(favorite.item.title, favorite.item.artistLinks)" :label="favorite.item.title" />
                     </div>
