@@ -559,20 +559,31 @@ function savedDate(value) {
           <div v-for="(item, index) in state.latest" :key="`${item.id}-${index}`" class="recent-item">
             <MediaArtwork :item="item" small />
             <div>
-              <AiLookupLink
-                v-if="itemCategory(item) === 'artists'"
-                compact
-                class="recent-title-link"
-                :href="artistAiModeUrl(item.title)"
-                :label="item.title"
-              />
-              <AiLookupLink
-                v-else-if="itemCategory(item) === 'albums'"
-                compact
-                class="recent-title-link"
-                :href="albumAiModeUrl(item.title, item.artistLinks)"
-                :label="item.title"
-              />
+              <div v-if="['artists', 'albums'].includes(itemCategory(item))" class="recent-title-row">
+                <AiLookupLink
+                  v-if="itemCategory(item) === 'artists'"
+                  compact
+                  class="recent-title-link"
+                  :href="artistAiModeUrl(item.title)"
+                  :label="item.title"
+                />
+                <AiLookupLink
+                  v-else
+                  compact
+                  class="recent-title-link"
+                  :href="albumAiModeUrl(item.title, item.artistLinks)"
+                  :label="item.title"
+                />
+                <a
+                  v-if="item.url"
+                  class="recent-spotify-link"
+                  :href="item.url"
+                  target="_blank"
+                  rel="noreferrer"
+                  :aria-label="`Open ${item.title} on Spotify`"
+                  :title="`Open ${item.title} on Spotify`"
+                >Spotify ↗</a>
+              </div>
               <a v-else-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer"><strong>{{ item.title }}</strong></a>
               <strong v-else>{{ item.title }}</strong>
               <span class="recent-artist-line">

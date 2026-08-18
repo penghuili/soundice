@@ -234,8 +234,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .recent-list { padding-top: 5px; }
 .recent-item { display: grid; grid-template-columns: 48px minmax(0,1fr) 20px; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 12px; transition: background 150ms ease; }
 .recent-item:hover { background: #1a1c22; }
+.recent-title-row { display: flex; min-width: 0; align-items: center; gap: 6px; }
 .recent-title-link { display: block; overflow: hidden; color: inherit; text-overflow: ellipsis; white-space: nowrap; }
 .recent-title-link:hover { color: #fff; }
+.recent-title-row .recent-title-link { min-width: 0; flex: 1 1 auto; }
+.recent-spotify-link { display: inline-flex; flex: 0 0 auto; align-items: center; padding: 3px 6px; color: #8ee7a6; background: rgba(30, 215, 96, .1); border: 1px solid rgba(30, 215, 96, .24); border-radius: 999px; font-size: 9px; font-weight: 750; line-height: 1; white-space: nowrap; }
+.recent-spotify-link:hover { color: #c5ffd2; background: rgba(30, 215, 96, .16); border-color: rgba(30, 215, 96, .4); }
 .artwork.small { width: 48px; height: 48px; border-radius: 9px; box-shadow: none; }
 .artwork.small .artwork-fallback { font-size: 13px; }
 .recent-item > div:nth-child(2) { min-width: 0; }

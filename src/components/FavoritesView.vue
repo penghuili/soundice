@@ -382,12 +382,23 @@ function formatError(error, fallback) {
                   <MediaArtwork :item="item" small />
                   <div class="favorite-item-copy">
                     <span class="favorite-type">album</span>
-                    <AiLookupLink
-                      compact
-                      class="recent-title-link"
-                      :href="albumAiModeUrl(item.title, item.artistLinks)"
-                      :label="item.title"
-                    />
+                    <div class="recent-title-row">
+                      <AiLookupLink
+                        compact
+                        class="recent-title-link"
+                        :href="albumAiModeUrl(item.title, item.artistLinks)"
+                        :label="item.title"
+                      />
+                      <a
+                        v-if="item.url"
+                        class="recent-spotify-link"
+                        :href="item.url"
+                        target="_blank"
+                        rel="noreferrer"
+                        :aria-label="`Open ${item.title} on Spotify`"
+                        :title="`Open ${item.title} on Spotify`"
+                      >Spotify ↗</a>
+                    </div>
                     <span class="recent-artist-line">
                       <ArtistNames
                         v-if="item.artistLinks?.length"
@@ -418,12 +429,23 @@ function formatError(error, fallback) {
                   <MediaArtwork :item="favorite.item" small />
                   <div class="favorite-item-copy">
                     <span class="favorite-type">{{ types[favorite.type] || favorite.type }}</span>
-                    <AiLookupLink
-                      compact
-                      class="recent-title-link"
-                      :href="albumAiModeUrl(favorite.item.title, favorite.item.artistLinks)"
-                      :label="favorite.item.title"
-                    />
+                    <div class="recent-title-row">
+                      <AiLookupLink
+                        compact
+                        class="recent-title-link"
+                        :href="albumAiModeUrl(favorite.item.title, favorite.item.artistLinks)"
+                        :label="favorite.item.title"
+                      />
+                      <a
+                        v-if="favorite.item.url"
+                        class="recent-spotify-link"
+                        :href="favorite.item.url"
+                        target="_blank"
+                        rel="noreferrer"
+                        :aria-label="`Open ${favorite.item.title} on Spotify`"
+                        :title="`Open ${favorite.item.title} on Spotify`"
+                      >Spotify ↗</a>
+                    </div>
                     <span class="recent-artist-line">
                       <ArtistNames
                         v-if="favorite.item.artistLinks?.length"
