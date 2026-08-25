@@ -236,7 +236,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .panel-heading { display: flex; align-items: center; justify-content: space-between; padding: 0 12px 17px; border-bottom: 1px solid var(--line); }
 .panel-heading p { margin: 0 0 5px; color: #696c75; font-size: 9px; font-weight: 730; letter-spacing: .1em; text-transform: uppercase; }
 .panel-heading h2 { margin: 0; font-size: 17px; letter-spacing: -.025em; }
-.panel-heading > span { display: grid; place-items: center; width: 27px; height: 27px; color: #81838b; background: #1b1d22; border-radius: 8px; font-size: 10px; }
+.panel-heading-actions { display: flex; align-items: center; gap: 6px; }
+.panel-heading-actions > span { display: grid; place-items: center; width: 27px; height: 27px; color: #81838b; background: #1b1d22; border-radius: 8px; font-size: 10px; }
+.recent-refresh-button { width: 27px; height: 27px; margin: 0; color: #81838b; background: #1b1d22; border-radius: 8px; }
+.recent-refresh-button:hover:not(:disabled) { color: #fff; background: #24262e; }
+.recent-refresh-button:disabled { cursor: wait; opacity: .65; }
+.recent-refresh-button.spinning svg { animation: refresh-spin 700ms linear infinite; }
 .recent-list { padding-top: 5px; }
 .recent-item { display: grid; grid-template-columns: 48px minmax(0,1fr) 20px; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 12px; transition: background 150ms ease; }
 .recent-item:hover { background: #1a1c22; }

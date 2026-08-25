@@ -108,6 +108,25 @@ async function load(type = active.value, pick = true) {
   return promise;
 }
 
+async function refresh(type = active.value) {
+  const target = states[type];
+  if (target.loading) return categoryLoadPromises.get(type);
+
+  target.loaded = false;
+  target.current = null;
+  target.previous = null;
+  target.rollError = '';
+  target.removeError = '';
+  if (type === 'artists') {
+    target.previousArtistAlbum = null;
+    artistAlbum.current = null;
+    artistAlbum.previous = null;
+    artistAlbum.error = '';
+    artistAlbum.artistId = null;
+  }
+  return load(type);
+}
+
 onMounted(() => {
   loadFavorites().catch(() => {});
 });
@@ -560,7 +579,23 @@ function savedDate(value) {
       </div>
 
       <section class="recent-panel">
-        <div class="panel-heading"><div><p>{{ meta.recent }}</p><h2>Your latest {{ meta.label.toLowerCase() }}</h2></div><span>{{ state.latest.length }}</span></div>
+        <div class="panel-heading">
+          <div><p>{{ meta.recent }}</p><h2>Your latest {{ meta.label.toLowerCase() }}</h2></div>
+          <div class="panel-heading-actions">
+            <span>{{ state.latest.length }}</span>
+            <button
+              class="icon-button recent-refresh-button"
+              :class="{ spinning: state.loading }"
+              type="button"
+              :aria-label="`Refresh latest ${meta.label.toLowerCase()}`"
+              :title="`Refresh latest ${meta.label.toLowerCase()}`"
+              :disabled="state.loading"
+              @click="refresh()"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" /></svg>
+            </button>
+          </div>
+        </div>
         <div class="recent-list">
           <div v-for="(item, index) in state.latest" :key="`${item.id}-${index}`" class="recent-item">
             <MediaArtwork :item="item" small />
