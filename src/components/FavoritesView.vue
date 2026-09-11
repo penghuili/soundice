@@ -328,7 +328,7 @@ function formatError(error, fallback) {
                   <p v-if="rollState.current.item.detail" class="feature-meta">{{ rollState.current.item.detail }}</p>
                   <div class="feature-actions">
                     <button class="primary-button roll-button" type="button" :disabled="rollState.rolling" @click="roll()">
-                      <img :class="{ spinning: rollState.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
+                      <img :class="{ spinning: rollState.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg?v=2" alt="" width="21" height="21" />
                       {{ rollState.rolling ? 'Rolling…' : 'Roll again' }}
                     </button>
                     <button class="favorite-toggle favorite-toggle-compact active" type="button" aria-pressed="true" @click="removeFavorite(rollState.current)">

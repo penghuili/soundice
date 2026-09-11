@@ -4,7 +4,7 @@ defineProps({ compact: Boolean });
 
 <template>
   <a class="brand" href="/" aria-label="Soundice home">
-    <img class="brand-logo" src="/soundice-mark.svg" alt="" width="32" height="32" />
+    <img class="brand-logo" src="/soundice-mark.svg?v=2" alt="" width="32" height="32" />
     <span v-if="!compact">Soundice</span>
   </a>
 </template>
