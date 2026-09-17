@@ -1,5 +1,11 @@
-const CACHE_NAME = 'soundice-shell-v5';
-const APP_SHELL = ['/', '/manifest.json', '/soundice-mark.svg', '/icons/icon-192.png', '/icons/icon-512.png'];
+const CACHE_NAME = 'soundice-shell-v6';
+const APP_SHELL = [
+  '/',
+  '/manifest.json',
+  '/soundice-mark.svg?v=3',
+  '/icons/icon-192.png?v=3',
+  '/icons/icon-512.png?v=3',
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));

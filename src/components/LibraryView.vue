@@ -491,7 +491,7 @@ function savedDate(value) {
               </div>
               <div class="feature-actions">
                 <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
-                  <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
+                  <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg?v=3" alt="" width="21" height="21" />
                   {{ state.rolling ? 'Rolling…' : 'Roll again' }}
                 </button>
                 <div class="feature-secondary-actions">
@@ -555,7 +555,7 @@ function savedDate(value) {
                 <p v-if="artistAlbum.current.detail" class="feature-meta">{{ artistAlbum.current.detail }}</p>
                 <div class="feature-actions artist-album-actions">
                   <button class="primary-button roll-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
-                    <img :class="{ spinning: artistAlbum.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg" alt="" width="21" height="21" />
+                    <img :class="{ spinning: artistAlbum.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg?v=3" alt="" width="21" height="21" />
                     {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album or EP' }}
                   </button>
                   <div class="feature-secondary-actions">

@@ -94,7 +94,7 @@ function logout() {
 
 <template>
   <main v-if="status === 'loading'" class="boot-screen" aria-label="Loading Soundice">
-    <img class="boot-logo-mark" src="/soundice-mark.svg?v=2" alt="" width="54" height="54" />
+    <img class="boot-logo-mark" src="/soundice-mark.svg?v=3" alt="" width="54" height="54" />
     <div class="boot-line"><span /></div>
   </main>
 
