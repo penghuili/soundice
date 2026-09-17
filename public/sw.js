@@ -1,10 +1,10 @@
-const CACHE_NAME = 'soundice-shell-v6';
+const CACHE_NAME = 'soundice-shell-v7';
 const APP_SHELL = [
   '/',
   '/manifest.json',
   '/soundice-mark.svg?v=3',
-  '/icons/icon-192.png?v=3',
-  '/icons/icon-512.png?v=3',
+  '/icons/icon-192.png?v=4',
+  '/icons/icon-512.png?v=4',
 ];
 
 self.addEventListener('install', (event) => {
