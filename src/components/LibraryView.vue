@@ -424,7 +424,7 @@ function savedDate(value) {
             <span>{{ favorite.item.subtitle || favorite.item.detail }}</span>
           </div>
           <button class="icon-button favorite-toggle favorite-toggle-small active" type="button" :aria-label="`Remove ${favorite.item.title} from favorites`" :title="`Remove ${favorite.item.title} from favorites`" @click="toggleFavorite(favorite.type, favorite.item)">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
           </button>
         </article>
       </div>
@@ -496,7 +496,7 @@ function savedDate(value) {
                 </button>
                 <div class="feature-secondary-actions">
                   <button v-if="itemType === 'albums'" class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite(itemType, state.current) }" type="button" :aria-pressed="isFavorite(itemType, state.current)" @click="toggleFavorite(itemType, state.current)">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
                     {{ isFavorite(itemType, state.current) ? 'Favorited' : 'Favorite' }}
                   </button>
                   <button class="remove-button" type="button" :disabled="state.removing || state.rolling" @click="requestRemoval()">
@@ -560,7 +560,7 @@ function savedDate(value) {
                   </button>
                   <div class="feature-secondary-actions">
                     <button class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite('albums', artistAlbum.current) }" type="button" :aria-pressed="isFavorite('albums', artistAlbum.current)" @click="toggleFavorite('albums', artistAlbum.current)">
-                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
                       {{ isFavorite('albums', artistAlbum.current) ? 'Favorited' : 'Favorite' }}
                     </button>
                   </div>
@@ -615,7 +615,7 @@ function savedDate(value) {
               <span class="recent-artist-line">{{ item.subtitle || item.detail }}</span>
             </div>
             <button v-if="itemCategory(item) === 'albums'" class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(itemCategory(item), item) }" type="button" :aria-label="`${isFavorite(itemCategory(item), item) ? 'Remove' : 'Save'} ${item.title} album`" @click="toggleFavorite(itemCategory(item), item)">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 17.27-5.18 3.13 1.64-5.89L3.82 10.5l6.09-.25L12 4.5l2.09 5.75 6.09.25-1.64 5.89L12 17.27Z" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
             </button>
           </div>
         </div>
