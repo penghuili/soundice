@@ -40,11 +40,11 @@ function item(type, index) {
   return {
     id: `${type}-${index}`,
     title: names[type][index % names[type].length],
-    subtitle: type === 'podcasts' ? 'A saved episode' : artistName,
+    subtitle: type === 'podcasts' ? '一集已收藏的播客' : artistName,
     artistLinks: ['albums', 'songs'].includes(type) ? [{ id: `artist-${index}`, name: artistName, url: 'https://open.spotify.com/' }] : [],
     albumTitle: type === 'albums' ? names.albums[index % names.albums.length] : type === 'songs' ? names.albums[index % names.albums.length] : null,
     albumUrl: type === 'songs' ? 'https://open.spotify.com/' : null,
-    detail: type === 'artists' ? `${(index + 2) * 134}K followers` : type === 'songs' ? names.albums[index % names.albums.length] : 'Saved in your Spotify library',
+    detail: type === 'artists' ? `${(index + 2) * 134}K 粉丝` : type === 'songs' ? names.albums[index % names.albums.length] : '已收藏在你的 Spotify 曲库',
     imageStyle: covers[index % covers.length],
     url: 'https://open.spotify.com/',
     uri: `spotify:${type}:${index}`,
@@ -82,7 +82,7 @@ function albumCatalogItem(entry, index) {
     subtitle: entry.artist,
     artistLinks: [{ id: `search-artist-${index}`, name: entry.artist, url: 'https://open.spotify.com/' }],
     albumTitle: entry.title,
-    detail: 'Album',
+    detail: '专辑',
   };
 }
 
@@ -94,7 +94,7 @@ export const demoService = {
   async getRandomItem(type) {
     await new Promise(resolve => setTimeout(resolve, 420));
     if (failRandomPick) {
-      const error = new Error('Spotify is temporarily unreachable. Please try again.');
+      const error = new Error('Spotify 暂时无法访问，请重试。');
       error.status = 503;
       throw error;
     }
@@ -113,7 +113,7 @@ export const demoService = {
       subtitle: names.artists[artistIndex % names.artists.length],
       artistLinks: [{ id: artistId, name: names.artists[artistIndex % names.artists.length], url: 'https://open.spotify.com/' }],
       albumTitle: album.title,
-      detail: [album.year, album.kind, `${album.tracks} tracks`].filter(Boolean).join(' · '),
+      detail: [album.year, album.kind, `${album.tracks} 首曲目`].filter(Boolean).join(' · '),
     };
   },
   async removeItem() {
@@ -147,7 +147,7 @@ export const demoService = {
     }).slice(0, 8);
   },
   async add(type, favoriteItem) {
-    if (type !== 'albums') throw new Error('Only albums can be favorited.');
+    if (type !== 'albums') throw new Error('只能收藏专辑。');
     await new Promise(resolve => setTimeout(resolve, 180));
     const favorite = { type, item: { ...favoriteItem }, createdAt: new Date().toISOString() };
     const existingIndex = demoFavorites.findIndex(item => item.type === type && item.item.id === favoriteItem.id);
@@ -156,7 +156,7 @@ export const demoService = {
     return favorite;
   },
   async remove(type, itemId) {
-    if (type !== 'albums') throw new Error('Only albums can be favorited.');
+    if (type !== 'albums') throw new Error('只能收藏专辑。');
     await new Promise(resolve => setTimeout(resolve, 180));
     const index = demoFavorites.findIndex(item => item.type === type && item.item.id === itemId);
     if (index >= 0) demoFavorites.splice(index, 1);

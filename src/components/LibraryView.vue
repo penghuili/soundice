@@ -16,17 +16,17 @@ const props = defineProps({
 const emit = defineEmits(['logout', 'open-favorites']);
 
 const libraryCategories = [
-  { id: 'albums', label: 'Albums', singular: 'album', symbol: '◐', recent: 'Recently saved' },
-  { id: 'artists', label: 'Artists', singular: 'artist', symbol: '✦', recent: 'Recently followed' },
-  { id: 'songs', label: 'Songs', singular: 'song', symbol: '♪', recent: 'Recently liked' },
-  { id: 'podcasts', label: 'Podcasts', singular: 'episode', symbol: '◉', recent: 'Recently saved' },
+  { id: 'albums', label: '专辑', singular: '专辑', symbol: '◐', recent: '最近收藏' },
+  { id: 'artists', label: '艺人', singular: '艺人', symbol: '✦', recent: '最近关注' },
+  { id: 'songs', label: '歌曲', singular: '歌曲', symbol: '♪', recent: '最近喜欢' },
+  { id: 'podcasts', label: '播客', singular: '单集', symbol: '◉', recent: '最近收藏' },
 ];
 const categories = libraryCategories;
 const removeLabels = {
-  albums: 'Remove album',
-  artists: 'Unfollow artist',
-  songs: 'Remove song',
-  podcasts: 'Remove episode',
+  albums: '移除专辑',
+  artists: '取消关注',
+  songs: '移除歌曲',
+  podcasts: '移除单集',
 };
 
 const requestedTab = new URLSearchParams(window.location.search).get('tab');
@@ -148,7 +148,7 @@ async function loadFavorites(force = false) {
     })
     .catch(error => {
       if (error instanceof AuthRequiredError) emit('logout');
-      favoriteState.error = formatError(error, 'Soundice could not load your favorites.');
+      favoriteState.error = formatError(error, 'Soundice 无法加载你的收藏。');
       favoriteError.value = favoriteState.error;
       throw error;
     })
@@ -187,7 +187,7 @@ async function toggleFavorite(type, item) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else {
-      favoriteError.value = formatError(error, 'Could not update this favorite.');
+      favoriteError.value = formatError(error, '无法更新这条收藏。');
     }
   }
 }
@@ -216,7 +216,7 @@ async function rollCategory(type, target, animate = true) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else {
-      target.rollError = formatError(error, 'Spotify could not pick something right now.');
+      target.rollError = formatError(error, 'Spotify 暂时无法抽取，请稍后再试。');
     }
   } finally {
     target.rolling = false;
@@ -238,7 +238,7 @@ async function randomize() {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else {
-      state.value.rollError = formatError(error, 'Spotify could not pick something right now.');
+      state.value.rollError = formatError(error, 'Spotify 暂时无法抽取，请稍后再试。');
     }
   } finally {
     randomizing.value = false;
@@ -304,7 +304,7 @@ async function confirmRemoval() {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else {
-      target.removeError = formatError(error, 'Spotify could not update your library right now.');
+      target.removeError = formatError(error, 'Spotify 暂时无法更新你的曲库。');
     }
   } finally {
     target.removing = false;
@@ -326,12 +326,12 @@ async function rollArtistAlbum(artist = states.artists.current, animate = true) 
     if (sameArtist && artistAlbum.current) artistAlbum.previous = artistAlbum.current;
     else artistAlbum.previous = null;
     artistAlbum.current = album;
-    if (!album) artistAlbum.error = `Spotify did not return an album or EP for ${artist.title}.`;
+    if (!album) artistAlbum.error = `Spotify 没有返回 ${artist.title} 的专辑或 EP。`;
   } catch (error) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else if (artistAlbum.artistId === artistId) {
-      artistAlbum.error = formatError(error, 'Spotify could not pick an album or EP right now.');
+      artistAlbum.error = formatError(error, 'Spotify 暂时无法抽取专辑或 EP。');
     }
   } finally {
     if (artistAlbum.artistId === artistId) artistAlbum.rolling = false;
@@ -350,7 +350,7 @@ function handleError(error, target) {
     emit('logout');
     return;
   }
-  target.error = formatError(error, 'Spotify did not respond. Please try again.');
+  target.error = formatError(error, 'Spotify 没有响应，请重试。');
 }
 
 function formatError(error, fallback) {
@@ -360,7 +360,7 @@ function formatError(error, fallback) {
 
 function savedDate(value) {
   if (!value) return '';
-  return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value));
+  return new Intl.DateTimeFormat('zh-CN', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value));
 }
 </script>
 
@@ -368,7 +368,7 @@ function savedDate(value) {
   <div class="app-shell">
     <AppHeader :favorite-count="favoriteState.count" show-randomize :randomizing="randomizing" @open-favorites="emit('open-favorites')" @randomize="randomize" @logout="emit('logout')" />
 
-    <nav class="library-tabs" aria-label="Spotify library" role="tablist">
+    <nav class="library-tabs" aria-label="Spotify 曲库" role="tablist">
       <button
         v-for="category in categories"
         :key="category.id"
@@ -390,8 +390,8 @@ function savedDate(value) {
     </div>
 
     <div v-else-if="state.error" class="error-panel" role="alert">
-      <span>!</span><div><h2>That roll didn't land.</h2><p>{{ state.error }}</p></div>
-      <button type="button" class="secondary-button" @click="state.loaded = false; load()">Try again</button>
+      <span>!</span><div><h2>这次抽取没有成功。</h2><p>{{ state.error }}</p></div>
+      <button type="button" class="secondary-button" @click="state.loaded = false; load()">重试</button>
     </div>
 
     <!-- Favorites moved to FavoritesView. -->
@@ -434,21 +434,21 @@ function savedDate(value) {
 
     <div v-else-if="state.loaded && !state.count" class="empty-panel">
       <span>{{ meta.symbol }}</span>
-      <h2>No {{ meta.label.toLowerCase() }} yet</h2>
-      <p>Save something in Spotify, then come back for a surprise.</p>
+      <h2>还没有{{ meta.label }}</h2>
+      <p>先在 Spotify 里收藏一些内容，再回来抽惊喜吧。</p>
     </div>
 
     <div v-else class="content-grid">
       <div class="feature-stack">
         <section class="feature-card">
         <div class="feature-topline">
-          <span>Random {{ meta.singular }}</span>
+          <span>随机{{ meta.singular }}</span>
           <button
             v-if="state.previous"
             class="icon-button previous-button"
             type="button"
-            aria-label="Undo"
-            title="Undo"
+            aria-label="撤销"
+            title="撤销"
             :disabled="state.rolling || state.removing"
             @click="goBack()"
           >
@@ -461,14 +461,14 @@ function savedDate(value) {
             <MediaArtwork :item="state.current" />
             <div class="feature-details">
               <div class="feature-copy">
-                <p class="feature-kicker">Soundice picked</p>
+                <p class="feature-kicker">Soundice 抽中了</p>
                 <h2 v-if="itemType === 'artists'" class="card-title-row">
-                  <a v-if="state.current.url" class="card-title-link" :href="state.current.url" target="_blank" rel="noreferrer" :aria-label="`Open ${state.current.title} on Spotify`" :title="`Open ${state.current.title} on Spotify`">{{ state.current.title }}</a>
+                  <a v-if="state.current.url" class="card-title-link" :href="state.current.url" target="_blank" rel="noreferrer" :aria-label="`在 Spotify 中打开 ${state.current.title}`" :title="`在 Spotify 中打开 ${state.current.title}`">{{ state.current.title }}</a>
                   <span v-else class="card-title-link">{{ state.current.title }}</span>
                   <AiLookupLink heading icon-only :href="artistAiModeUrl(state.current.title)" :label="state.current.title" />
                 </h2>
                 <h2 v-else-if="itemType === 'albums'" class="card-title-row">
-                  <a v-if="state.current.url" class="card-title-link" :href="state.current.url" target="_blank" rel="noreferrer" :aria-label="`Open ${state.current.title} on Spotify`" :title="`Open ${state.current.title} on Spotify`">{{ state.current.title }}</a>
+                  <a v-if="state.current.url" class="card-title-link" :href="state.current.url" target="_blank" rel="noreferrer" :aria-label="`在 Spotify 中打开 ${state.current.title}`" :title="`在 Spotify 中打开 ${state.current.title}`">{{ state.current.title }}</a>
                   <span v-else class="card-title-link">{{ state.current.title }}</span>
                   <AiLookupLink heading icon-only :href="albumAiModeUrl(state.current.title, state.current.artistLinks)" :label="state.current.title" />
                 </h2>
@@ -482,25 +482,25 @@ function savedDate(value) {
                   <template v-else>{{ state.current.subtitle }}</template>
                 </p>
                 <p v-if="itemType === 'songs' && state.current.albumTitle" class="feature-meta card-meta-link-row">
-                  <a v-if="state.current.albumUrl" class="card-meta-link" :href="state.current.albumUrl" target="_blank" rel="noreferrer" :aria-label="`Open ${state.current.albumTitle} on Spotify`" :title="`Open ${state.current.albumTitle} on Spotify`">{{ state.current.albumTitle }}</a>
+                  <a v-if="state.current.albumUrl" class="card-meta-link" :href="state.current.albumUrl" target="_blank" rel="noreferrer" :aria-label="`在 Spotify 中打开 ${state.current.albumTitle}`" :title="`在 Spotify 中打开 ${state.current.albumTitle}`">{{ state.current.albumTitle }}</a>
                   <span v-else>{{ state.current.albumTitle }}</span>
                   <AiLookupLink compact icon-only :href="albumAiModeUrl(state.current.albumTitle, state.current.artistLinks)" :label="state.current.albumTitle" />
                 </p>
                 <p v-else-if="state.current.detail" class="feature-meta">{{ state.current.detail }}</p>
-                <p v-if="state.current.addedAt" class="feature-saved">Saved {{ savedDate(state.current.addedAt) }}</p>
+                <p v-if="state.current.addedAt" class="feature-saved">收藏于 {{ savedDate(state.current.addedAt) }}</p>
               </div>
               <div class="feature-actions">
                 <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
                   <img :class="{ spinning: state.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg?v=3" alt="" width="21" height="21" />
-                  {{ state.rolling ? 'Rolling…' : 'Roll again' }}
+                  {{ state.rolling ? '抽取中…' : '再抽一次' }}
                 </button>
                 <div class="feature-secondary-actions">
                   <button v-if="itemType === 'albums'" class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite(itemType, state.current) }" type="button" :aria-pressed="isFavorite(itemType, state.current)" @click="toggleFavorite(itemType, state.current)">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
-                    {{ isFavorite(itemType, state.current) ? 'Favorited' : 'Favorite' }}
+                    {{ isFavorite(itemType, state.current) ? '已收藏' : '收藏' }}
                   </button>
                   <button class="remove-button" type="button" :disabled="state.removing || state.rolling" @click="requestRemoval()">
-                    {{ state.removing ? 'Removing…' : removeLabels[itemType] }}
+                    {{ state.removing ? '移除中…' : removeLabels[itemType] }}
                   </button>
                 </div>
                 <p v-if="state.rollError" class="roll-error" role="status">{{ state.rollError }}</p>
@@ -511,10 +511,10 @@ function savedDate(value) {
           </div>
           <div v-else class="feature-retry">
             <span>↻</span>
-            <h2>One more roll?</h2>
-            <p>{{ state.rollError || 'Spotify did not return a pick.' }}</p>
+            <h2>再来一次？</h2>
+            <p>{{ state.rollError || 'Spotify 没有返回结果。' }}</p>
             <button class="primary-button roll-button" type="button" :disabled="state.rolling" @click="roll()">
-              {{ state.rolling ? 'Trying again…' : 'Try again' }}
+              {{ state.rolling ? '重试中…' : '再试一次' }}
             </button>
           </div>
         </Transition>
@@ -522,13 +522,13 @@ function savedDate(value) {
 
         <section v-if="itemType === 'artists'" class="artist-album-card">
           <div class="feature-topline">
-            <span>Random album or EP by {{ state.current?.title }}</span>
+            <span>{{ state.current?.title }} 的随机专辑或 EP</span>
             <button
               v-if="artistAlbum.previous"
               class="icon-button previous-button"
               type="button"
-              aria-label="Undo"
-              title="Undo"
+              aria-label="撤销"
+              title="撤销"
               :disabled="artistAlbum.rolling"
               @click="goBackArtistAlbum()"
             >
@@ -540,9 +540,9 @@ function savedDate(value) {
             <div v-if="artistAlbum.current" :key="artistAlbum.current.id" class="artist-album-content">
               <MediaArtwork :item="artistAlbum.current" />
               <div class="artist-album-details">
-                <p class="feature-kicker">From their catalog</p>
+                <p class="feature-kicker">来自这位艺人的作品</p>
                 <h2 class="card-title-row">
-                  <a v-if="artistAlbum.current.url" class="card-title-link" :href="artistAlbum.current.url" target="_blank" rel="noreferrer" :aria-label="`Open ${artistAlbum.current.title} on Spotify`" :title="`Open ${artistAlbum.current.title} on Spotify`">{{ artistAlbum.current.title }}</a>
+                  <a v-if="artistAlbum.current.url" class="card-title-link" :href="artistAlbum.current.url" target="_blank" rel="noreferrer" :aria-label="`在 Spotify 中打开 ${artistAlbum.current.title}`" :title="`在 Spotify 中打开 ${artistAlbum.current.title}`">{{ artistAlbum.current.title }}</a>
                   <span v-else class="card-title-link">{{ artistAlbum.current.title }}</span>
                   <AiLookupLink heading icon-only :href="albumAiModeUrl(artistAlbum.current.title, artistAlbum.current.artistLinks)" :label="artistAlbum.current.title" />
                 </h2>
@@ -556,21 +556,21 @@ function savedDate(value) {
                 <div class="feature-actions artist-album-actions">
                   <button class="primary-button roll-button artist-album-roll" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
                     <img :class="{ spinning: artistAlbum.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg?v=3" alt="" width="21" height="21" />
-                    {{ artistAlbum.rolling ? 'Rolling…' : 'Roll another album or EP' }}
+                    {{ artistAlbum.rolling ? '抽取中…' : '再抽一张专辑或 EP' }}
                   </button>
                   <div class="feature-secondary-actions">
                     <button class="favorite-toggle favorite-toggle-compact" :class="{ active: isFavorite('albums', artistAlbum.current) }" type="button" :aria-pressed="isFavorite('albums', artistAlbum.current)" @click="toggleFavorite('albums', artistAlbum.current)">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
-                      {{ isFavorite('albums', artistAlbum.current) ? 'Favorited' : 'Favorite' }}
+                      {{ isFavorite('albums', artistAlbum.current) ? '已收藏' : '收藏' }}
                     </button>
                   </div>
                 </div>
               </div>
             </div>
             <div v-else class="artist-album-empty">
-              <p>{{ artistAlbum.error || 'No album or EP landed for this artist.' }}</p>
+              <p>{{ artistAlbum.error || '这位艺人没有抽到专辑或 EP。' }}</p>
               <button class="primary-button roll-button" type="button" :disabled="artistAlbum.rolling" @click="rollArtistAlbum()">
-                {{ artistAlbum.rolling ? 'Trying…' : 'Try an album or EP' }}
+                {{ artistAlbum.rolling ? '抽取中…' : '试试抽一张专辑或 EP' }}
               </button>
             </div>
           </Transition>
@@ -580,15 +580,15 @@ function savedDate(value) {
 
       <section class="recent-panel">
         <div class="panel-heading">
-          <div><p>{{ meta.recent }}</p><h2>Your latest {{ meta.label.toLowerCase() }}</h2></div>
+          <div><p>{{ meta.recent }}</p><h2>你最近的{{ meta.label }}</h2></div>
           <div class="panel-heading-actions">
             <span>{{ state.latest.length }}</span>
             <button
               class="icon-button recent-refresh-button"
               :class="{ spinning: state.loading }"
               type="button"
-              :aria-label="`Refresh latest ${meta.label.toLowerCase()}`"
-              :title="`Refresh latest ${meta.label.toLowerCase()}`"
+              :aria-label="`刷新最近的${meta.label}`"
+              :title="`刷新最近的${meta.label}`"
               :disabled="state.loading"
               @click="refresh()"
             >
@@ -601,7 +601,7 @@ function savedDate(value) {
             <MediaArtwork :item="item" small />
             <div>
               <div v-if="['artists', 'albums'].includes(itemCategory(item))" class="recent-title-row">
-                <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${item.title} on Spotify`" :title="`Open ${item.title} on Spotify`"><strong>{{ item.title }}</strong></a>
+                <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`在 Spotify 中打开 ${item.title}`" :title="`在 Spotify 中打开 ${item.title}`"><strong>{{ item.title }}</strong></a>
                 <strong v-else>{{ item.title }}</strong>
                 <AiLookupLink
                   compact
@@ -614,7 +614,7 @@ function savedDate(value) {
               <strong v-else>{{ item.title }}</strong>
               <span class="recent-artist-line">{{ item.subtitle || item.detail }}</span>
             </div>
-            <button v-if="itemCategory(item) === 'albums'" class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(itemCategory(item), item) }" type="button" :aria-label="`${isFavorite(itemCategory(item), item) ? 'Remove' : 'Save'} ${item.title} album`" @click="toggleFavorite(itemCategory(item), item)">
+            <button v-if="itemCategory(item) === 'albums'" class="icon-button favorite-toggle favorite-toggle-small" :class="{ active: isFavorite(itemCategory(item), item) }" type="button" :aria-label="`${isFavorite(itemCategory(item), item) ? '移除收藏' : '收藏'}专辑 ${item.title}`" @click="toggleFavorite(itemCategory(item), item)">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
             </button>
           </div>
@@ -623,9 +623,9 @@ function savedDate(value) {
     </div>
 
     <footer class="app-footer">
-      <a class="status-link" href="https://x.com/SpotifyStatus" target="_blank" rel="noreferrer">Spotify Status</a>
-      <a class="github-link" href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer" title="View on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg></a>
-      <button class="icon-button footer-logout" type="button" aria-label="Log out" title="Log out" @click="emit('logout')">
+      <a class="status-link" href="https://x.com/SpotifyStatus" target="_blank" rel="noreferrer">Spotify 状态</a>
+      <a class="github-link" href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer" title="在 GitHub 上查看"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg></a>
+      <button class="icon-button footer-logout" type="button" aria-label="退出登录" title="退出登录" @click="emit('logout')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5v2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5v2Zm5.59 2.59L20 12l-4.41 4.41L14.17 15l2-2H8v-2h8.17l-2-2 1.42-1.41Z" /></svg>
       </button>
     </footer>
@@ -635,11 +635,11 @@ function savedDate(value) {
         <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="remove-dialog-title">
           <p class="feature-kicker">{{ pendingRemovalLabel }}</p>
           <h2 id="remove-dialog-title">{{ pendingRemoval.item.title }}</h2>
-          <p>This will update your Spotify library.</p>
+          <p>此操作会更新你的 Spotify 曲库。</p>
           <div class="dialog-actions">
-            <button class="secondary-button" type="button" :disabled="removalState?.removing" @click="closeRemovalDialog">Cancel</button>
+            <button class="secondary-button" type="button" :disabled="removalState?.removing" @click="closeRemovalDialog">取消</button>
             <button class="primary-button confirm-remove-button" type="button" :disabled="removalState?.removing" @click="confirmRemoval">
-              {{ removalState?.removing ? 'Removing…' : pendingRemovalLabel }}
+              {{ removalState?.removing ? '移除中…' : pendingRemovalLabel }}
             </button>
           </div>
         </section>

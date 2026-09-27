@@ -20,12 +20,12 @@ const { updateAvailable, applyAppUpdate } = useAppUpdate();
       v-if="favoritesActive"
       class="header-back"
       type="button"
-      aria-label="Back to library"
-      title="Back to library"
+      aria-label="返回曲库"
+      title="返回曲库"
       @click="$emit('open-library')"
     >
       <span class="header-back-symbol" aria-hidden="true">←</span>
-      <span>Library</span>
+      <span>曲库</span>
     </button>
     <BrandMark v-else />
     <div class="account-menu">
@@ -33,8 +33,8 @@ const { updateAvailable, applyAppUpdate } = useAppUpdate();
         v-if="updateAvailable"
         class="icon-button update-button"
         type="button"
-        aria-label="New version — tap to refresh"
-        title="New version — tap to refresh"
+        aria-label="有新版本，点击刷新"
+        title="有新版本，点击刷新"
         @click="applyAppUpdate"
       >
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.41-6.24L14 10h6V4l-2.35 2.35Z" fill="currentColor" /></svg>
@@ -45,8 +45,8 @@ const { updateAvailable, applyAppUpdate } = useAppUpdate();
         class="icon-button randomize-button"
         :class="{ spinning: randomizing }"
         type="button"
-        aria-label="Pick a random album or artist"
-        title="Pick a random album or artist"
+        aria-label="随机抽取一张专辑或一位艺人"
+        title="随机抽取一张专辑或一位艺人"
         :disabled="randomizing"
         @click="$emit('randomize')"
       >
@@ -54,7 +54,7 @@ const { updateAvailable, applyAppUpdate } = useAppUpdate();
       </button>
       <button v-if="!favoritesActive" class="favorites-shortcut" type="button" @click="$emit('open-favorites')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
-        <span>Favorites</span>
+        <span>收藏</span>
         <small v-if="favoriteCount !== null">{{ favoriteCount }}</small>
       </button>
     </div>

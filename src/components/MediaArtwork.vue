@@ -7,7 +7,7 @@ defineProps({
 
 <template>
   <div class="artwork" :class="{ small }" :style="!item?.image && item?.imageStyle ? { background: item.imageStyle } : null">
-    <img v-if="item?.image" :src="item.image" :alt="`${item.title} cover`" />
+    <img v-if="item?.image" :src="item.image" :alt="`${item.title} 封面`" />
     <div v-else class="artwork-fallback" aria-hidden="true">
       <span>◆</span>
     </div>

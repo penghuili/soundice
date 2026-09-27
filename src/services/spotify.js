@@ -27,7 +27,7 @@ async function spotifyFetch(path, options = {}, retry = true) {
 }
 
 function spotifyError(response) {
-  const error = new Error('Spotify request failed.');
+  const error = new Error('Spotify 请求失败。');
   error.status = response.status;
   return error;
 }
@@ -172,7 +172,7 @@ export async function loadCategory(type) {
     return { count: artists.length, latest: artists.slice(0, 8).map(normalizeArtist) };
   }
   const category = categories[type];
-  if (!category) throw new Error('Unknown library category.');
+  if (!category) throw new Error('未知的曲库分类。');
   const data = await spotifyFetch(category.listPath);
   return { count: data.total || 0, latest: (data.items || []).map(category.normalize) };
 }
@@ -218,12 +218,12 @@ export async function getRandomArtistAlbum(artistId) {
 }
 
 export async function removeItem(type, item) {
-  if (!item?.id) throw new Error('No Spotify item is selected.');
+  if (!item?.id) throw new Error('未选中任何 Spotify 内容。');
   if (type === 'artists') {
     await spotifyFetch(`/me/following?type=artist&ids=${encodeURIComponent(item.id)}`, { method: 'DELETE' });
     followedArtists = followedArtists?.filter(artist => artist.id !== item.id) || null;
     return;
   }
-  if (!['albums', 'songs', 'podcasts'].includes(type) || !item.uri) throw new Error('Unknown library category.');
+  if (!['albums', 'songs', 'podcasts'].includes(type) || !item.uri) throw new Error('未知的曲库分类。');
   await spotifyFetch(`/me/library?uris=${encodeURIComponent(item.uri)}`, { method: 'DELETE' });
 }

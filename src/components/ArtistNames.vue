@@ -19,8 +19,8 @@ defineProps({
           :href="artist.url"
           target="_blank"
           rel="noreferrer"
-          :aria-label="`Open ${artist.name} on Spotify`"
-          :title="`Open ${artist.name} on Spotify`"
+          :aria-label="`在 Spotify 中打开 ${artist.name}`"
+          :title="`在 Spotify 中打开 ${artist.name}`"
         >{{ artist.name }}</a>
         <span v-else>{{ artist.name }}</span>
         <AiLookupLink compact icon-only :href="artistAiModeUrl(artist.name)" :label="artist.name" />

@@ -18,7 +18,7 @@ const props = defineProps({
 const emit = defineEmits(['logout', 'open-library']);
 
 const types = {
-  albums: 'album',
+  albums: '专辑',
 };
 const state = reactive({
   items: [],
@@ -102,7 +102,7 @@ async function loadFavorites() {
     updateObserver();
   } catch (error) {
     if (error instanceof AuthRequiredError) emit('logout');
-    state.error = formatError(error, 'Soundice could not load your favorites.');
+    state.error = formatError(error, 'Soundice 无法加载你的收藏。');
     favoriteError.value = state.error;
   } finally {
     state.loading = false;
@@ -122,7 +122,7 @@ async function loadMore() {
       state.hasMore = state.items.length < state.total;
     } catch (error) {
       if (error instanceof AuthRequiredError) emit('logout');
-      else favoriteError.value = formatError(error, 'Could not load more favorites.');
+      else favoriteError.value = formatError(error, '无法加载更多收藏。');
     } finally {
       state.loadingMore = false;
       loadMorePromise = null;
@@ -158,7 +158,7 @@ async function runSearch(query) {
   } catch (error) {
     if (seq !== searchSeq) return;
     if (error instanceof AuthRequiredError) emit('logout');
-    search.error = formatError(error, 'Spotify could not search albums right now.');
+    search.error = formatError(error, 'Spotify 暂时无法搜索专辑。');
     search.results = [];
     search.searched = true;
   } finally {
@@ -202,7 +202,7 @@ async function roll(animate = true) {
     rollState.current = next;
   } catch (error) {
     if (error instanceof AuthRequiredError) emit('logout');
-    else favoriteError.value = formatError(error, 'Could not pick a favorite.');
+    else favoriteError.value = formatError(error, '无法抽取收藏。');
   } finally {
     rollState.rolling = false;
   }
@@ -227,7 +227,7 @@ async function addFavorite(item) {
     if (!rollState.current) await roll(false);
   } catch (error) {
     if (error instanceof AuthRequiredError) emit('logout');
-    else favoriteError.value = formatError(error, 'Could not update favorites.');
+    else favoriteError.value = formatError(error, '无法更新收藏。');
   }
 }
 
@@ -250,7 +250,7 @@ async function removeFavorite(favorite) {
     if (error instanceof AuthRequiredError) {
       emit('logout');
     } else {
-      favoriteError.value = formatError(error, 'Could not update favorites.');
+      favoriteError.value = formatError(error, '无法更新收藏。');
     }
   }
 }
@@ -280,26 +280,26 @@ function formatError(error, fallback) {
     <section class="favorites-page">
       <div v-if="state.loading && !state.loaded" class="favorites-empty" aria-live="polite">
         <span>↻</span>
-        <h2>Loading your shelf</h2>
-        <p>Soundice is fetching your saved items.</p>
+        <h2>正在加载你的书架</h2>
+        <p>Soundice 正在获取你收藏的内容。</p>
       </div>
       <div v-else-if="state.error && !state.loaded" class="favorites-empty" role="alert">
         <span>!</span>
-        <h2>Favorites could not load</h2>
+        <h2>收藏加载失败</h2>
         <p>{{ state.error }}</p>
-        <button class="secondary-button" type="button" @click="loadFavorites()">Try again</button>
+        <button class="secondary-button" type="button" @click="loadFavorites()">重试</button>
       </div>
       <div v-else class="favorites-body">
         <section class="feature-card favorites-random-card">
           <template v-if="state.total">
             <div class="feature-topline">
-              <span>Random favorite</span>
+              <span>随机收藏</span>
               <button
                 v-if="rollState.previous"
                 class="icon-button previous-button"
                 type="button"
-                aria-label="Undo"
-                title="Undo"
+                aria-label="撤销"
+                title="撤销"
                 :disabled="rollState.rolling"
                 @click="goBack"
               >
@@ -311,9 +311,9 @@ function formatError(error, fallback) {
               <div v-if="rollState.current" :key="favoriteKey(rollState.current)" class="feature-content">
                 <MediaArtwork :item="rollState.current.item" />
                 <div class="feature-details">
-                  <p class="feature-kicker">Soundice picked</p>
+                  <p class="feature-kicker">Soundice 抽中了</p>
                   <h2 class="card-title-row">
-                    <a v-if="rollState.current.item.url" class="card-title-link" :href="rollState.current.item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${rollState.current.item.title} on Spotify`" :title="`Open ${rollState.current.item.title} on Spotify`">{{ rollState.current.item.title }}</a>
+                    <a v-if="rollState.current.item.url" class="card-title-link" :href="rollState.current.item.url" target="_blank" rel="noreferrer" :aria-label="`在 Spotify 中打开 ${rollState.current.item.title}`" :title="`在 Spotify 中打开 ${rollState.current.item.title}`">{{ rollState.current.item.title }}</a>
                     <span v-else class="card-title-link">{{ rollState.current.item.title }}</span>
                     <AiLookupLink heading icon-only :href="albumAiModeUrl(rollState.current.item.title, rollState.current.item.artistLinks)" :label="rollState.current.item.title" />
                   </h2>
@@ -329,37 +329,37 @@ function formatError(error, fallback) {
                   <div class="feature-actions">
                     <button class="primary-button roll-button" type="button" :disabled="rollState.rolling" @click="roll()">
                       <img :class="{ spinning: rollState.rolling }" class="roll-mark" src="/soundice-mark-inverted.svg?v=3" alt="" width="21" height="21" />
-                      {{ rollState.rolling ? 'Rolling…' : 'Roll again' }}
+                      {{ rollState.rolling ? '抽取中…' : '再抽一次' }}
                     </button>
                     <button class="favorite-toggle favorite-toggle-compact active" type="button" aria-pressed="true" @click="removeFavorite(rollState.current)">
                       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
-                      Favorited
+                      已收藏
                     </button>
                   </div>
                 </div>
               </div>
               <div v-else class="feature-retry">
                 <span>↻</span>
-                <h2>One more roll?</h2>
-                <p>Pick another favorite from your shelf.</p>
+                <h2>再来一次？</h2>
+                <p>从书架中再抽一条收藏。</p>
                 <button class="primary-button roll-button" type="button" :disabled="rollState.rolling" @click="roll()">
-                  {{ rollState.rolling ? 'Trying again…' : 'Try again' }}
+                  {{ rollState.rolling ? '重试中…' : '再试一次' }}
                 </button>
               </div>
             </Transition>
           </template>
           <div v-else class="feature-retry">
             <span>★</span>
-            <h2>Nothing saved here yet</h2>
-            <p>Search an album on the right and star it to start your shelf.</p>
+            <h2>这里还没有收藏</h2>
+            <p>在右侧搜索一张专辑并点亮星标，开始搭建你的书架。</p>
           </div>
         </section>
 
         <section class="favorites-list-panel">
           <div class="panel-heading">
             <div>
-              <p>Your shelf</p>
-              <h2>{{ search.query.trim() ? 'Add album' : 'All favorites' }}</h2>
+              <p>你的书架</p>
+              <h2>{{ search.query.trim() ? '添加专辑' : '全部收藏' }}</h2>
             </div>
             <span>{{ state.total }}</span>
           </div>
@@ -367,24 +367,24 @@ function formatError(error, fallback) {
             <input
               v-model="search.query"
               type="search"
-              placeholder="Search albums to add"
+              placeholder="搜索要添加的专辑"
               autocomplete="off"
               spellcheck="false"
-              aria-label="Search albums to add"
+              aria-label="搜索要添加的专辑"
             />
           </div>
           <div ref="listEl" class="favorites-list-scroll">
             <template v-if="search.query.trim()">
-              <div v-if="search.loading" class="favorites-list-status" aria-live="polite">Searching albums…</div>
+              <div v-if="search.loading" class="favorites-list-status" aria-live="polite">正在搜索专辑…</div>
               <div v-else-if="search.error" class="favorites-list-status" role="alert">{{ search.error }}</div>
-              <div v-else-if="search.searched && !search.results.length" class="favorites-list-status">No albums matched that search.</div>
+              <div v-else-if="search.searched && !search.results.length" class="favorites-list-status">没有找到匹配的专辑。</div>
               <div v-else class="favorites-list">
                 <article v-for="item in search.results" :key="item.id" class="favorite-item">
                   <MediaArtwork :item="item" small />
                   <div class="favorite-item-copy">
-                    <span class="favorite-type">album</span>
+                    <span class="favorite-type">专辑</span>
                     <div class="recent-title-row">
-                      <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${item.title} on Spotify`" :title="`Open ${item.title} on Spotify`"><strong>{{ item.title }}</strong></a>
+                      <a v-if="item.url" class="recent-title-link" :href="item.url" target="_blank" rel="noreferrer" :aria-label="`在 Spotify 中打开 ${item.title}`" :title="`在 Spotify 中打开 ${item.title}`"><strong>{{ item.title }}</strong></a>
                       <strong v-else>{{ item.title }}</strong>
                       <AiLookupLink compact icon-only :href="albumAiModeUrl(item.title, item.artistLinks)" :label="item.title" />
                     </div>
@@ -394,8 +394,8 @@ function formatError(error, fallback) {
                     class="icon-button favorite-toggle favorite-toggle-small"
                     :class="{ active: isKnownFavorite(item.id) }"
                     type="button"
-                    :aria-label="`${isKnownFavorite(item.id) ? 'Remove' : 'Save'} ${item.title} album`"
-                    :title="`${isKnownFavorite(item.id) ? 'Remove' : 'Save'} ${item.title}`"
+                    :aria-label="`${isKnownFavorite(item.id) ? '移除收藏' : '收藏'}专辑 ${item.title}`"
+                    :title="`${isKnownFavorite(item.id) ? '移除收藏' : '收藏'} ${item.title}`"
                     :aria-pressed="isKnownFavorite(item.id)"
                     @click="toggleSearchFavorite(item)"
                   >
@@ -405,25 +405,25 @@ function formatError(error, fallback) {
               </div>
             </template>
             <template v-else>
-              <div v-if="!state.items.length" class="favorites-list-status">Star an album to keep it on this shelf.</div>
+              <div v-if="!state.items.length" class="favorites-list-status">点亮星标即可把专辑留在这个书架上。</div>
               <div v-else class="favorites-list">
                 <article v-for="favorite in state.items" :key="favoriteKey(favorite)" class="favorite-item">
                   <MediaArtwork :item="favorite.item" small />
                   <div class="favorite-item-copy">
                     <span class="favorite-type">{{ types[favorite.type] || favorite.type }}</span>
                     <div class="recent-title-row">
-                      <a v-if="favorite.item.url" class="recent-title-link" :href="favorite.item.url" target="_blank" rel="noreferrer" :aria-label="`Open ${favorite.item.title} on Spotify`" :title="`Open ${favorite.item.title} on Spotify`"><strong>{{ favorite.item.title }}</strong></a>
+                      <a v-if="favorite.item.url" class="recent-title-link" :href="favorite.item.url" target="_blank" rel="noreferrer" :aria-label="`在 Spotify 中打开 ${favorite.item.title}`" :title="`在 Spotify 中打开 ${favorite.item.title}`"><strong>{{ favorite.item.title }}</strong></a>
                       <strong v-else>{{ favorite.item.title }}</strong>
                       <AiLookupLink compact icon-only :href="albumAiModeUrl(favorite.item.title, favorite.item.artistLinks)" :label="favorite.item.title" />
                     </div>
                     <span class="recent-artist-line">{{ favorite.item.subtitle || favorite.item.detail }}</span>
                   </div>
-                  <button class="icon-button favorite-toggle favorite-toggle-small active" type="button" :aria-label="`Remove ${favorite.item.title} from favorites`" :title="`Remove ${favorite.item.title} from favorites`" @click="removeFavorite(favorite)">
+                  <button class="icon-button favorite-toggle favorite-toggle-small active" type="button" :aria-label="`从收藏中移除 ${favorite.item.title}`" :title="`从收藏中移除 ${favorite.item.title}`" @click="removeFavorite(favorite)">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27Z" /></svg>
                   </button>
                 </article>
               </div>
-              <div v-if="state.loadingMore" class="favorites-list-status" aria-live="polite">Loading more…</div>
+              <div v-if="state.loadingMore" class="favorites-list-status" aria-live="polite">加载中…</div>
               <div v-else-if="state.hasMore" ref="sentinelEl" class="favorites-scroll-sentinel" aria-hidden="true"></div>
             </template>
           </div>
@@ -433,9 +433,9 @@ function formatError(error, fallback) {
     </section>
 
     <footer class="app-footer">
-      <a class="status-link" href="https://x.com/SpotifyStatus" target="_blank" rel="noreferrer">Spotify Status</a>
-      <a class="github-link" href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer" title="View on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg></a>
-      <button class="icon-button footer-logout" type="button" aria-label="Log out" title="Log out" @click="emit('logout')">
+      <a class="status-link" href="https://x.com/SpotifyStatus" target="_blank" rel="noreferrer">Spotify 状态</a>
+      <a class="github-link" href="https://github.com/penghuili/soundice" target="_blank" rel="noreferrer" title="在 GitHub 上查看"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg></a>
+      <button class="icon-button footer-logout" type="button" aria-label="退出登录" title="退出登录" @click="emit('logout')">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5H5v14h5v2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5v2Zm5.59 2.59L20 12l-4.41 4.41L14.17 15l2-2H8v-2h8.17l-2-2 1.42-1.41Z" /></svg>
       </button>
     </footer>

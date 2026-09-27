@@ -93,7 +93,7 @@ function userPlaceholders(identity, startAt = 1) {
 
 export async function onRequest(context) {
   const { request, env } = context;
-  if (!env.DB) return requestError('Favorites database is not configured.', 503);
+  if (!env.DB) return requestError('收藏数据库未配置。', 503);
   if (request.method === 'OPTIONS') return new Response(null, { status: 204 });
 
   const url = new URL(request.url);
@@ -101,17 +101,17 @@ export async function onRequest(context) {
   try {
     identity = await authenticateWithSpotify(request);
   } catch {
-    return requestError('Spotify could not verify this request.', 503);
+    return requestError('Spotify 无法验证此请求。', 503);
   }
   if (!identity) {
-    return requestError('A valid Spotify access token is required.', 401, {
+    return requestError('需要有效的 Spotify 访问令牌。', 401, {
       'WWW-Authenticate': 'Bearer',
     });
   }
 
   if (request.method === 'GET') {
     const type = url.searchParams.get('type');
-    if (type && !validateType(type)) return requestError('Unknown favorite type.');
+    if (type && !validateType(type)) return requestError('未知的收藏类型。');
 
     const values = [...identity.ids];
     const userFilter = userPlaceholders(identity);
@@ -161,7 +161,7 @@ export async function onRequest(context) {
     const body = await readBody(request);
     const type = validateType(body?.type);
     const item = validateItem(body?.item);
-    if (!type || !item) return requestError('A valid favorite type and item are required.');
+    if (!type || !item) return requestError('需要有效的收藏类型和内容。');
 
     await env.DB.prepare(
       `INSERT INTO favorites (user_id, item_type, item_id, item_json, created_at)
@@ -175,7 +175,7 @@ export async function onRequest(context) {
     const body = await readBody(request);
     const type = validateType(body?.type);
     const itemId = typeof body?.itemId === 'string' && body.itemId.length <= 256 ? body.itemId : null;
-    if (!type || !itemId) return requestError('A valid favorite type and item id are required.');
+    if (!type || !itemId) return requestError('需要有效的收藏类型和内容 ID。');
     const userFilter = userPlaceholders(identity);
     await env.DB.prepare(
       `DELETE FROM favorites WHERE user_id IN (${userFilter}) AND item_type = ?${identity.ids.length + 1} AND item_id = ?${identity.ids.length + 2}`
@@ -185,5 +185,5 @@ export async function onRequest(context) {
     return new Response(null, { status: 204 });
   }
 
-  return requestError('Method not allowed.', 405);
+  return requestError('不支持的请求方法。', 405);
 }

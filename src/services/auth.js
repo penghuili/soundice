@@ -8,13 +8,13 @@ let refreshPromise = null;
 
 function requireClientId() {
   if (!clientId) {
-    throw new Error('Spotify is not configured. Set VITE_SPOTIFY_CLIENT_ID and rebuild the app.');
+    throw new Error('Spotify 未配置。请设置 VITE_SPOTIFY_CLIENT_ID 后重新构建应用。');
   }
   return clientId;
 }
 
 export class AuthRequiredError extends Error {
-  constructor(message = 'Your Spotify session has expired.') {
+  constructor(message = '你的 Spotify 会话已过期。') {
     super(message);
     this.name = 'AuthRequiredError';
   }
@@ -75,7 +75,7 @@ export async function beginSpotifyLogin() {
 export async function exchangeAuthorizationCode(code) {
   const configuredClientId = requireClientId();
   const verifier = storage.get(storageKeys.codeVerifier);
-  if (!verifier) throw new Error('The sign-in request has expired. Please connect again.');
+  if (!verifier) throw new Error('登录请求已过期，请重新连接。');
   const response = await fetchWithRetry(tokenUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -87,7 +87,7 @@ export async function exchangeAuthorizationCode(code) {
       code_verifier: verifier,
     }),
   });
-  const tokens = await readTokenResponse(response, 'Could not connect to Spotify.');
+  const tokens = await readTokenResponse(response, '无法连接 Spotify。');
   saveTokens(tokens);
   storage.remove(storageKeys.codeVerifier);
 }
@@ -110,7 +110,7 @@ async function refreshAccessToken() {
         refresh_token: savedRefreshToken,
       }),
     });
-    const tokens = await readTokenResponse(response, 'Spotify could not refresh your session.');
+    const tokens = await readTokenResponse(response, 'Spotify 无法刷新你的会话。');
     saveTokens(tokens, true);
     return tokens.access_token;
   } catch (error) {

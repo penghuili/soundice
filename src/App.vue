@@ -58,7 +58,7 @@ onMounted(async () => {
   const authError = params.get('error');
 
   try {
-    if (authError) throw new Error('Spotify sign-in was cancelled.');
+    if (authError) throw new Error('已取消 Spotify 登录。');
     if (code) {
       await exchangeAuthorizationCode(code);
       window.history.replaceState({}, '', window.location.pathname);
@@ -71,7 +71,7 @@ onMounted(async () => {
     status.value = 'ready';
   } catch (error) {
     if (error instanceof AuthRequiredError) signOut();
-    message.value = error.message || 'Could not connect to Spotify.';
+    message.value = error.message || '无法连接 Spotify。';
     status.value = 'guest';
   }
 });
@@ -81,7 +81,7 @@ async function connect() {
   try {
     await beginSpotifyLogin();
   } catch (error) {
-    message.value = error.message || 'Could not start Spotify sign-in.';
+    message.value = error.message || '无法启动 Spotify 登录。';
   }
 }
 
@@ -93,7 +93,7 @@ function logout() {
 </script>
 
 <template>
-  <main v-if="status === 'loading'" class="boot-screen" aria-label="Loading Soundice">
+  <main v-if="status === 'loading'" class="boot-screen" aria-label="Soundice 正在加载">
     <img class="boot-logo-mark" src="/soundice-mark.svg?v=3" alt="" width="54" height="54" />
     <div class="boot-line"><span /></div>
   </main>
