@@ -10,13 +10,13 @@
     "deploy": "node ./scripts/update-build-env.js prod && node ./scripts/deploy-cloudflare.js"
   },
   "dependencies": {
-    "vue": "^3.5.41"
+    "vue": "^3.5.43"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.8",
-    "dotenv": "^17.4.2",
-    "rollup-plugin-visualizer": "^7.0.1",
-    "sharp": "^0.35.4",
-    "vite": "^8.2.1"
+    "@vitejs/plugin-vue": "^6.0.9",
+    "dotenv": "^18.0.4",
+    "rollup-plugin-visualizer": "^7.1.1",
+    "sharp": "^0.35.5",
+    "vite": "^8.3.1"
   }
 }
